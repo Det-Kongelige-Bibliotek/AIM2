@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>List of all words</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<thead>Keywords</thead>
+<tbody>
+    <tr th:each="word : ${words}">
+        <td th:text="${word.id}"></td>
+        <td th:text="${word.text_en}"></td>"
+        <td th:text="${word.text_da}"></td>"
+        <td th:text="${word.status}"></td>"
+    </tr>
+</tbody>
+</body>
+</html>
