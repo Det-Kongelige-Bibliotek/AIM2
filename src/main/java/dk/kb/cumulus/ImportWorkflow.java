@@ -39,6 +39,7 @@ public class ImportWorkflow extends TimerTask {
      * @param record The Cumulus record to import.
      */
     protected void importRecord(CumulusRecord record) {
+        // TODO set to 'processing' for the aim field.
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         File imageFile = record.getFile();
@@ -58,6 +59,7 @@ public class ImportWorkflow extends TimerTask {
                 return path.get(aimPath + 1);
             }
         }
+        // TODO what should we do, if we cannot find the category?
         return "UNKNOWN";
     }
 }

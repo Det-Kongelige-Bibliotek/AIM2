@@ -19,7 +19,13 @@ public class CumulusRetriever {
     protected static final String FIELD_NAME_AIM = "AIM";
     /** The value regarding 'Ready for AIM' for the Cumulus field 'AIM'. ̈́*/
     protected static final String FIELD_VALUE_AIM_READY = "Ready for AIM";
-    
+
+    /** The Cumulus field name for Forside/Bagside*/
+    protected static final String FIELD_NAME_FRONT_BACK = "Forside og bagside";
+    /** The value regarding ready for Forside/Bagside workflow.*/
+    protected static final String FIELD_VALUE_FRONT_BACK_READY = "Ready for forside og bagside";
+
+
     /** The Cumulus server.*/
     protected final CumulusServer server;
     
@@ -50,7 +56,27 @@ public class CumulusRetriever {
         CumulusQuery query = new CumulusQuery(queryString, findFlags, CombineMode.FIND_NEW);
         return server.getItems(catalogName, query);
     }
-    
+
+    /**
+     * Retrieves all the CumulusRecords which are ready for the Front/Back workflow for the given catalog.
+     * @param catalogName The name of the catalog.
+     * @return The collection of CumulusRecords which are ready for AIM from the given catalog.
+     */
+    public CumulusRecordCollection getReadyForFrontBackRecords(String catalogName) {
+        String queryString = String.format(
+                StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s"),
+                FIELD_NAME_FRONT_BACK,
+                FIELD_VALUE_FRONT_BACK_READY,
+                Constants.FieldNames.CATALOG_NAME,
+                catalogName);
+        EnumSet<FindFlag> findFlags = EnumSet.of(
+                FindFlag.FIND_MISSING_FIELDS_ARE_ERROR,
+                FindFlag.FIND_MISSING_STRING_LIST_VALUES_ARE_ERROR);
+
+        CumulusQuery query = new CumulusQuery(queryString, findFlags, CombineMode.FIND_NEW);
+        return server.getItems(catalogName, query);
+    }
+
     /**
      * Finds the CumulusRecord with the given name in the given catalog.
      * @param catalogName The name of the catalog.
