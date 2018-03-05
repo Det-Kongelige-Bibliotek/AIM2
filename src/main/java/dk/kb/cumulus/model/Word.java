@@ -2,7 +2,6 @@ package dk.kb.cumulus.model;
 
 /**
  * Created by dgj on 22-02-2018.
- * test
  */
 public class Word {
     private int id;
