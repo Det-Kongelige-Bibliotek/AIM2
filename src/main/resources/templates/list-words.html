@@ -2,17 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>List of all words</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/css/AIM.min.css}" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 </head>
 <body>
-<thead>Keywords</thead>
-<tbody>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>English</th>
+        <th>Danish</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
     <tr th:each="word : ${words}">
         <td th:text="${word.id}"></td>
-        <td th:text="${word.text_en}"></td>"
-        <td th:text="${word.text_da}"></td>"
-        <td th:text="${word.status}"></td>"
+        <td th:text="${word.text_en}"></td>
+        <td th:text="${word.text_da}"></td>
+        <td th:text="${word.status}"></td>
     </tr>
-</tbody>
+    </tbody>
+</table>
 </body>
 </html>
