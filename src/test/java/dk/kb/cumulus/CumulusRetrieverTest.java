@@ -7,31 +7,29 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.jaccept.structure.ExtendedTestCase;
-import org.testng.SkipException;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Assume;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.yaml.snakeyaml.Yaml;
 
 import com.canto.cumulus.CategoryItem;
 
-public class CumulusRetrieverTest extends ExtendedTestCase {
+@SpringBootTest
+public class CumulusRetrieverTest {
 
-    String testServerUrl;
-    String testUserName;
-    String testUserPassword;
-    String testCatalog;
+    static String testServerUrl;
+    static String testUserName;
+    static String testUserPassword;
+    static String testCatalog;
     
     @BeforeClass
-    public void setup() throws Exception {
+    public static void setup() throws Exception {
         File f = new File(System.getenv("HOME") + "/cumulus-password.yml");
-        if(!f.exists()) {
-            throw new SkipException("Coult not find a YAML at '" + f.getAbsolutePath() + "'");
-        }
+        Assume.assumeTrue("Coult not find a YAML at '" + f.getAbsolutePath() + "'", f.exists());
         Object o = new Yaml().load(new FileInputStream(f));
-        if (!(o instanceof LinkedHashMap)) {
-            throw new SkipException("Could not read YAML file: " + f.getAbsolutePath());
-        }
+        Assume.assumeTrue("Could not read YAML file: " + f.getAbsolutePath(), (o instanceof LinkedHashMap));
         LinkedHashMap<String, Object> settings = (LinkedHashMap<String, Object>) o;
         
         testServerUrl = (String) settings.get("server_url");
@@ -40,7 +38,8 @@ public class CumulusRetrieverTest extends ExtendedTestCase {
         testCatalog = (String) settings.get("catalog");;
     }
     
-//    @Test
+    @Test
+    @Ignore
     public void testStuff() throws Exception {
         String serverUrl = testServerUrl;
         String userName = testUserName;

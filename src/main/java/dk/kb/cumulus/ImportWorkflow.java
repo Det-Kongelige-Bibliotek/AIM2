@@ -4,12 +4,21 @@ import java.io.File;
 import java.util.List;
 import java.util.TimerTask;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
  * 
  */
 public class ImportWorkflow extends TimerTask {
-    /** The name of the */
+    /** The log.*/
+    Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
+    
+    /** The default value for the */
+    protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
+    
+    /** The name of the root category for AIM.*/
     protected static final String CATEGORY_NAME_AIM = "AIM";
     
     /** The Cumulus retriever.*/
@@ -39,6 +48,8 @@ public class ImportWorkflow extends TimerTask {
      * @param record The Cumulus record to import.
      */
     protected void importRecord(CumulusRecord record) {
+        log.info("Importing the Cumulus record '" + record + "' into AIM.");
+        
         // TODO set to 'processing' for the aim field.
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
@@ -55,11 +66,12 @@ public class ImportWorkflow extends TimerTask {
         for(int i : record.getCategories()) {
             List<String> path = cumulusRetriever.getCategoryPath(catalogName, i);
             int aimPath = path.indexOf(CATEGORY_NAME_AIM);
-            if(aimPath > 0) {
+            if(aimPath > 0 && aimPath < path.size()) {
                 return path.get(aimPath + 1);
             }
         }
         // TODO what should we do, if we cannot find the category?
-        return "UNKNOWN";
+        log.warn("No AIM category found. Returning 'UNKNOWN'");
+        return CATEGORY_UNKNOWN;
     }
 }
