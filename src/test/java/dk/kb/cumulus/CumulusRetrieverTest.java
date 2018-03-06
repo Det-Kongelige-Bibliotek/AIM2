@@ -29,13 +29,13 @@ public class CumulusRetrieverTest {
         File f = new File(System.getenv("HOME") + "/cumulus-password.yml");
         Assume.assumeTrue("Coult not find a YAML at '" + f.getAbsolutePath() + "'", f.exists());
         Object o = new Yaml().load(new FileInputStream(f));
-        Assume.assumeTrue("Could not read YAML file: " + f.getAbsolutePath(), (o instanceof LinkedHashMap));
+        Assume.assumeTrue("Could not read YAML file '" + f.getAbsolutePath() + "'", (o instanceof LinkedHashMap));
         LinkedHashMap<String, Object> settings = (LinkedHashMap<String, Object>) o;
         
         testServerUrl = (String) settings.get("server_url");
         testUserName = (String) settings.get("login");
         testUserPassword = (String) settings.get("password");
-        testCatalog = (String) settings.get("catalog");;
+        testCatalog = (String) settings.get("catalog");
     }
     
     @Test
