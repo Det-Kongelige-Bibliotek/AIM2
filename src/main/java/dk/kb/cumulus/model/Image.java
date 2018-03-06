@@ -1,5 +1,7 @@
 package dk.kb.cumulus.model;
 
+import java.util.List;
+
 /**
  * Created by dgj on 05-03-2018.
  */
@@ -11,6 +13,8 @@ public class Image {
     private String color;
     private String ocr;
     private String status;
+    private List<ImageWord> imageWords;
+
 
     public Image(int id, String path, String cumulus_id, String category, String color, String ocr, String status) {
         this.id = id;
