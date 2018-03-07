@@ -1,8 +1,30 @@
 DROP TABLE IF EXISTS words;
 CREATE TABLE words (
   id SERIAL NOT NULL,
-  text_en VARCHAR(256),
-  text_da VARCHAR(256),
-  status VARCHAR(50),
+  text_en text,
+  text_da text,
+  category text,
+  status text,
   PRIMARY KEY (id)
+);
+
+DROP TABLE IF EXISTS images;
+CREATE TABLE images (
+  id SERIAL NOT NULL,
+  path text,
+  cumulus_id text,
+  category text,
+  color text,
+  ocr text,
+  status text,
+  PRIMARY KEY (id)
+);
+
+
+DROP TABLE IF EXISTS image_word;
+CREATE TABLE image_word (
+  id SERIAL NOT NULL,
+  image_id INTEGER REFERENCES images (id),
+  word_id INTEGER REFERENCES words (id),
+  percent INTEGER
 );
