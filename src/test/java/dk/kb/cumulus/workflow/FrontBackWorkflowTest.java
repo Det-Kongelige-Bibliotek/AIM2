@@ -1,4 +1,4 @@
-package dk.kb.cumulus;
+package dk.kb.cumulus.workflow;
 
 import java.util.UUID;
 
@@ -7,6 +7,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.workflow.FrontBackWorkflow;
 
 @SpringBootTest
 public class FrontBackWorkflowTest {
@@ -23,7 +26,7 @@ public class FrontBackWorkflowTest {
 //        addDescription("Test the getParent method");
         CumulusRetriever retriever = Mockito.mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName);
+        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
 
 //        addStep("Test with uuid filename with non-digit as last character", "Does not find a parent");
         String f1 = UUID.randomUUID().toString() + "a";

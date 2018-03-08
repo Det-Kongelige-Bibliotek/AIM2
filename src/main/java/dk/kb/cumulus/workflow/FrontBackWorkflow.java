@@ -1,14 +1,17 @@
-package dk.kb.cumulus;
-
-import java.util.TimerTask;
+package dk.kb.cumulus.workflow;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.cumulus.Constants;
+import dk.kb.cumulus.CumulusRecord;
+import dk.kb.cumulus.CumulusRecordCollection;
+import dk.kb.cumulus.CumulusRetriever;
+
 /**
  * The workflow for the FrontBack relations to be generated.
  */
-public class FrontBackWorkflow extends TimerTask {
+public class FrontBackWorkflow extends Workflow {
     /** The log.*/
     Logger log = LoggerFactory.getLogger(FrontBackWorkflow.class);
 
@@ -21,14 +24,16 @@ public class FrontBackWorkflow extends TimerTask {
      * Constructor.
      * @param retriever The Cumulus retriever.
      * @param catalogName The catalog.
+     * @param interval The interval for workflow.
      */
-    public FrontBackWorkflow(CumulusRetriever retriever, String catalogName) {
+    public FrontBackWorkflow(CumulusRetriever retriever, String catalogName, long interval) {
+        super(interval);
         this.retriever = retriever;
         this.catalogName = catalogName;
     }
     
     @Override
-    public void run() {
+    public void runWorkflow() {
         CumulusRecordCollection records = retriever.getReadyForFrontBackRecords(catalogName);
 
         for(CumulusRecord record : records) {

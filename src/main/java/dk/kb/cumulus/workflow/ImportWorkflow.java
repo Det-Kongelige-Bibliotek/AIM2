@@ -1,17 +1,20 @@
-package dk.kb.cumulus;
+package dk.kb.cumulus.workflow;
 
 import java.io.File;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.kb.cumulus.Constants;
+import dk.kb.cumulus.CumulusRecord;
+import dk.kb.cumulus.CumulusRetriever;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
  * 
  */
-public class ImportWorkflow extends TimerTask {
+public class ImportWorkflow extends Workflow {
     /** The log.*/
     Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
     
@@ -30,14 +33,16 @@ public class ImportWorkflow extends TimerTask {
      * Constructor.
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
+     * @param interval The interval for workflow.
      */
-    public ImportWorkflow(CumulusRetriever cumulusRetriever, String catalogName) {
+    public ImportWorkflow(CumulusRetriever cumulusRetriever, String catalogName, long interval) {
+        super(interval);
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
     }
     
     @Override
-    public void run() {
+    public void runWorkflow() {
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
             importRecord(record);
         }
