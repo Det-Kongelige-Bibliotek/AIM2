@@ -1,13 +1,18 @@
 package dk.kb.cumulus.workflow;
 
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import dk.kb.cumulus.Constants;
+import dk.kb.cumulus.CumulusRecord;
+import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.workflow.FrontBackWorkflow;
 
@@ -24,7 +29,7 @@ public class FrontBackWorkflowTest {
     @Test
     public void testGetParent() {
 //        addDescription("Test the getParent method");
-        CumulusRetriever retriever = Mockito.mock(CumulusRetriever.class);
+        CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
         FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
 
@@ -58,6 +63,107 @@ public class FrontBackWorkflowTest {
         String f5 = id5 + "2_123456";
         String p5 = fbw.getFrontPage(f5);
         Assert.assertNull(p5);
-
+    }
+    
+    @Test
+    public void testRunWorkflowWhenParentFound() {
+        CumulusRetriever retriever = mock(CumulusRetriever.class);
+        String catalogName = UUID.randomUUID().toString();
+        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        
+        String id = UUID.randomUUID().toString();
+        
+        CumulusRecord backRecord = mock(CumulusRecord.class);
+        String backRecordName = id + "1";
+        CumulusRecord frontRecord = mock(CumulusRecord.class);
+        String frontRecordName = id + "0";
+        CumulusRecordCollection records = mock(CumulusRecordCollection.class);
+        
+        when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
+        when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(frontRecord);
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        
+        when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
+        
+        fbw.runWorkflow();
+        
+        verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
+        verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
+        verifyNoMoreInteractions(retriever);
+        
+        verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord).addMasterAsset(eq(frontRecord));
+        verifyNoMoreInteractions(backRecord);
+        
+        verifyZeroInteractions(frontRecord);
+        
+        verify(records).iterator();
+        verifyNoMoreInteractions(records);
+    }
+    
+    @Test
+    public void testRunWorkflowWhenNoParentFound() {
+        CumulusRetriever retriever = mock(CumulusRetriever.class);
+        String catalogName = UUID.randomUUID().toString();
+        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        
+        String id = UUID.randomUUID().toString();
+        
+        CumulusRecord backRecord = mock(CumulusRecord.class);
+        String backRecordName = id + "2";
+        CumulusRecord frontRecord = mock(CumulusRecord.class);
+        String frontRecordName = id + "0";
+        CumulusRecordCollection records = mock(CumulusRecordCollection.class);
+        
+        when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
+        when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(frontRecord);
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        
+        when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
+        
+        fbw.runWorkflow();
+        
+        verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
+        verifyNoMoreInteractions(retriever);
+        
+        verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verifyNoMoreInteractions(backRecord);
+        
+        verifyZeroInteractions(frontRecord);
+        
+        verify(records).iterator();
+        verifyNoMoreInteractions(records);
+    }
+    
+    @Test
+    public void testRunWorkflowWhenFrontRecordCouldNotBeFoundInCumulus() {
+        CumulusRetriever retriever = mock(CumulusRetriever.class);
+        String catalogName = UUID.randomUUID().toString();
+        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        
+        String id = UUID.randomUUID().toString();
+        
+        CumulusRecord backRecord = mock(CumulusRecord.class);
+        String backRecordName = id + "1";
+        String frontRecordName = id + "0";
+        CumulusRecordCollection records = mock(CumulusRecordCollection.class);
+        
+        when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
+        when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(null);
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        
+        when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
+        
+        fbw.runWorkflow();
+        
+        verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
+        verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
+        verifyNoMoreInteractions(retriever);
+        
+        verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verifyNoMoreInteractions(backRecord);
+        
+        verify(records).iterator();
+        verifyNoMoreInteractions(records);
     }
 }

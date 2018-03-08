@@ -8,7 +8,7 @@ import java.util.Timer;
  * The workflow scheduler for scheduling the workflows.
  * 
  * Basically the timer checks whether to run any of workflows once every second.
- * It is the workflows themselves, who checks their credentials.
+ * It is the workflows themselves, who checks their conditions and performs their tasks if the conditions are met.
  */
 public class WorkflowScheduler {
     /** The timer should run as a daemon.*/
