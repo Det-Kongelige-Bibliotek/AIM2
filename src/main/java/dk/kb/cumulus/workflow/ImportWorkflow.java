@@ -16,7 +16,7 @@ import dk.kb.cumulus.CumulusRetriever;
  */
 public class ImportWorkflow extends Workflow {
     /** The log.*/
-    Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";

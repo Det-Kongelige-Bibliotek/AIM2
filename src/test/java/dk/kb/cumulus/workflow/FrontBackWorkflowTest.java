@@ -27,38 +27,37 @@ public class FrontBackWorkflowTest {
     }
 
     @Test
-    public void testGetParent() {
-//        addDescription("Test the getParent method");
+    public void testGetFrontPage() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
         FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
 
-//        addStep("Test with uuid filename with non-digit as last character", "Does not find a parent");
+//        addStep("Test with uuid filename with non-digit as last character", "Does not find a front-page");
         String f1 = UUID.randomUUID().toString() + "a";
         String p1 = fbw.getFrontPage(f1);
         Assert.assertNull(p1);
 
-//        addStep("Test with an odd digit as last character", "Finds a parent");
+//        addStep("Test with an odd digit as last character", "Finds a front-page");
         String id2 = UUID.randomUUID().toString();
         String f2 = id2 + "1";
         String p2 = fbw.getFrontPage(f2);
         Assert.assertNotNull(p2);
         Assert.assertEquals(p2, id2 + "0");
 
-//        addStep("Test with an even digit as last character", "No parent");
+//        addStep("Test with an even digit as last character", "No front-page");
         String id3 = UUID.randomUUID().toString();
         String f3 = id3 + "0";
         String p3 = fbw.getFrontPage(f3);
         Assert.assertNull(p3);
 
-//        addStep("Test with 'extra' back-pages", "Finds a parent");
+//        addStep("Test with 'extra' back-pages", "Finds a front-page");
         String id4 = UUID.randomUUID().toString();
         String f4 = id4 + "1_123456";
         String p4 = fbw.getFrontPage(f4);
         Assert.assertNotNull(p4);
         Assert.assertEquals(p4, id4 + "0");
 
-//        addStep("Test with 'extra' back-pages, but not on an 'odd' page", "No parent");
+//        addStep("Test with 'extra' back-pages, but not on an 'odd' page", "No front-page");
         String id5 = UUID.randomUUID().toString();
         String f5 = id5 + "2_123456";
         String p5 = fbw.getFrontPage(f5);
@@ -66,7 +65,7 @@ public class FrontBackWorkflowTest {
     }
     
     @Test
-    public void testRunWorkflowWhenParentFound() {
+    public void testRunWorkflowWhenFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
         FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
@@ -102,7 +101,7 @@ public class FrontBackWorkflowTest {
     }
     
     @Test
-    public void testRunWorkflowWhenNoParentFound() {
+    public void testRunWorkflowWhenNoFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
         FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
@@ -136,7 +135,7 @@ public class FrontBackWorkflowTest {
     }
     
     @Test
-    public void testRunWorkflowWhenFrontRecordCouldNotBeFoundInCumulus() {
+    public void testRunWorkflowWhenFrontPageRecordCouldNotBeFoundInCumulus() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
         FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);

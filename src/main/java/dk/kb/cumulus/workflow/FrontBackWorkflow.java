@@ -10,10 +10,18 @@ import dk.kb.cumulus.CumulusRetriever;
 
 /**
  * The workflow for the FrontBack relations to be generated.
+ * If the name of an image ends with and odd digit, then it has a front-page with same name except the last digit, 
+ * which will be one less.
+ * 
+ * E.g. A record named '123.tif' will have the front-page '122.tif'.
+ * Whereas the record name '122.tif' will be a front-page itself.
+ * 
+ * We will then create a Master/Sub asset relation between the given record and the record of the front-page -
+ * where front-page will be master.
  */
 public class FrontBackWorkflow extends Workflow {
     /** The log.*/
-    Logger log = LoggerFactory.getLogger(FrontBackWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(FrontBackWorkflow.class);
 
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
@@ -38,14 +46,14 @@ public class FrontBackWorkflow extends Workflow {
 
         for(CumulusRecord record : records) {
             String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
-            String parent = getFrontPage(filename);
-            if(parent != null) {
-                log.info("The record '" + record + "' will have master asset '" + parent + "'");
-                CumulusRecord parentRecord = retriever.findRecord(catalogName, parent);
-                if(parentRecord != null) {
-                    record.addMasterAsset(parentRecord);
+            String frontPage = getFrontPage(filename);
+            if(frontPage != null) {
+                log.info("The record '" + record + "' will have master asset '" + frontPage + "'");
+                CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
+                if(frontPageRecord != null) {
+                    record.addMasterAsset(frontPageRecord);
                 } else {
-                    log.warn("The record '" + record + "' should have a parent named '" + parent 
+                    log.warn("The record '" + record + "' should have a front page named '" + frontPage 
                             + "', but no such record could be found.");
                 }
             }
@@ -63,8 +71,9 @@ public class FrontBackWorkflow extends Workflow {
      * E.g. 'id-123.tiff' will be a front-page, 'id-124.tiff' will be a back-page, and 'id-124_2.tiff' will be a 
      * secondary back-page.
      * 
-     * @param filename The name of the file, whose parent file should be found.
-     * @return The name of the parent, or null if no parent was found (e.g. the file might be parent to other records)
+     * @param filename The name of the file, whose front-page file should be found.
+     * @return The name of the front-page, or null if no front-page was found 
+     * (e.g. the file might be front-page to other records).
      */
     protected String getFrontPage(String filename) {
         String nameWithoutSuffix = filename.split("\\.")[0];
@@ -88,7 +97,7 @@ public class FrontBackWorkflow extends Workflow {
                 return prefix.substring(0,prefix.length() - 1) + (digit - 1) + suffix;
             }
         } else {
-            log.warn("Cannot find parent, when file '" + filename + "' does not have the required format: "
+            log.warn("Cannot find front page, when file '" + filename + "' does not have the required format: "
                     + "[a-zA-Z0-9\\-]*[0-9].`suffix` or [a-zA-Z0-9]*[0-9]_[0-9]*.`suffix`");
         }
         return null;

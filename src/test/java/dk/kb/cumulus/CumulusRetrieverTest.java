@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -36,6 +37,26 @@ public class CumulusRetrieverTest {
         testUserName = (String) settings.get("login");
         testUserPassword = (String) settings.get("password");
         testCatalog = (String) settings.get("catalog");
+    }
+    
+    @Test
+    @Ignore
+    public void testConnection() throws Exception {
+        String serverUrl = testServerUrl;
+        String userName = testUserName;
+        String userPassword = testUserPassword;
+        List<String> catalogs = Arrays.asList(testCatalog);
+        boolean writeAccess = false;
+        
+        try (CumulusServer cumulusServer = new CumulusServer(serverUrl, userName, userPassword, catalogs, writeAccess)) {
+            CumulusRetriever retriever = new CumulusRetriever(cumulusServer);
+            CumulusRecordCollection aimRecords = retriever.getReadyForAIMRecords(testCatalog);
+            Assert.assertEquals(aimRecords.getCount(), 1);
+            
+            CumulusRecordCollection frontBackRecords = retriever.getReadyForFrontBackRecords(testCatalog);
+            Assert.assertEquals(frontBackRecords.getCount(), 1);
+
+        }        
     }
     
     @Test
