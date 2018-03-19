@@ -13,10 +13,19 @@ public class Word {
     private String status;
     private List<ImageWord> imageWords;
 
-    public Word(int id, String text_en, String text_da, String status) {
+    public Word(int id, String text_en, String text_da, String category, String status) {
         this.id = id;
         this.text_en = text_en;
         this.text_da = text_da;
+        this.category = category;
+        this.status = status;
+    }
+
+    public Word(String text_en, String text_da, String category, String status) {
+        this.id = -1;
+        this.text_en = text_en;
+        this.text_da = text_da;
+        this.category = category;
         this.status = status;
     }
 

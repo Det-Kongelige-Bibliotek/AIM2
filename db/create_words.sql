@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS image_word;
 DROP TABLE IF EXISTS words;
 CREATE TABLE words (
   id SERIAL NOT NULL,
@@ -21,10 +22,9 @@ CREATE TABLE images (
 );
 
 
-DROP TABLE IF EXISTS image_word;
 CREATE TABLE image_word (
   id SERIAL NOT NULL,
   image_id INTEGER REFERENCES images (id),
   word_id INTEGER REFERENCES words (id),
-  percent INTEGER
+  confidence INTEGER
 );
