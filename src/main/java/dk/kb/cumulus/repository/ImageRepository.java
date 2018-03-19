@@ -78,7 +78,7 @@ public class ImageRepository {
                 img.getPath(),img.getCumulus_id(),img.getCategory(),img.getStatus(),img.getId());
     }
 
-    public void addWordToImage(int image_id, int word_id, int percent) throws Exception {
+    public void addWordToImage(int image_id, int word_id, int confidence) throws Exception {
         Image img = getImage(image_id);
         if (img == null) throw new Exception("Image does not exits");
 
@@ -87,8 +87,8 @@ public class ImageRepository {
 
         // reject if status is banned and has correct category
 
-        jdbcTemplate.update("INSERT INTO image_words (image_id, word_id, percent) VALUES (?,?,?)"
-        , image_id,word_id,percent);
+        jdbcTemplate.update("INSERT INTO image_words (image_id, word_id, confidence) VALUES (?,?,?)"
+        , image_id,word_id,confidence);
 
     }
 
