@@ -8,11 +8,15 @@ You can do that using the
 
  psql
 
-tool. You can use the same tool to create a database called
+tool. You can use the same tool to create  databases called  ```aim```  and ```aim-test``` using
 
- aim 
+ create database "aim";
 
-then select that database 
+and
+
+ create database "aim-test";
+
+respectively, then select that database using (eg)
 
  \c aim
 
