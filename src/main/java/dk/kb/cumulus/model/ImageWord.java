@@ -28,7 +28,7 @@ public class ImageWord {
         return  confidence;
     }
 
-    public void setConfidence(int percent) {
-        this.confidence = percent;
+    public void setConfidence(int confidence) {
+        this.confidence = confidence;
     }
 }
