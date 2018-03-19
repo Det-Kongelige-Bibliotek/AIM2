@@ -6,7 +6,7 @@ package dk.kb.cumulus.model;
 public class ImageWord {
     int word_id;
     int image_id;
-    int percent;
+    int confidence;
 
     public int getWord_id() {
         return word_id;
@@ -24,11 +24,11 @@ public class ImageWord {
         this.image_id = image_id;
     }
 
-    public int getPercent() {
-        return percent;
+    public int getConfidence() {
+        return  confidence;
     }
 
-    public void setPercent(int percent) {
-        this.percent = percent;
+    public void setConfidence(int percent) {
+        this.confidence = percent;
     }
 }
