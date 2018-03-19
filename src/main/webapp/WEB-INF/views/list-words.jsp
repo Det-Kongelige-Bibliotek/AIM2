@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<html lang="en">
+
+<head>
+    <jsp:include page="includes/head.jsp" />
+</head>
 
 <body>
-
-<thead>Keywords</thead>
-<tbody>
-<c:forEach items="${words}" var="word">
-<tr>
-    <td>${word.id}</td>
-    <td>${word.text_en}</td>"
-    <td>${word.text_da}</td>"
-    <td>${word.status}</td>"
-</tr>
-</c:forEach>
-</tbody>
+<div class="jumbotron text-center">
+    <h1>AIM</h1>
+</div>
+<div class="container">
+    <jsp:include page="includes/tabs.jsp" />
+</div>
 </body>
 </html>
