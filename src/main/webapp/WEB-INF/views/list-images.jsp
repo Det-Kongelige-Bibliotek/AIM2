@@ -24,7 +24,7 @@
 <tr>
     <td>${image.id}</td>
     <td>${image.path}</td>
-    <td>image.text not in database</td>
+    <td><img src="</td>
     <td>${image.status}</td>
 </tr>
 </c:forEach>
