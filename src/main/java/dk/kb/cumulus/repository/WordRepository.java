@@ -55,6 +55,17 @@ public class WordRepository {
         }
     };
 
+    public Word getWordByText(String text_en, String category) {
+        List<Word> rs = queryForWords("SELECT id,text_en,text_da,category,status FROM words "+
+                "WHERE text_en='"+text_en+"' AND category ='"+category+"'");
+        if (rs.size() > 0) {
+            return rs.get(0);
+        } else {
+            return null;
+        }
+    }
+
+
     public void updateWord(Word word)  {
         jdbcTemplate.update(
                 "UPDATE words SET (text_en,text_da,category,status) = (?,?,?,?) WHERE id = ?",
@@ -82,19 +93,26 @@ public class WordRepository {
     }
 
     public boolean isAcceptedFor(String text_en, String category) {
-        return false;
+        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = 'ACCEPTED'";
+        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category}, Integer.class);
+        return (count > 0);
     }
 
     public boolean isRejectedFor(String text_en, String category) {
-        return false;
+        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = 'REJECTED'";
+        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category}, Integer.class);
+        return (count > 0);
     }
 
-    public Word getWord(String text_en, String category) {
-        return null;
-    }
-
-    public List<Word> getImageWords(String image_id,String status) {
-        return null;
+    public List<Word> getImageWords(int image_id,String status) {
+        String sql = "SELECT * " +
+                "from image_word i NATURAL JOIN words w WHERE " +
+                "i.image_id = "+image_id+ " AND " +
+                "w.status='"+status+"'";
+        return jdbcTemplate.query(sql,
+                (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
+                        rs.getString("text_da"), rs.getString("category"),
+                        rs.getString("status")));
     }
 
 

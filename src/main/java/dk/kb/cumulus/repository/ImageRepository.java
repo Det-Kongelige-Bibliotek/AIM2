@@ -2,6 +2,7 @@ package dk.kb.cumulus.repository;
 
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.model.ImageWord;
+import dk.kb.cumulus.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,20 +79,19 @@ public class ImageRepository {
                 img.getPath(),img.getCumulus_id(),img.getCategory(),img.getStatus(),img.getId());
     }
 
-    public void addWordToImage(int image_id, int word_id, int percent) throws Exception {
+    public void addWordToImage(int image_id, int word_id, int confidence) throws Exception {
         Image img = getImage(image_id);
         if (img == null) throw new Exception("Image does not exits");
 
-        SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT category,status FROM words WHERE id =" +word_id);
+        SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT category,status FROM words " +
+                "WHERE id =" +word_id +" and category='"+img.getCategory()+"'");
         if (!rows.next()) throw new Exception("Word does not exists");
 
         // reject if status is banned and has correct category
 
-        jdbcTemplate.update("INSERT INTO image_words (image_id, word_id, percent) VALUES (?,?,?)"
-        , image_id,word_id,percent);
-
+        jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)"
+        , image_id,word_id,confidence);
     }
-
 
     private List<Image> queryForImages(String sql) {
         return jdbcTemplate.query(sql,
