@@ -24,12 +24,12 @@
 <tr>
     <td>${image.id}</td>
     <td>${image.path}</td>
-    <td><img src="</td>
+    <td><img src="/aim/image_store/${image.path}" alt="broken linke, we presume."/></td>
     <td>${image.status}</td>
 </tr>
 </c:forEach>
 </tbody>
-</table
+</table>
 </div>
 <!--
 commented out this, for the time being/Sigge
