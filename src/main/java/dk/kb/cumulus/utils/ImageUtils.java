@@ -18,8 +18,7 @@ public class ImageUtils {
     public static void main(String [] args){
 
         try{
-
-            BufferedImage originalImage = ImageIO.read(new File("c:\\image\\KE030001.jpg"));
+            BufferedImage originalImage = ImageIO.read(new File("c:\\image\\KE030001.tif"));
             System.out.println(originalImage);
             int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
 
