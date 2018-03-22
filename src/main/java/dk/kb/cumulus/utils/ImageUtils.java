@@ -12,21 +12,30 @@ import javax.imageio.ImageIO;
  * Created by bimo on 19-03-2018.
  */
 public class ImageUtils {
-    private static final int IMG_WIDTH = 100;
-    private static final int IMG_HEIGHT = 100;
 
     public static void main(String [] args){
 
         try{
-            BufferedImage originalImage = ImageIO.read(new File("c:\\image\\KE030001.tif"));
-            System.out.println(originalImage);
-            int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
+            BufferedImage originalImage = ImageIO.read(new File("c:\\image\\KE030099.tif"));
+            ImageIO.write(originalImage, "jpg", new File("c:\\image\\KE030099.jpg"));
+            long fileSize = new File("c:\\image\\KE030099.jpg").length();
+            System.out.println(originalImage.getWidth());
+            System.out.println(fileSize);
+            if (fileSize > 3999999){
+                originalImage = ImageIO.read(new File("c:\\image\\KE030099.jpg"));
 
-            BufferedImage resizeImageJpg = resizeImage(originalImage, type);
-            ImageIO.write(resizeImageJpg, "jpg", new File("c:\\image\\KE000001_resized.jpg"));
+                int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
 
-            BufferedImage resizeImageHintJpg = resizeImageWithHint(originalImage, type);
-            ImageIO.write(resizeImageHintJpg, "jpg", new File("c:\\image\\KE000001_hint.jpg"));
+                BufferedImage resizeImageJpg = resizeImage(originalImage, type, originalImage.getWidth()-100, originalImage.getHeight()-100);
+                System.out.println(originalImage.getWidth());
+
+                ImageIO.write(resizeImageJpg, "jpg", new File("c:\\image\\KE000001_resized.jpg"));
+
+                BufferedImage resizeImageHintJpg = resizeImageWithHint(originalImage, type, originalImage.getWidth()-100, originalImage.getHeight()-100);
+                ImageIO.write(resizeImageHintJpg, "jpg", new File("c:\\image\\KE000001_hint.jpg"));
+            }
+
+
 
         }catch(IOException e){
             System.out.println(e.getMessage());
@@ -34,7 +43,7 @@ public class ImageUtils {
 
     }
 
-    private static BufferedImage resizeImage(BufferedImage originalImage, int type){
+    private static BufferedImage resizeImage(BufferedImage originalImage, int type, int  IMG_WIDTH, int IMG_HEIGHT){
         BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, type);
         Graphics2D g = resizedImage.createGraphics();
         g.drawImage(originalImage, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
@@ -43,7 +52,7 @@ public class ImageUtils {
         return resizedImage;
     }
 
-    private static BufferedImage resizeImageWithHint(BufferedImage originalImage, int type){
+    private static BufferedImage resizeImageWithHint(BufferedImage originalImage, int type, int IMG_WIDTH, int IMG_HEIGHT){
 
         BufferedImage resizedImage = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, type);
         Graphics2D g = resizedImage.createGraphics();
