@@ -1,5 +1,7 @@
 package dk.kb.cumulus.repository;
 
+import dk.kb.cumulus.ImageStatus;
+import dk.kb.cumulus.WordStatus;
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.model.Word;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,7 @@ public class WordRepository {
                         pst.setString(1, word.getText_en());
                         pst.setString(2, word.getText_da());
                         pst.setString(3, word.getCategory());
-                        pst.setString(4, word.getStatus());
+                        pst.setString(4, word.getStatus().toString());
                         return pst;
                     }
                 },
@@ -69,14 +71,14 @@ public class WordRepository {
     public void updateWord(Word word)  {
         jdbcTemplate.update(
                 "UPDATE words SET (text_en,text_da,category,status) = (?,?,?,?) WHERE id = ?",
-                word.getText_en(),word.getText_da(),word.getCategory(),word.getStatus(),word.getId());
+                word.getText_en(),word.getText_da(),word.getCategory(),word.getStatus().toString(),word.getId());
     }
 
     public List<Word> allWords() {
         return queryForWords("SELECT id,text_en,text_da,category,status from words");
     }
 
-    public List<Word> allWordsWithStatus(String status) {
+    public List<Word> allWordsWithStatus(WordStatus status) {
         return queryForWords("SELECT id,text_en,text_da,category,status from words "+
         "WHERE status = '"+status+"'");
     }
@@ -86,25 +88,25 @@ public class WordRepository {
                 "WHERE category = '"+category+"'");
     }
 
-    public List<Word> allWordsInCategoryWithStatus(String category, String status) {
+    public List<Word> allWordsInCategoryWithStatus(String category, WordStatus status) {
         return queryForWords("SELECT id,text_en,text_da,category,status from words "+
                 "WHERE category = '"+category+"' "+
                 "AND status = '"+status+"'");
     }
 
     public boolean isAcceptedFor(String text_en, String category) {
-        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = 'ACCEPTED'";
-        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category}, Integer.class);
+        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = ?";
+        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category, WordStatus.ACCEPTED.toString()}, Integer.class);
         return (count > 0);
     }
 
     public boolean isRejectedFor(String text_en, String category) {
-        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = 'REJECTED'";
-        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category}, Integer.class);
+        String sql = "SELECT count(*) FROM words WHERE text_en = ? AND category = ? AND status = ? ";
+        int count = jdbcTemplate.queryForObject(sql, new Object[] {text_en, category, WordStatus.REJECTED.toString()}, Integer.class);
         return (count > 0);
     }
 
-    public List<Word> getImageWords(int image_id,String status) {
+    public List<Word> getImageWords(int image_id,WordStatus status) {
         String sql = "SELECT * " +
                 "from image_word i NATURAL JOIN words w WHERE " +
                 "i.image_id = "+image_id+ " AND " +
@@ -112,7 +114,8 @@ public class WordRepository {
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),
-                        rs.getString("status")));
+                        WordStatus.valueOf(rs.getString("status"))));
+
     }
 
 
@@ -120,7 +123,8 @@ public class WordRepository {
     private List<Word> queryForWords(String sql) {
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
-                        rs.getString("text_da"), rs.getString("category"), rs.getString("status"))
+                        rs.getString("text_da"), rs.getString("category"),
+                        WordStatus.valueOf(rs.getString("status")))
         );
     }
 }

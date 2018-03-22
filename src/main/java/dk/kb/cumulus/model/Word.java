@@ -1,5 +1,7 @@
 package dk.kb.cumulus.model;
 
+import dk.kb.cumulus.WordStatus;
+
 import java.util.List;
 
 /**
@@ -10,10 +12,10 @@ public class Word {
     private String text_en;
     private String text_da;
     private String category;
-    private String status;
+    private WordStatus status;
     private List<ImageWord> imageWords;
 
-    public Word(int id, String text_en, String text_da, String category, String status) {
+    public Word(int id, String text_en, String text_da, String category, WordStatus status) {
         this.id = id;
         this.text_en = text_en;
         this.text_da = text_da;
@@ -21,7 +23,7 @@ public class Word {
         this.status = status;
     }
 
-    public Word(String text_en, String text_da, String category, String status) {
+    public Word(String text_en, String text_da, String category, WordStatus status) {
         this.id = -1;
         this.text_en = text_en;
         this.text_da = text_da;
@@ -61,11 +63,11 @@ public class Word {
         this.category = category;
     }
 
-    public String getStatus() {
+    public WordStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WordStatus status) {
         this.status = status;
     }
 

@@ -1,5 +1,6 @@
 package dk.kb.cumulus.repository;
 
+import dk.kb.cumulus.ImageStatus;
 import dk.kb.cumulus.model.Image;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,7 @@ public class ImageRepositoryTest  {
 
     @Test
     public void testCreateAndRetreiveImage() {
-        int id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","category","red","ocr","test"));
+        int id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","category","red","ocr", ImageStatus.NEW));
         System.out.println("id is "+id);
         Image retreivedImage = imageRepository.getImage(id);
         System.out.println("Retreived image "+retreivedImage);
@@ -35,7 +36,7 @@ public class ImageRepositoryTest  {
         System.out.println(result.size());
         result = imageRepository.listImagesInCategory("test");
         System.out.println(result.size());
-        result = imageRepository.listImagesInCategoryWithStatus("category","test");
+        result = imageRepository.listImagesInCategoryWithStatus("category",ImageStatus.NEW);
         System.out.println(result.size());
     }
 }
