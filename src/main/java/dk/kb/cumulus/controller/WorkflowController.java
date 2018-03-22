@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import dk.kb.cumulus.workflow.Workflow;
+import dk.kb.cumulus.workflow.AimWorkflow;
 import dk.kb.cumulus.workflow.WorkflowScheduler;
 
 /**
@@ -20,11 +20,11 @@ public class WorkflowController {
     protected WorkflowScheduler scheduler;
 
     @RequestMapping("/workflows")
-    public List<Workflow> allWorkflows(Model model) {
+    public List<AimWorkflow> allWorkflows(Model model) {
         if(scheduler != null) {
             return scheduler.getWorkflows();            
         }
-        return new ArrayList<Workflow>();
+        return new ArrayList<AimWorkflow>();
     }
     
     /**

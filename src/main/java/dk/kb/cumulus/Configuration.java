@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,7 @@ import dk.kb.cumulus.utils.FileUtils;
  *     server: $ URL for the Cumulus server
  *     user: $ Cumulus user name
  *     password: $ Cumulus user password
- *     catalogs:
- *       - $ First catalog
- *       - $ Second catalog
- *       - ...
+ *     catalog: $ Cumulus Catalog
  *   vision_credentials: $ the credentials for using the Google vision API
  *   workflow_interval: $ interval for how often to run the workflows
  *   jpeg_folder: $ The folder where the jpeg compressed are placed
@@ -44,7 +42,7 @@ public class Configuration {
     /** The cumulus server password leaf-element.*/
     protected static final String CONF_CUMULUS_PASSWORD = "password";
     /** The cumulus catalogs array leaf-element.*/
-    protected static final String CONF_CUMULUS_CATALOGS = "catalogs";
+    protected static final String CONF_CUMULUS_CATALOG = "catalog";
 
     protected static final String CONF_VISION_CREDENTIALS = "vision_credentials";
     protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
@@ -104,13 +102,41 @@ public class Configuration {
                 "Missing Cumulus element '" + CONF_CUMULUS_USERNAME + "'");
         ArgumentCheck.checkTrue(map.containsKey(CONF_CUMULUS_PASSWORD), 
                 "Missing Cumulus element '" + CONF_CUMULUS_PASSWORD + "'");
-        ArgumentCheck.checkTrue(map.containsKey(CONF_CUMULUS_CATALOGS), 
-                "Missing Cumulus element '" + CONF_CUMULUS_CATALOGS + "'");
+        ArgumentCheck.checkTrue(map.containsKey(CONF_CUMULUS_CATALOG), 
+                "Missing Cumulus element '" + CONF_CUMULUS_CATALOG + "'");
         
-        List<String> catalogs = (List<String>) map.get(CONF_CUMULUS_CATALOGS);
+        List<String> catalogs = Arrays.asList((String) map.get(CONF_CUMULUS_CATALOG));
         
         return new CumulusConfiguration(CUMULUS_WRITE_ACCESS, (String) map.get(CONF_CUMULUS_SERVER), 
                 (String) map.get(CONF_CUMULUS_USERNAME), (String) map.get(CONF_CUMULUS_PASSWORD), catalogs);
-
+    }
+    
+    /** @return The configuration for Cumulus.*/
+    public CumulusConfiguration getCumulusConf() {
+        return cumulusConf;
+    }
+    
+    /** @return The credentials for the Google Vision API.*/
+    public String getVisionCredentials() {
+        return visionCredentials;
+    }
+    
+    /** @return The interval for running the workflow.*/
+    public Long getWorkflowInterval() {
+        return workflowInterval;
+    }
+    
+    /** @return The folder for containing the images.*/
+    public File getJpegFolder() {
+        return jpegFolder;
+    }
+    
+    /**
+     * We only allow 1 catalog, so our instantiation of the Cumulus configuration has only one catalog in its 
+     * list of catalogs. Thus returning the first and only catalog.
+     * @return The Cumulus catalog.
+     */
+    public String getCumulusCatalog() {
+        return cumulusConf.getCatalogs().get(0);
     }
 }

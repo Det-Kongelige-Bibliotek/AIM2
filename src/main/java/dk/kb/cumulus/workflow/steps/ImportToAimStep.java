@@ -1,4 +1,4 @@
-package dk.kb.cumulus.workflow;
+package dk.kb.cumulus.workflow.steps;
 
 import java.io.File;
 import java.util.List;
@@ -10,14 +10,15 @@ import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.model.Image;
+import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
  * 
  */
-public class ImportToAimWorkflow extends Workflow {
+public class ImportToAimStep extends WorkflowStep {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(ImportToAimWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(ImportToAimStep.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
@@ -34,16 +35,14 @@ public class ImportToAimWorkflow extends Workflow {
      * Constructor.
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
-     * @param interval The interval for workflow.
      */
-    public ImportToAimWorkflow(CumulusRetriever cumulusRetriever, String catalogName, long interval) {
-        super(interval);
+    public ImportToAimStep(CumulusRetriever cumulusRetriever, String catalogName) {
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
     }
     
     @Override
-    public void runWorkflow() {
+    public void runStep() {
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
             importRecord(record);
         }

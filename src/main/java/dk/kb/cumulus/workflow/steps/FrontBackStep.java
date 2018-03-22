@@ -1,4 +1,4 @@
-package dk.kb.cumulus.workflow;
+package dk.kb.cumulus.workflow.steps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,7 @@ import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
  * The workflow for the FrontBack relations to be generated.
@@ -19,9 +20,9 @@ import dk.kb.cumulus.CumulusRetriever;
  * We will then create a Master/Sub asset relation between the given record and the record of the front-page -
  * where front-page will be master.
  */
-public class FrontBackWorkflow extends Workflow {
+public class FrontBackStep extends WorkflowStep {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(FrontBackWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(FrontBackStep.class);
 
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
@@ -32,16 +33,14 @@ public class FrontBackWorkflow extends Workflow {
      * Constructor.
      * @param retriever The Cumulus retriever.
      * @param catalogName The catalog.
-     * @param interval The interval for workflow.
      */
-    public FrontBackWorkflow(CumulusRetriever retriever, String catalogName, long interval) {
-        super(interval);
+    public FrontBackStep(CumulusRetriever retriever, String catalogName) {
         this.retriever = retriever;
         this.catalogName = catalogName;
     }
     
     @Override
-    public void runWorkflow() {
+    public void runStep() {
         CumulusRecordCollection records = retriever.getReadyForFrontBackRecords(catalogName);
 
         for(CumulusRecord record : records) {

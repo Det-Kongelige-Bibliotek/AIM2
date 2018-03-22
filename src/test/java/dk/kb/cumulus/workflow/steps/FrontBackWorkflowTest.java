@@ -1,4 +1,4 @@
-package dk.kb.cumulus.workflow;
+package dk.kb.cumulus.workflow.steps;
 
 import static org.mockito.Mockito.*;
 
@@ -14,7 +14,7 @@ import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.workflow.FrontBackWorkflow;
+import dk.kb.cumulus.workflow.steps.FrontBackStep;
 
 @SpringBootTest
 public class FrontBackWorkflowTest {
@@ -30,7 +30,7 @@ public class FrontBackWorkflowTest {
     public void testGetFrontPage() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
 
 //        addStep("Test with uuid filename with non-digit as last character", "Does not find a front-page");
         String f1 = UUID.randomUUID().toString() + "a";
@@ -68,7 +68,7 @@ public class FrontBackWorkflowTest {
     public void testRunWorkflowWhenFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -84,7 +84,7 @@ public class FrontBackWorkflowTest {
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
         
-        fbw.runWorkflow();
+        fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
         verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
@@ -104,7 +104,7 @@ public class FrontBackWorkflowTest {
     public void testRunWorkflowWhenNoFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -120,7 +120,7 @@ public class FrontBackWorkflowTest {
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
         
-        fbw.runWorkflow();
+        fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
         verifyNoMoreInteractions(retriever);
@@ -138,7 +138,7 @@ public class FrontBackWorkflowTest {
     public void testRunWorkflowWhenFrontPageRecordCouldNotBeFoundInCumulus() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackWorkflow fbw = new FrontBackWorkflow(retriever, catalogName, 0L);
+        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -153,7 +153,7 @@ public class FrontBackWorkflowTest {
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
         
-        fbw.runWorkflow();
+        fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
         verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));

@@ -1,27 +1,54 @@
 package dk.kb.cumulus.workflow;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimerTask;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dk.kb.cumulus.Configuration;
+import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.workflow.steps.FindFinishedImagesStep;
+import dk.kb.cumulus.workflow.steps.FrontBackStep;
+import dk.kb.cumulus.workflow.steps.ImportToAimStep;
 
 /**
  * Abstract class for workflows.
  * Deals with the generic part of when the workflow should run.
  */
-public abstract class Workflow extends TimerTask {
+public class AimWorkflow extends TimerTask {
+    /** The log.*/
+    protected static Logger log = LoggerFactory.getLogger(AimWorkflow.class);
 
-    /** The interval for running the workflow - in millis.*/
-    protected long interval;
     /** The date for the next run of the workflow.*/
     protected Date nextRun;
     /** The current state of the workflow.*/
     protected WorkflowState state = WorkflowState.WAITING;
+    /** The status of this workflow.*/
+    protected String status = "Has not run yet";
+    
+    /** The configuration.*/
+    protected final Configuration conf;
+    /** The Cumulus retriever.*/
+    protected final CumulusRetriever retriever;
+    /** The steps for the workflow.*/
+    protected final List<WorkflowStep> steps;
     
     /**
      * Constructor.
      * @param interval The interval for the workflow.
      */
-    public Workflow(long interval) {
-        this.interval = interval;
+    public AimWorkflow(Configuration conf, CumulusRetriever retriever) {
+        this.conf = conf;
+        this.retriever = retriever;
+        this.steps = new ArrayList<WorkflowStep>();
+        
+        steps.add(new FrontBackStep(retriever, conf.getCumulusCatalog()));
+        steps.add(new ImportToAimStep(retriever, conf.getCumulusCatalog()));
+        steps.add(new FindFinishedImagesStep(retriever, conf.getCumulusCatalog()));
+        
         readyForNextRun();
     }
     
@@ -30,7 +57,7 @@ public abstract class Workflow extends TimerTask {
         if(state == WorkflowState.WAITING && nextRun.getTime() < System.currentTimeMillis()) {
             try {
                 state = WorkflowState.RUNNING;
-                runWorkflow();
+                runWorkflowSteps();
             } finally {
                 readyForNextRun();
             }
@@ -48,9 +75,18 @@ public abstract class Workflow extends TimerTask {
     
     /**
      * The method for actually running the workflow.
-     * This must implement the 
+     * Goes through all steps and runs them one after the other.
      */
-    protected abstract void runWorkflow();
+    protected void runWorkflowSteps() {
+        try {
+            for(WorkflowStep step : steps) {
+                step.runStep();
+            }
+        } catch (Exception e) {
+            log.error("Faild to run all the workflow steps.", e);
+            status = "Failure during last run: " + e.getMessage();
+        }
+    }
     
     /**
      * @return The current state of the workflow.
@@ -67,12 +103,19 @@ public abstract class Workflow extends TimerTask {
     }
     
     /**
+     * @return The steps of the workflow.
+     */
+    public List<WorkflowStep> getSteps() {
+        return new ArrayList<WorkflowStep>(steps);
+    }
+    
+    /**
      * Sets this workflow ready for the next run by setting the date for the next run and the state to 'waiting'.
      * 
      * TODO: this should also handle the situation for negative interval - only run manually??
      */
     protected void readyForNextRun() {
-        nextRun = new Date(System.currentTimeMillis() + interval);
+        nextRun = new Date(System.currentTimeMillis() + conf.getWorkflowInterval());
         state = WorkflowState.WAITING;        
     }
     

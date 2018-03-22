@@ -18,7 +18,7 @@ public class WorkflowScheduler {
     protected final static long timerInterval = 1000L;
     
     /** The workflows running in this scheduler.*/
-    List<Workflow> workflows;
+    List<AimWorkflow> workflows;
     
     /** The timer for running the TimerTasks.*/
     Timer timer;
@@ -29,14 +29,14 @@ public class WorkflowScheduler {
      */
     public WorkflowScheduler() {
         this.timer = new Timer(isDaemon);
-        this.workflows = new ArrayList<Workflow>();
+        this.workflows = new ArrayList<AimWorkflow>();
     }
     
     /**
      * Adds a workflow to the scheduler and schedule it.
      * @param workflow The workflow
      */
-    public void scheduleWorkflow(Workflow workflow) {
+    public void scheduleWorkflow(AimWorkflow workflow) {
         workflows.add(workflow);
         timer.scheduleAtFixedRate(workflow, timerInterval, timerInterval);
     }
@@ -44,7 +44,7 @@ public class WorkflowScheduler {
     /**
      * @return All the current workflows.
      */
-    public List<Workflow> getWorkflows() {
-        return new ArrayList<Workflow>(workflows);
+    public List<AimWorkflow> getWorkflows() {
+        return new ArrayList<AimWorkflow>(workflows);
     }
 }
