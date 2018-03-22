@@ -1,14 +1,17 @@
 package dk.kb.cumulus.model;
 
+import java.util.List;
+
 /**
  * Created by dgj on 22-02-2018.
- * test
  */
 public class Word {
     private int id;
     private String text_en;
     private String text_da;
+    private String category;
     private String status;
+    private List<ImageWord> imageWords;
 
     public Word(int id, String text_en, String text_da, String status) {
         this.id = id;
@@ -39,6 +42,14 @@ public class Word {
 
     public void setText_da(String text_da) {
         this.text_da = text_da;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getStatus() {
