@@ -165,4 +165,22 @@ public class FrontBackWorkflowTest {
         verify(records).iterator();
         verifyNoMoreInteractions(records);
     }
+    
+//    @Test
+    public void testRegex() {
+        String regex = "([a-zA-Z0-9]{1,}[\\-_])*[a-zA-Z0-9]{1,}[.][a-zA-Z0-9]{1,6}";
+        
+        Assert.assertFalse("".matches(regex));
+        Assert.assertTrue("a.tif".matches(regex));
+        Assert.assertTrue("txt_digit_0123.suffix".matches(regex));
+        Assert.assertTrue("txt-digit-0123.mp3".matches(regex));
+        Assert.assertTrue("txt_digit-0123.suffix".matches(regex));
+        Assert.assertFalse("txt_digit-0123.VeryLongSuffix".matches(regex));
+        Assert.assertFalse("txt_-0123.suffix".matches(regex));
+        Assert.assertFalse("txt_digit-0123.tif1.tif2".matches(regex));
+        Assert.assertFalse("ÅØÆ-123_xyz.tif".matches(regex));
+        Assert.assertFalse("txt-digit--0123.suffix".matches(regex));
+        Assert.assertFalse("txt__digit_0123.suffix".matches(regex));
+        Assert.assertFalse("txt_digit-0123!#%&.suffix".matches(regex));
+    }
 }

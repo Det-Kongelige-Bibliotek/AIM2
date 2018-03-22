@@ -9,14 +9,15 @@ import org.slf4j.LoggerFactory;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.model.Image;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
  * 
  */
-public class ImportWorkflow extends Workflow {
+public class ImportToAimWorkflow extends Workflow {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(ImportToAimWorkflow.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
@@ -35,7 +36,7 @@ public class ImportWorkflow extends Workflow {
      * @param catalogName The name of the catalog.
      * @param interval The interval for workflow.
      */
-    public ImportWorkflow(CumulusRetriever cumulusRetriever, String catalogName, long interval) {
+    public ImportToAimWorkflow(CumulusRetriever cumulusRetriever, String catalogName, long interval) {
         super(interval);
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
@@ -59,6 +60,12 @@ public class ImportWorkflow extends Workflow {
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         File imageFile = record.getFile();
+        
+        record.setStringValueInField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
+        
+        
+        Image image = new Image(-1, "", filename, category, null, null, "I proces");
         // TODO make actual import!!!
     }
     
