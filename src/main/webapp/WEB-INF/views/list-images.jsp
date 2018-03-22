@@ -9,25 +9,26 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <head>
-  <title>List of all words</title>
+  <title>List all images</title>
   <jsp:include page="includes/head.jsp" />
 </head>
 
 <body>
 <div class="jumbotron text-center">
-    <h1>AIM Words</h1>
+    <h1>AIM Images</h1>
 
 <table>
 <tbody>
-<c:forEach items="${words}" var="word">
+<c:forEach items="${images}" var="image">
 <tr>
-    <td>${word.id}</td>
-    <td>${word.text_en}</td>
-    <td>${word.text_da}</td>
-    <td>${word.status}</td>
+    <td>${image.id}</td>
+    <td>${image.path}</td>
+    <td><img src="/aim/image_store/${image.path}" alt="broken link, we presume."/></td>
+    <td>${image.status}</td>
 </tr>
 </c:forEach>
-</table
+</tbody>
+</table>
 </div>
 <!--
 commented out this, for the time being/Sigge
