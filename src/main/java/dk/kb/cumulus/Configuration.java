@@ -44,8 +44,9 @@ public class Configuration {
     /** The cumulus catalogs array leaf-element.*/
     protected static final String CONF_CUMULUS_CATALOG = "catalog";
 
-    protected static final String CONF_VISION_CREDENTIALS = "vision_credentials";
+    /** The interval for how often the workflow should run (time in millis).*/
     protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
+    /** The path to the folder, where the JPEGs are kept.*/
     protected static final String CONF_JPEG_FOLDER = "jpeg_folder";
     
     /** Whether Cumulus should have write access. */
@@ -53,8 +54,6 @@ public class Configuration {
 
     /** The configuration for Cumulus.*/
     protected final CumulusConfiguration cumulusConf;
-    /** The credentials for the Google Vision API.*/
-    protected final String visionCredentials;
     /** The interval for running the workflow.*/
     protected final Long workflowInterval;
     /** The folder for containing the images.*/
@@ -74,8 +73,6 @@ public class Configuration {
             LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) o;
             
             
-            ArgumentCheck.checkTrue(confMap.containsKey(CONF_VISION_CREDENTIALS), 
-                    "Configuration must contain the '" + CONF_VISION_CREDENTIALS + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
                     "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_JPEG_FOLDER), 
@@ -83,7 +80,6 @@ public class Configuration {
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
             
-            this.visionCredentials = (String) confMap.get(CONF_VISION_CREDENTIALS);
             this.workflowInterval = (Long) confMap.get(CONF_WORKFLOW_INTERVAL);
             this.jpegFolder = FileUtils.getDirectory((String) confMap.get(CONF_JPEG_FOLDER));
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
@@ -114,11 +110,6 @@ public class Configuration {
     /** @return The configuration for Cumulus.*/
     public CumulusConfiguration getCumulusConf() {
         return cumulusConf;
-    }
-    
-    /** @return The credentials for the Google Vision API.*/
-    public String getVisionCredentials() {
-        return visionCredentials;
     }
     
     /** @return The interval for running the workflow.*/
