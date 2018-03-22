@@ -15,10 +15,9 @@
 
 <body>
 <div class="jumbotron text-center">
-    <h1>AIM</h1>
+    <h1>AIM Words</h1>
 
 <table>
-<thead>Keywords</thead>
 <tbody>
 <c:forEach items="${words}" var="word">
 <tr>
@@ -28,7 +27,6 @@
     <td>${word.status}</td>
 </tr>
 </c:forEach>
-</tbody>
 </table
 </div>
 <!--

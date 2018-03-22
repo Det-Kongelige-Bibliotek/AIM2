@@ -115,8 +115,6 @@ public class WordRepository {
                         rs.getString("status")));
     }
 
-
-
     private List<Word> queryForWords(String sql) {
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),

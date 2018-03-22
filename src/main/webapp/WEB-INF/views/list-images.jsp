@@ -15,16 +15,15 @@
 
 <body>
 <div class="jumbotron text-center">
-    <h1>AIM</h1>
+    <h1>AIM Images</h1>
 
 <table>
-<thead>Images</thead>
 <tbody>
 <c:forEach items="${images}" var="image">
 <tr>
     <td>${image.id}</td>
     <td>${image.path}</td>
-    <td><img src="/aim/image_store/${image.path}" alt="broken linke, we presume."/></td>
+    <td><img src="/aim/image_store/${image.path}" alt="broken link, we presume."/></td>
     <td>${image.status}</td>
 </tr>
 </c:forEach>
