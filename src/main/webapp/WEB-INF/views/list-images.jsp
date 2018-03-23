@@ -23,7 +23,9 @@
 <tr>
     <td>${image.id}</td>
     <td>${image.path}</td>
+
     <td><a href="/aim/images/${image.id}"><img src="/aim/image_store/${image.path}" alt="broken image link, we presume."/></a></td>
+
     <td>${image.status}</td>
 </tr>
 </c:forEach>
