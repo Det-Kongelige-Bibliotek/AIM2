@@ -17,6 +17,11 @@
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
 
+<div class="container">
+    <jsp:include page="includes/tabs.jsp" />
+</div>
+
+
 <table>
 <tbody>
 <c:forEach items="${words}" var="word">
@@ -29,10 +34,6 @@
 </c:forEach>
 </table
 </div>
-<!--
-commented out this, for the time being/Sigge
-div class="container">
-    <jsp:include page="includes/tabs.jsp" />
-</div-->
+
 </body>
 </html>
