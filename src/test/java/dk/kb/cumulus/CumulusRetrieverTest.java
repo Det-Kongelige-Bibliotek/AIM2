@@ -1,59 +1,35 @@
 package dk.kb.cumulus;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.yaml.snakeyaml.Yaml;
 
 import com.canto.cumulus.CategoryItem;
 
 @SpringBootTest
 public class CumulusRetrieverTest {
 
-    static String testServerUrl;
-    static String testUserName;
-    static String testUserPassword;
-    static String testCatalog;
+    static Configuration conf;
     
     @BeforeClass
     public static void setup() throws Exception {
-        File f = new File(System.getenv("HOME") + "/cumulus-password.yml");
-        Assume.assumeTrue("Coult not find a YAML at '" + f.getAbsolutePath() + "'", f.exists());
-        Object o = new Yaml().load(new FileInputStream(f));
-        Assume.assumeTrue("Could not read YAML file '" + f.getAbsolutePath() + "'", (o instanceof LinkedHashMap));
-        LinkedHashMap<String, Object> settings = (LinkedHashMap<String, Object>) o;
-        
-        testServerUrl = (String) settings.get("server_url");
-        testUserName = (String) settings.get("login");
-        testUserPassword = (String) settings.get("password");
-        testCatalog = (String) settings.get("catalog");
+        conf = TestUtils.getTestConfiguration();
     }
     
     @Test
     @Ignore
     public void testConnection() throws Exception {
-        String serverUrl = testServerUrl;
-        String userName = testUserName;
-        String userPassword = testUserPassword;
-        List<String> catalogs = Arrays.asList(testCatalog);
-        boolean writeAccess = false;
-        
-        try (CumulusServer cumulusServer = new CumulusServer(serverUrl, userName, userPassword, catalogs, writeAccess)) {
+        try (CumulusServer cumulusServer = new CumulusServer(conf.getCumulusConf())) {
             CumulusRetriever retriever = new CumulusRetriever(cumulusServer);
-            CumulusRecordCollection aimRecords = retriever.getReadyForAIMRecords(testCatalog);
+            CumulusRecordCollection aimRecords = retriever.getReadyForAIMRecords(conf.getCumulusCatalog());
             Assert.assertEquals(aimRecords.getCount(), 1);
             
-            CumulusRecordCollection frontBackRecords = retriever.getReadyForFrontBackRecords(testCatalog);
+            CumulusRecordCollection frontBackRecords = retriever.getReadyForFrontBackRecords(conf.getCumulusCatalog());
             Assert.assertEquals(frontBackRecords.getCount(), 1);
 
         }        
@@ -62,20 +38,14 @@ public class CumulusRetrieverTest {
     @Test
     @Ignore
     public void testStuff() throws Exception {
-        String serverUrl = testServerUrl;
-        String userName = testUserName;
-        String userPassword = testUserPassword;
-        List<String> catalogs = Arrays.asList(testCatalog);
-        boolean writeAccess = false;
-        
-        try (CumulusServer cumulusServer = new CumulusServer(serverUrl, userName, userPassword, catalogs, writeAccess)) {
-            CumulusRecord record = cumulusServer.findCumulusRecordByName(catalogs.get(0), "album_0018_1_001.tif");
+        try (CumulusServer cumulusServer = new CumulusServer(conf.getCumulusConf())) {
+            CumulusRecord record = cumulusServer.findCumulusRecordByName(conf.getCumulusCatalog(), "album_0018_1_001.tif");
             
             System.err.println("The file: " + record.getFieldValue(Constants.FieldNames.RECORD_NAME));
             System.err.println("The categories: " + record.getFieldValue(Constants.DeprecatedFieldNames.CATEGORIES));
             System.err.println("The categories: " + record.getCategories());
             for(int id : record.getCategories()) {
-                CategoryItem category = cumulusServer.getCategory(catalogs.get(0), id);
+                CategoryItem category = cumulusServer.getCategory(conf.getCumulusCatalog(), id);
                 System.err.println("Category id: " + getCategoryPath(category));
             }
             
