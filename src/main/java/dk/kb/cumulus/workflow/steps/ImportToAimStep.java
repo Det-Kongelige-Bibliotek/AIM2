@@ -1,19 +1,24 @@
-package dk.kb.cumulus;
+package dk.kb.cumulus.workflow.steps;
 
 import java.io.File;
 import java.util.List;
-import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import dk.kb.cumulus.Constants;
+import dk.kb.cumulus.CumulusRecord;
+import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.model.Image;
+import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
  * 
  */
-public class ImportWorkflow extends TimerTask {
+public class ImportToAimStep extends WorkflowStep {
     /** The log.*/
-    Logger log = LoggerFactory.getLogger(ImportWorkflow.class);
+    protected static Logger log = LoggerFactory.getLogger(ImportToAimStep.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
@@ -31,13 +36,13 @@ public class ImportWorkflow extends TimerTask {
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
      */
-    public ImportWorkflow(CumulusRetriever cumulusRetriever, String catalogName) {
+    public ImportToAimStep(CumulusRetriever cumulusRetriever, String catalogName) {
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
     }
     
     @Override
-    public void run() {
+    public void runStep() {
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
             importRecord(record);
         }
@@ -54,6 +59,12 @@ public class ImportWorkflow extends TimerTask {
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         File imageFile = record.getFile();
+        
+        record.setStringValueInField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
+        
+        
+        Image image = new Image(-1, "", filename, category, null, null, "I proces");
         // TODO make actual import!!!
     }
     
