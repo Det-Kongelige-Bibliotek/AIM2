@@ -17,20 +17,28 @@ public class ImageUtils {
     public static void main(String [] args){
 
         try{
+            ByteArrayOutputStream tmp = new ByteArrayOutputStream();
             BufferedImage originalImage = ImageIO.read(new File("c:\\image\\KE030099.tif"));
+            ImageIO.write(originalImage, "jpg", tmp);
+            long fileSize = tmp.size();
+            tmp.close();
+            tmp.reset();
             ImageIO.write(originalImage, "jpg", new File("c:\\image\\KE030099.jpg"));
-            long fileSize = new File("c:\\image\\KE030099.jpg").length();
-            //System.out.print("Output image size:");
-            //System.out.println(fileSize);
-            BufferedImage bm = originalImage;
-            while (fileSize > 3999999){
-                //System.out.print("Output image size:");
-                //System.out.println(fileSize);
+            System.out.print("Output image size:");
+            System.out.println(fileSize);
+            BufferedImage jpgImage = ImageIO.read(new File("c:\\image\\KE030099.jpg"));
 
-                originalImage = ImageIO.read(new File("c:\\image\\KE030099.jpg"));
-                bm = resize(originalImage,originalImage.getWidth()-200, originalImage.getHeight()-200);
-                ImageIO.write(bm, "jpg", new File("c:\\image\\KE030099.jpg"));
-                fileSize = new File("c:\\image\\KE030099.jpg").length();
+            BufferedImage bm = jpgImage;
+
+            while (fileSize > 2999999){
+                System.out.print("Output image size:");
+                System.out.println(fileSize);
+                bm = resize(jpgImage,jpgImage.getWidth()-200, jpgImage.getHeight()-200);
+                ImageIO.write(bm, "jpg", tmp);
+                tmp.close();
+                fileSize = tmp.size();
+                tmp.reset();
+                jpgImage = bm;
             }
             ImageIO.write(bm, "jpg", new File("c:\\image\\KE030099.jpg"));
 
