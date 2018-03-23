@@ -24,7 +24,7 @@ import dk.kb.cumulus.utils.FileUtils;
  * AIM:
  *   cumulus:
  *     server: $ URL for the Cumulus server
- *     user: $ Cumulus user name
+ *     username: $ Cumulus user name
  *     password: $ Cumulus user password
  *     catalog: $ Cumulus Catalog
  *   vision_credentials: $ the credentials for using the Google vision API
@@ -36,7 +36,7 @@ public class Configuration {
     /** Cumulus node-element.*/
     protected static final String CONF_CUMULUS = "cumulus";
     /** The cumulus server url leaf-element.*/
-    protected static final String CONF_CUMULUS_SERVER = "server_url";
+    protected static final String CONF_CUMULUS_SERVER = "server";
     /** The cumulus server username leaf-element.*/
     protected static final String CONF_CUMULUS_USERNAME = "username";
     /** The cumulus server password leaf-element.*/
@@ -70,8 +70,11 @@ public class Configuration {
             if(!(o instanceof LinkedHashMap)) {
                 throw new IllegalArgumentException("The file '" + f + "' does not contain a valid AIM configuration.");
             }
-            LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) o;
+            LinkedHashMap<String, Object> rootMap = (LinkedHashMap<String, Object>) o;
+            ArgumentCheck.checkTrue(rootMap.containsKey("aim"), 
+                    "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
             
+            LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) rootMap.get("aim");
             
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
                     "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
@@ -80,7 +83,7 @@ public class Configuration {
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
             
-            this.workflowInterval = (Long) confMap.get(CONF_WORKFLOW_INTERVAL);
+            this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.jpegFolder = FileUtils.getDirectory((String) confMap.get(CONF_JPEG_FOLDER));
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
         }
