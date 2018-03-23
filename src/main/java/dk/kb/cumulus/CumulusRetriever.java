@@ -16,15 +16,25 @@ import dk.kb.cumulus.utils.StringUtils;
 public class CumulusRetriever {
     // TODO: MAKE SURE THAT THE FIELD ACTUALLY HAVE THESE NAMES!!!!
     /** The Cumulus field name for AIM.*/
-    protected static final String FIELD_NAME_AIM = "AIM";
+    public static final String FIELD_NAME_READY_FOR_AIM = "Klar til AIM";
     /** The value regarding 'Ready for AIM' for the Cumulus field 'AIM'. ̈́*/
-    protected static final String FIELD_VALUE_AIM_READY = "Ready for AIM";
+    public static final String FIELD_VALUE_AIM_READY_TRUE = "True";
+    /** The value for the 'Ready for AIM' field, when AIM is finished. ̈́*/
+    public static final String FIELD_VALUE_AIM_READY_FALSE = "False";
 
+    /** The Cumulus field name for the AIM status.*/
+    public static final String FIELD_NAME_AIM_STATUS = "AIM status";
+    /** The AIM status field value for 'in process'.*/
+    public static final String FIELD_VALUE_AIM_STATUS_IN_PROCESS = "I proces";
+    /** The AIM status field value for 'awaiting approval'.*/
+    public static final String FIELD_VALUE_AIM_STATUS_AWATING = "Afventer godkendelse";
+    /** The AIM status field value for 'done'.*/
+    public static final String FIELD_VALUE_AIM_STATUS_DONE = "Afsluttet";
+    
     /** The Cumulus field name for Forside/Bagside*/
-    protected static final String FIELD_NAME_FRONT_BACK = "Forside og bagside";
+    public static final String FIELD_NAME_READY_FOR_FRONT_BACK = "Klar til for- og bagside";
     /** The value regarding ready for Forside/Bagside workflow.*/
-    protected static final String FIELD_VALUE_FRONT_BACK_READY = "Ready for forside og bagside";
-
+    public static final String FIELD_VALUE_FRONT_BACK_READY = "True";
 
     /** The Cumulus server.*/
     protected final CumulusServer server;
@@ -45,8 +55,8 @@ public class CumulusRetriever {
     public CumulusRecordCollection getReadyForAIMRecords(String catalogName) {
         String queryString = String.format(
                 StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s"),
-                FIELD_NAME_AIM,
-                FIELD_VALUE_AIM_READY,
+                FIELD_NAME_READY_FOR_AIM,
+                FIELD_VALUE_AIM_READY_TRUE,
                 Constants.FieldNames.CATALOG_NAME,
                 catalogName);
         EnumSet<FindFlag> findFlags = EnumSet.of(
@@ -65,7 +75,7 @@ public class CumulusRetriever {
     public CumulusRecordCollection getReadyForFrontBackRecords(String catalogName) {
         String queryString = String.format(
                 StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s"),
-                FIELD_NAME_FRONT_BACK,
+                FIELD_NAME_READY_FOR_FRONT_BACK,
                 FIELD_VALUE_FRONT_BACK_READY,
                 Constants.FieldNames.CATALOG_NAME,
                 catalogName);

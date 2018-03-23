@@ -63,6 +63,11 @@
 			<artifactId>kb-cumulus-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>1.17</version>
+		</dependency>
                 <!-- TEST packages-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -79,12 +84,6 @@
 			<groupId>org.jaccept</groupId>
 			<artifactId>jaccept-core</artifactId>
 			<version>0.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>1.17</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
