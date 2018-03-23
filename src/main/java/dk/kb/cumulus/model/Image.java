@@ -1,5 +1,7 @@
 package dk.kb.cumulus.model;
 
+import dk.kb.cumulus.ImageStatus;
+
 import java.util.List;
 
 /**
@@ -12,11 +14,11 @@ public class Image {
     private String category;
     private String color;
     private String ocr;
-    private String status;
+    private ImageStatus status;
     private List<ImageWord> imageWords;
 
 
-    public Image(int id, String path, String cumulus_id, String category, String color, String ocr, String status) {
+    public Image(int id, String path, String cumulus_id, String category, String color, String ocr, ImageStatus status) {
         this.id = id;
         this.path = path;
         this.cumulus_id = cumulus_id;
@@ -74,11 +76,11 @@ public class Image {
         this.ocr = ocr;
     }
 
-    public String getStatus() {
+    public ImageStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ImageStatus status) {
         this.status = status;
     }
 
