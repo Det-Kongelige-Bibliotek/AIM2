@@ -22,7 +22,7 @@
 </div>
 
 
-<table>
+<!-- table>
 <tbody>
 <c:forEach items="${words}" var="word">
 <tr>
@@ -32,7 +32,7 @@
     <td>${word.status}</td>
 </tr>
 </c:forEach>
-</table
+</table> -->
 </div>
 
 
