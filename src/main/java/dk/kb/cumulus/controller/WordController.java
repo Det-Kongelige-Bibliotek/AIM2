@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -20,5 +21,12 @@ public class WordController {
         model.addAttribute("words",wordRepository.allWords());
         return "list-words";
     }
+
+    @RequestMapping(value="/words/{category}")
+    public String showImage(@PathVariable String category, Model model) {
+        model.addAttribute("words",wordRepository.allWordsInCategory(category));
+        return "list-words";
+    }
+
 
 }
