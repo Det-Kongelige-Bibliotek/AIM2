@@ -11,7 +11,7 @@
     </thead>
     <tbody>
     <c:forEach items="${words}" var="word">
-        <c:if test = "${word.status == 'New'}">
+        <c:if test = "${word.status == 'REJECTED'}">
         <tr>
             <td>${word.id}</td>
             <td>${word.text_en}</td>

@@ -1,5 +1,6 @@
 package dk.kb.cumulus.repository;
 
+import dk.kb.cumulus.ImageStatus;
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.model.ImageWord;
 import dk.kb.cumulus.model.Word;
@@ -46,7 +47,7 @@ public class ImageRepository {
                 "FROM images WHERE category ='"+category+"'");
     }
 
-    public List<Image> listImagesInCategoryWithStatus(String category, String status) {
+    public List<Image> listImagesInCategoryWithStatus(String category, ImageStatus status) {
         return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status " +
                 "FROM images WHERE category = '"+category+"' "+
                 "AND status = '"+status+"'");
@@ -65,7 +66,7 @@ public class ImageRepository {
                         pst.setString(1, img.getPath());
                         pst.setString(2, img.getCumulus_id());
                         pst.setString(3, img.getCategory());
-                        pst.setString(4, img.getStatus());
+                        pst.setString(4, img.getStatus().toString());
                         return pst;
                     }
                 },
@@ -97,7 +98,8 @@ public class ImageRepository {
         return jdbcTemplate.query(sql,
                 (rs,rowNum) -> new Image(rs.getInt("id"), rs.getString("path"),
                 rs.getString("cumulus_id"), rs.getString("category"),
-                rs.getString("color"),rs.getString("ocr"),rs.getString("status")));
+                rs.getString("color"),rs.getString("ocr"),
+                        ImageStatus.valueOf(rs.getString("status"))));
     }
 
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.ImageStatus;
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.workflow.WorkflowStep;
 
@@ -64,7 +65,7 @@ public class ImportToAimStep extends WorkflowStep {
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
         
         
-        Image image = new Image(-1, "", filename, category, null, null, "I proces");
+        Image image = new Image(-1, "", filename, category, null, null, ImageStatus.NEW);
         // TODO make actual import!!!
     }
     
