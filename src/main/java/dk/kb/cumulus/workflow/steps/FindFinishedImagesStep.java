@@ -25,5 +25,4 @@ public class FindFinishedImagesStep extends WorkflowStep {
     public void runStep() {
         // ??
     }
-
 }

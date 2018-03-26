@@ -46,7 +46,7 @@ public class WordRepositoryTest {
         Assert.assertEquals(WordStatus.REJECTED,retrievedWord.getStatus());
     }
 
-    @Test
+//    @Test
     public void testRelationAndStuff() throws Exception{
         int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
         int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
