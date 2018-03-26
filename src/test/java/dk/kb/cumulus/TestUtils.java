@@ -12,7 +12,7 @@ public class TestUtils {
         try {
             File f = new File("aim.yml");
             Assume.assumeTrue("Local configuration file exists", f.isFile());
-            conf = new Configuration(f);
+            conf = new Configuration(f.getAbsolutePath());
         } catch (IOException e) {
             Assume.assumeNoException(e);
         }

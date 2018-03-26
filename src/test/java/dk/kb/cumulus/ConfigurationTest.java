@@ -14,6 +14,8 @@ public class ConfigurationTest {
         File f = new File("src/test/resources/aim.yml");
         Assert.assertTrue(f.isFile());
         
-        Configuration conf = new Configuration(f);
+        Configuration conf = new Configuration(f.getAbsolutePath());
+        
+        Assert.assertNotNull(conf);
     }
 }
