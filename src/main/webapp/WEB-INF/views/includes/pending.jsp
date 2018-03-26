@@ -6,7 +6,7 @@
         <th>id</th>
         <th>English</th>
         <th>Danish</th>
-        <th>Status</th>
+        <th colspan="4"></th>
     </tr>
     </thead>
     <tbody>
@@ -16,7 +16,10 @@
             <td>${word.id}</td>
             <td>${word.text_en}</td>
             <td>${word.text_da}</td>
-            <td>${word.status}</td>
+            <td><button type="button" class="btn btn-success">Approve</button></td>
+            <td><button type="button" class="btn btn-danger">Reject</button></td>
+            <td><button type="button" class="btn btn-success">Approve for all categories</button></td>
+            <td><button type="button" class="btn btn-danger">Reject for all categories</button></td>
         </tr>
         </c:if>
     </c:forEach>
