@@ -17,9 +17,9 @@
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
 
-<div class="container">
+<!-- div class="container">
     <jsp:include page="includes/tabs.jsp" />
-</div>
+</div -->
 
 
 <table>
@@ -32,7 +32,7 @@
     <td>${word.status}</td>
 </tr>
 </c:forEach>
-</table
+</table>
 </div>
 
 
