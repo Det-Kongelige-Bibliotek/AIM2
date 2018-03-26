@@ -1,6 +1,7 @@
 target/
 test-output/
 !.mvn/wrapper/maven-wrapper.jar
+tempDir/
 
 ### Local configuration ###
 aim.yml

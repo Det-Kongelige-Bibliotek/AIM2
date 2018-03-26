@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import dk.kb.cumulus.Configuration;
 import dk.kb.cumulus.CumulusRetriever;
+import dk.kb.cumulus.repository.ImageRepository;
+import dk.kb.cumulus.utils.ImageConverter;
 import dk.kb.cumulus.workflow.steps.FindFinishedImagesStep;
 import dk.kb.cumulus.workflow.steps.FrontBackStep;
 import dk.kb.cumulus.workflow.steps.ImportToAimStep;
@@ -41,6 +43,13 @@ public class AimWorkflow extends TimerTask {
     /** The Cumulus retriever.*/
     @Autowired
     protected CumulusRetriever retriever;
+    /** The image converter.*/
+    @Autowired
+    protected ImageConverter imageConverter;
+    /** The repository for the images.*/
+    @Autowired
+    protected ImageRepository imageRepo; 
+
     /** The steps for the workflow.*/
     protected List<WorkflowStep> steps = new ArrayList<WorkflowStep>();;
     
@@ -50,7 +59,7 @@ public class AimWorkflow extends TimerTask {
     @PostConstruct
     protected void init() {
         steps.add(new FrontBackStep(retriever, conf.getCumulusCatalog()));
-        steps.add(new ImportToAimStep(retriever, conf.getCumulusCatalog()));
+        steps.add(new ImportToAimStep(retriever, conf.getCumulusCatalog(), imageConverter, imageRepo));
         steps.add(new FindFinishedImagesStep(retriever, conf.getCumulusCatalog()));
         
         readyForNextRun();

@@ -70,7 +70,7 @@ public class FrontBackStep extends WorkflowStep {
                 log.warn("Failed to find front/back.", e);
                 numberOfUnknown++;
             }
-            setDone(record);
+//            setDone(record);
         }
         
         setResultOfRun("Found total: " + total
