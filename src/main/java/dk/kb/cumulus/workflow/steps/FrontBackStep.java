@@ -43,20 +43,38 @@ public class FrontBackStep extends WorkflowStep {
     public void runStep() {
         CumulusRecordCollection records = retriever.getReadyForFrontBackRecords(catalogName);
 
+        int numberOfFronts = 0;
+        int numberOfBacks = 0;
+        int numberOfUnknown = 0;
+        int total = 0;
+        
         for(CumulusRecord record : records) {
-            String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
-            String frontPage = getFrontPage(filename);
-            if(frontPage != null) {
-                log.info("The record '" + record + "' will have master asset '" + frontPage + "'");
-                CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
-                if(frontPageRecord != null) {
-                    record.addMasterAsset(frontPageRecord);
+            total++;
+            try {
+                String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
+                String frontPage = getFrontPage(filename);
+                if(frontPage != null) {
+                    log.info("The record '" + record + "' will have master asset '" + frontPage + "'");
+                    CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
+                    if(frontPageRecord != null) {
+                        record.addMasterAsset(frontPageRecord);
+                    } else {
+                        log.warn("The record '" + record + "' should have a front page named '" + frontPage 
+                                + "', but no such record could be found.");
+                    }
+                    numberOfBacks++;
                 } else {
-                    log.warn("The record '" + record + "' should have a front page named '" + frontPage 
-                            + "', but no such record could be found.");
+                    numberOfFronts++;
                 }
+            } catch (Exception e) {
+                numberOfUnknown++;
             }
         }
+        
+        resultsOfLastRun = "Found total: " + total + "\n"
+                + "Number of fronts: " + numberOfFronts + "\n"
+                + "Number of backs: " + numberOfBacks + "\n"
+                + "Number of errors: " + numberOfUnknown + "\n";
     }
     
     /**
@@ -100,5 +118,10 @@ public class FrontBackStep extends WorkflowStep {
                     + "[a-zA-Z0-9\\-]*[0-9].`suffix` or [a-zA-Z0-9]*[0-9]_[0-9]*.`suffix`");
         }
         return null;
+    }
+    
+    @Override
+    public String getName() {
+        return "Front/Back step";
     }
 }

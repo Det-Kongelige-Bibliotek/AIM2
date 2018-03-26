@@ -4,8 +4,6 @@ import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.workflow.WorkflowStep;
 
 public class FindFinishedImagesStep extends WorkflowStep {
-
-
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
     /** The name of the catalog.*/
@@ -24,5 +22,11 @@ public class FindFinishedImagesStep extends WorkflowStep {
     @Override
     public void runStep() {
         // ??
+        setResultOfRun("TODO: implement me!!!");
+    }
+
+    @Override
+    public String getName() {
+        return "Find Finished Images step";
     }
 }

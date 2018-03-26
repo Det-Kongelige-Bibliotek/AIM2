@@ -100,4 +100,9 @@ public class ImportToAimStep extends WorkflowStep {
         // TODO: implement the call for the VISION api.
         return;
     }
+    
+    @Override
+    public String getName() {
+        return "Import AIM images step";
+    }
 }

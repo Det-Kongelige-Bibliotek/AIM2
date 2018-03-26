@@ -5,8 +5,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import dk.kb.cumulus.Configuration;
 import dk.kb.cumulus.CumulusRetriever;
@@ -18,6 +22,7 @@ import dk.kb.cumulus.workflow.steps.ImportToAimStep;
  * Abstract class for workflows.
  * Deals with the generic part of when the workflow should run.
  */
+@Component
 public class AimWorkflow extends TimerTask {
     /** The log.*/
     protected static Logger log = LoggerFactory.getLogger(AimWorkflow.class);
@@ -30,21 +35,19 @@ public class AimWorkflow extends TimerTask {
     protected String status = "Has not run yet";
     
     /** The configuration.*/
-    protected final Configuration conf;
+    @Autowired
+    protected Configuration conf;
     /** The Cumulus retriever.*/
-    protected final CumulusRetriever retriever;
+    @Autowired
+    protected CumulusRetriever retriever;
     /** The steps for the workflow.*/
-    protected final List<WorkflowStep> steps;
+    protected List<WorkflowStep> steps = new ArrayList<WorkflowStep>();;
     
     /**
-     * Constructor.
-     * @param interval The interval for the workflow.
+     * Initialization
      */
-    public AimWorkflow(Configuration conf, CumulusRetriever retriever) {
-        this.conf = conf;
-        this.retriever = retriever;
-        this.steps = new ArrayList<WorkflowStep>();
-        
+    @PostConstruct
+    protected void init() {
         steps.add(new FrontBackStep(retriever, conf.getCumulusCatalog()));
         steps.add(new ImportToAimStep(retriever, conf.getCumulusCatalog()));
         steps.add(new FindFinishedImagesStep(retriever, conf.getCumulusCatalog()));
@@ -80,7 +83,7 @@ public class AimWorkflow extends TimerTask {
     protected void runWorkflowSteps() {
         try {
             for(WorkflowStep step : steps) {
-                step.runStep();
+                step.run();
             }
         } catch (Exception e) {
             log.error("Faild to run all the workflow steps.", e);

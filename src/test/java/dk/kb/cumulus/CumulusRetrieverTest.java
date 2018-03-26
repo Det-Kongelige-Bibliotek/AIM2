@@ -25,13 +25,13 @@ public class CumulusRetrieverTest {
     @Ignore
     public void testConnection() throws Exception {
         try (CumulusServer cumulusServer = new CumulusServer(conf.getCumulusConf())) {
-            CumulusRetriever retriever = new CumulusRetriever(cumulusServer);
+            CumulusRetriever retriever = new CumulusRetriever();
+            retriever.setCumulusServer(cumulusServer);
             CumulusRecordCollection aimRecords = retriever.getReadyForAIMRecords(conf.getCumulusCatalog());
             Assert.assertEquals(aimRecords.getCount(), 1);
             
             CumulusRecordCollection frontBackRecords = retriever.getReadyForFrontBackRecords(conf.getCumulusCatalog());
             Assert.assertEquals(frontBackRecords.getCount(), 1);
-
         }        
     }
     
