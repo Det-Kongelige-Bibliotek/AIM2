@@ -17,6 +17,7 @@ import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.workflow.steps.FindFinishedImagesStep;
 import dk.kb.cumulus.workflow.steps.FrontBackStep;
 import dk.kb.cumulus.workflow.steps.ImportToAimStep;
+import dk.kb.cumulus.workflow.steps.WorkflowStep;
 
 /**
  * Abstract class for workflows.

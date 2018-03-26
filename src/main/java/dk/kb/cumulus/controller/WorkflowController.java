@@ -28,6 +28,14 @@ public class WorkflowController {
     @RequestMapping("/workflow/run")
     public RedirectView runWorkflow() {
         workflow.startManually();
+        
+        try {
+            synchronized(this) {
+                this.wait(1000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new RedirectView("/workflow");
     }
 }

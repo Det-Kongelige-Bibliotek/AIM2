@@ -40,6 +40,17 @@ public class CumulusRetriever {
     public static final String FIELD_NAME_READY_FOR_FRONT_BACK = "Klar til for- og bagside";
     /** The value regarding ready for Forside/Bagside workflow.*/
     public static final String FIELD_VALUE_FRONT_BACK_READY = "True";
+    /** The value regarding ready for Forside/Bagside workflow.*/
+    public static final String FIELD_VALUE_FRONT_BACK_DONE = "False";
+    
+    /** The Cumulus field name for Forside/Bagside status.*/
+    public static final String FIELD_NAME_FRONT_BACK_STATUS = "For- og bagside status";
+    /** The Front/Back state for 'in process'*/
+    public static final String FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS = "I proces";
+    /** The Front/Back state for 'done'.*/
+    public static final String FIELD_VALUE_FRONT_BACK_STATUS_DONE = "Afsluttet";
+    
+    
 
     /** The Cumulus server.*/
     protected CumulusServer server;

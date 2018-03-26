@@ -12,7 +12,6 @@ import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.ImageStatus;
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.repository.ImageRepository;
-import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
@@ -71,6 +70,9 @@ public class ImportToAimStep extends WorkflowStep {
         repo.createImage(image);
         
         runVision(jpegFile);
+        
+        record.setStringValueInField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING);
     }
     
     /**

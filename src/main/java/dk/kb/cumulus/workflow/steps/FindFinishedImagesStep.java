@@ -1,7 +1,6 @@
 package dk.kb.cumulus.workflow.steps;
 
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.workflow.WorkflowStep;
 
 public class FindFinishedImagesStep extends WorkflowStep {
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
