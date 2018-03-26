@@ -18,8 +18,8 @@
             <td>${word.text_da}</td>
             <td><button type="button" class="btn btn-success">Approve</button></td>
             <td><button type="button" class="btn btn-danger">Reject</button></td>
-            <td><button type="button" class="btn btn-success">Approve for all categories</button></td>
-            <td><button type="button" class="btn btn-danger">Reject for all categories</button></td>
+            <td><button type="button" class="btn btn-success">Approve for all</button></td>
+            <td><button type="button" class="btn btn-danger">Reject for all</button></td>
         </tr>
         </c:if>
     </c:forEach>

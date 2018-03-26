@@ -17,7 +17,7 @@
                 <td>${word.text_en}</td>
                 <td>${word.text_da}</td>
                 <td><button type="button" class="btn btn-danger">Reject</button></td>
-                <td><button type="button" class="btn btn-danger">Reject for all categories</button></td>
+                <td><button type="button" class="btn btn-danger">Reject for all</button></td>
 
             </tr>
         </c:if>
