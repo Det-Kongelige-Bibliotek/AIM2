@@ -74,4 +74,11 @@ public class WordRepositoryTest {
         Assert.assertFalse(wordRepository.isAcceptedFor("Horse","cat2"));
         Assert.assertFalse(wordRepository.isRejectedFor("Horse","cat2"));
     }
+
+    @Test
+    public void testCategories() {
+        List<String> categories = wordRepository.getCategories();
+        for(String cat : categories)
+            System.out.println(cat);
+    }
 }

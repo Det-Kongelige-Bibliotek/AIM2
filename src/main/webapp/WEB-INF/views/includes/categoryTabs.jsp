@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <ul class="nav nav-tabs" id="categories">
-    <c:set var = "categories"  value = "aim,mammals"/>
 <c:forEach  items="${categories}"  var="category">
     <li class="nav-item">
         <a class="${category} nav-link <c:if test = "${category == 'aim'}"></c:if>"  href="/words/${category}">${category}</a>
@@ -9,12 +8,13 @@
 </c:forEach >
 </ul>
 <div class="tab-content">
-    <c:forEach items="aim,mammals"  var="category">
-    <div class="tab-pane fade container" id="${category}">
-        <%--<jsp:include page="${category}.jsp" />--%>
-        <jsp:include page="tabs.jsp" />
-    </div>
-    </c:forEach >
+    <c:forEach items="aim,mammals" var="category">
+        <div class="tab-pane fade container" id="${category}">
+            <jsp:include page="tabs.jsp">
+                <jsp:param name="category" value="${category}"/>
+            </jsp:include>
+        </div>
+    </c:forEach>
 </div>
 
 <script type="text/javascript">
@@ -38,7 +38,9 @@
             for (var j = 0; j < statuses.length; j++) {
                 if (window.location.href.indexOf(statuses[j]) > -1)
                 {
-                    document.getElementById(statuses[j]).className += (' show active');
+                    console.log(categories[i]);
+                    console.log(statuses[j]+"_"+categories[i]);
+                    document.getElementById(statuses[j]+"_"+categories[i]).className += (' show active');
                     document.getElementsByClassName(statuses[j])[i].className += (' active');
                 }
             }
