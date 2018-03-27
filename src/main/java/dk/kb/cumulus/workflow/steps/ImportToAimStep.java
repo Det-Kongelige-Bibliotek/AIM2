@@ -70,7 +70,7 @@ public class ImportToAimStep extends WorkflowStep {
             }
         }
         
-        setResultOfRun("Found total: " + numberOfRecords
+        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! Found total: " + numberOfRecords
                 + ", number successfully imported: " + numberOfSuccess
                 + ", number of failures: " + numberOfFailures);
     }
@@ -84,6 +84,7 @@ public class ImportToAimStep extends WorkflowStep {
         
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
+        // TODO: use the right image instead of this test one.
 //        File imageFile = record.getFile();
         File imageFile = new File("src/test/resources/image.tif");
 
