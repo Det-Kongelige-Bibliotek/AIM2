@@ -2,6 +2,9 @@ target/
 test-output/
 !.mvn/wrapper/maven-wrapper.jar
 
+### Local configuration ###
+aim.yml
+
 ### STS ###
 .apt_generated
 .classpath

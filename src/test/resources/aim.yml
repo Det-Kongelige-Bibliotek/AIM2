@@ -1,0 +1,8 @@
+aim:
+  workflow_interval: 3600000
+  jpeg_folder: tempDir/images
+  cumulus:
+    server: http://cumulus.kb.dk
+    username: cumulus-user
+    password: cumulus-password
+    catalog: aim-catalog

@@ -11,6 +11,7 @@ import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.ImageStatus;
 import dk.kb.cumulus.model.Image;
+import dk.kb.cumulus.repository.ImageRepository;
 import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
@@ -56,17 +57,20 @@ public class ImportToAimStep extends WorkflowStep {
     protected void importRecord(CumulusRecord record) {
         log.info("Importing the Cumulus record '" + record + "' into AIM.");
         
-        // TODO set to 'processing' for the aim field.
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         File imageFile = record.getFile();
-        
+
         record.setStringValueInField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
         
+        File jpegFile = createJpegFile(imageFile);
+        Image image = new Image(0, jpegFile.getAbsolutePath(), filename, category, null, null, ImageStatus.NEW);
         
-        Image image = new Image(-1, "", filename, category, null, null, ImageStatus.NEW);
-        // TODO make actual import!!!
+        ImageRepository repo = null;
+        repo.createImage(image);
+        
+        runVision(jpegFile);
     }
     
     /**
@@ -85,5 +89,15 @@ public class ImportToAimStep extends WorkflowStep {
         // TODO what should we do, if we cannot find the category?
         log.warn("No AIM category found. Returning 'UNKNOWN'");
         return CATEGORY_UNKNOWN;
+    }
+    
+    protected File createJpegFile(File imageFile) {
+        // TODO: Use method for creating the JPEG.
+        return null;
+    }
+    
+    protected void runVision(File jpegFile) {
+        // TODO: implement the call for the VISION api.
+        return;
     }
 }
