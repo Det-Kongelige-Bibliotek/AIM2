@@ -21,7 +21,7 @@ import dk.kb.cumulus.CumulusRetriever;
  */
 public class FrontBackStep extends WorkflowStep {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(FrontBackStep.class);
+    protected static final Logger log = LoggerFactory.getLogger(FrontBackStep.class);
 
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
@@ -131,7 +131,7 @@ public class FrontBackStep extends WorkflowStep {
 
         if(lastChar.matches("[0-9]")) {
             int digit = Integer.parseInt(lastChar);
-            if (digit % 2 == 1) {
+            if (digit % 2 != 0) {
                 return prefix.substring(0,prefix.length() - 1) + (digit - 1) + suffix;
             }
         } else {

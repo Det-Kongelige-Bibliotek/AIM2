@@ -28,7 +28,7 @@ import dk.kb.cumulus.workflow.steps.WorkflowStep;
 @Component
 public class AimWorkflow extends TimerTask {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(AimWorkflow.class);
+    protected static final Logger log = LoggerFactory.getLogger(AimWorkflow.class);
 
     /** The date for the next run of the workflow.*/
     protected Date nextRun;
@@ -112,7 +112,7 @@ public class AimWorkflow extends TimerTask {
      * @return The date for the next time this workflow should be run.
      */
     public Date getNextRunDate() {
-        return nextRun;
+        return new Date(nextRun.getTime());
     }
     
     /**

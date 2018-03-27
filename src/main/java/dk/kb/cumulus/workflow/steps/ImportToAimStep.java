@@ -21,7 +21,7 @@ import dk.kb.cumulus.utils.ImageConverter;
  */
 public class ImportToAimStep extends WorkflowStep {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(ImportToAimStep.class);
+    protected static final Logger log = LoggerFactory.getLogger(ImportToAimStep.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
