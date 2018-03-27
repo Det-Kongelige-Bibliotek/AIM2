@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import dk.kb.cumulus.Configuration;
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.repository.ImageRepository;
+import dk.kb.cumulus.GoogleRetreiver;
 import dk.kb.cumulus.utils.ImageConverter;
 import dk.kb.cumulus.workflow.steps.FindFinishedImagesStep;
 import dk.kb.cumulus.workflow.steps.FrontBackStep;
@@ -42,13 +42,13 @@ public class AimWorkflow extends TimerTask {
     protected Configuration conf;
     /** The Cumulus retriever.*/
     @Autowired
-    protected CumulusRetriever retriever;
+    protected CumulusRetriever cumulusRetriever;
     /** The image converter.*/
     @Autowired
     protected ImageConverter imageConverter;
-    /** The repository for the images.*/
+    /** The google retriever, both for the vision and the translation APIs.*/
     @Autowired
-    protected ImageRepository imageRepo; 
+    protected GoogleRetreiver googleRetriever;
 
     /** The steps for the workflow.*/
     protected List<WorkflowStep> steps = new ArrayList<WorkflowStep>();;
@@ -58,9 +58,9 @@ public class AimWorkflow extends TimerTask {
      */
     @PostConstruct
     protected void init() {
-        steps.add(new FrontBackStep(retriever, conf.getCumulusCatalog()));
-        steps.add(new ImportToAimStep(retriever, conf.getCumulusCatalog(), imageConverter, imageRepo));
-        steps.add(new FindFinishedImagesStep(retriever, conf.getCumulusCatalog()));
+        steps.add(new FrontBackStep(cumulusRetriever, conf.getCumulusCatalog()));
+        steps.add(new ImportToAimStep(cumulusRetriever, conf.getCumulusCatalog(), imageConverter, googleRetriever));
+        steps.add(new FindFinishedImagesStep(cumulusRetriever, conf.getCumulusCatalog()));
         
         readyForNextRun();
     }

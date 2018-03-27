@@ -6,7 +6,10 @@ import dk.kb.cumulus.repository.ImageRepository;
 import dk.kb.cumulus.repository.WordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,11 +19,14 @@ import java.util.List;
 /**
  * Created by dgj on 26-03-2018.
  */
+@Component
 public class GoogleRetreiver {
 
     private Logger logger = LoggerFactory.getLogger(GoogleRetreiver.class);
 
+    @Autowired
     private ImageRepository imageRepository;
+    @Autowired
     private WordRepository wordRepository;
 
     public GoogleRetreiver(ImageRepository imageRepository, WordRepository wordRepository) {
@@ -29,11 +35,11 @@ public class GoogleRetreiver {
     }
 
 
-    public void createImageAndRetreiveLabels(String imgPath, String cumulusId, String category) {
+    public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) {
         try {
-            Image image = readImage(imgPath);
+            Image image = readImage(imageFile);
             String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
-            dk.kb.cumulus.model.Image dbImage = new dk.kb.cumulus.model.Image(-1,imgPath,cumulusId,category,color,"",ImageStatus.NEW);
+            dk.kb.cumulus.model.Image dbImage = new dk.kb.cumulus.model.Image(-1,imageFile.getAbsolutePath(),cumulusId,category,color,"",ImageStatus.NEW);
             int image_id = imageRepository.createImage(dbImage);
             dbImage.setId(image_id);
             retreiveAndCreateImageWords(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
@@ -95,8 +101,8 @@ public class GoogleRetreiver {
         return response.getResponsesList();
     }
 
-    private Image readImage(String filePath) throws IOException {
-        ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+    private Image readImage(File file) throws IOException {
+        ByteString imgBytes = ByteString.readFrom(new FileInputStream(file));
         return Image.newBuilder().setContent(imgBytes).build();
     }
 

@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.ImageStatus;
-import dk.kb.cumulus.model.Image;
-import dk.kb.cumulus.repository.ImageRepository;
+import dk.kb.cumulus.GoogleRetreiver;
 import dk.kb.cumulus.utils.ImageConverter;
 
 /**
@@ -35,22 +33,22 @@ public class ImportToAimStep extends WorkflowStep {
     protected final String catalogName;
     /** The image converter.*/
     protected final ImageConverter imageConverter;
-    /** The repository for the images.*/
-    protected final ImageRepository imageRepo; 
-
+    /** The google retreiver.*/
+    protected final GoogleRetreiver googleRetriever;
+    
     /**
      * Constructor.
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
      * @param imageConverter The image converter.
-     * @param imageRepo The repository for the images.
+     * @param googleRetriever The retriever for the google vision and translation APIs.
      */
     public ImportToAimStep(CumulusRetriever cumulusRetriever, String catalogName, ImageConverter imageConverter, 
-            ImageRepository imageRepo) {
+            GoogleRetreiver googleRetriever) {
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
         this.imageConverter = imageConverter;
-        this.imageRepo = imageRepo;
+        this.googleRetriever = googleRetriever;
     }
     
     @Override
@@ -92,11 +90,8 @@ public class ImportToAimStep extends WorkflowStep {
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
 
         File jpegFile = imageConverter.convertTiff(imageFile);
-        Image image = new Image(0, jpegFile.getAbsolutePath(), filename, category, null, null, ImageStatus.NEW);
-
-        imageRepo.createImage(image);
-
-        runVision(jpegFile);
+        
+        googleRetriever.createImageAndRetreiveLabels(jpegFile, filename, category);
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING);
@@ -118,11 +113,6 @@ public class ImportToAimStep extends WorkflowStep {
         // TODO what should we do, if we cannot find the category?
         log.warn("No AIM category found. Returning 'UNKNOWN'");
         return CATEGORY_UNKNOWN;
-    }
-    
-    protected void runVision(File jpegFile) {
-        // TODO: implement the call for the VISION api.
-        return;
     }
     
     @Override
