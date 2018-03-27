@@ -21,6 +21,7 @@ public class WordController {
     @RequestMapping(value="/words")
     public String allWords(Model model) {
         model.addAttribute("words",wordRepository.allWords());
+        model.addAttribute("categories",wordRepository.getCategories());
         return "list-words";
     }
 
