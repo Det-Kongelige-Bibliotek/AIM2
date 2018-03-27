@@ -16,15 +16,16 @@
 <body>
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
+</div>
 
-<!-- div class="container">
-    <jsp:include page="includes/tabs.jsp" />
-</div -->
-
+<div class="container">
+    <jsp:include page="includes/categoryTabs.jsp" />
+</div>
 
 <table>
 <tbody>
 <c:forEach items="${words}" var="word">
+
 <tr>
     <td>${word.id}</td>
     <td>${word.text_en}</td>
@@ -33,7 +34,6 @@
 </tr>
 </c:forEach>
 </table>
-</div>
 
 
 </body>

@@ -118,6 +118,11 @@ public class WordRepository {
 
     }
 
+    public List<String> getCategories() {
+        String sql = "select DISTINCT category from words";
+        return jdbcTemplate.queryForList(sql,String.class);
+    }
+
     private List<Word> queryForWords(String sql) {
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
