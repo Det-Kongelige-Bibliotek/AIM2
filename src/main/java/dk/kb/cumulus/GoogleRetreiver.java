@@ -1,6 +1,16 @@
 package dk.kb.cumulus;
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+
+import com.google.api.services.translate.model.TranslationsResource;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.google.cloud.vision.v1.*;
+import com.google.common.collect.ImmutableList;
 import com.google.protobuf.ByteString;
 import dk.kb.cumulus.repository.ImageRepository;
 import dk.kb.cumulus.repository.WordRepository;
@@ -8,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +62,7 @@ public class GoogleRetreiver {
                     dk.kb.cumulus.model.Word dbWord = wordRepository.getWordByText(text_en,dbImage.getCategory());
                     if (dbWord == null) {
                         // The word does not exist in database - create new
-                        String text_da = ""; //TODO: translate text
+                        String text_da = translateText(text_en); //TODO: translate text
                         dbWord = new dk.kb.cumulus.model.Word(text_en,text_da,dbImage.getCategory(),WordStatus.PENDING);
                         int word_id = wordRepository.createWord(dbWord);
                         dbWord.setId(word_id);
@@ -98,6 +108,14 @@ public class GoogleRetreiver {
     private Image readImage(String filePath) throws IOException {
         ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
         return Image.newBuilder().setContent(imgBytes).build();
+    }
+
+    private String translateText(String text_en) throws GeneralSecurityException, IOException {
+        Translate translate = TranslateOptions.newBuilder().build().getService();
+        Translate.TranslateOption srcLang = Translate.TranslateOption.sourceLanguage("en");
+        Translate.TranslateOption tgtLang = Translate.TranslateOption.targetLanguage("da");
+        Translation translation = translate.translate(text_en,srcLang,tgtLang);
+        return translation.getTranslatedText();
     }
 
 
