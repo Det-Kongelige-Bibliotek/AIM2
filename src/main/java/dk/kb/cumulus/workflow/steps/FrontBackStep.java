@@ -135,8 +135,7 @@ public class FrontBackStep extends WorkflowStep {
                 return prefix.substring(0,prefix.length() - 1) + (digit - 1) + suffix;
             }
         } else {
-            throw new IllegalArgumentException("Cannot find front page, when file '" + filename + "' does not have "
-                    + "the required format: [a-zA-Z0-9\\-]*[0-9].`suffix` or [a-zA-Z0-9]*[0-9]_[0-9]*.`suffix`");
+            return null;
         }
         return null;
     }
@@ -144,5 +143,5 @@ public class FrontBackStep extends WorkflowStep {
     @Override
     public String getName() {
         return "Front/Back step";
-    }
+    }    
 }
