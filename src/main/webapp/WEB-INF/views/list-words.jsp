@@ -21,6 +21,25 @@
     <jsp:include page="includes/categoryTabs.jsp" />
 </div>
 
+<%
+java.util.List<dk.kb.cumulus.WordStatus> ws =java.util.Arrays.asList(dk.kb.cumulus.WordStatus.values()); 
+pageContext.setAttribute("statuses", ws);
+%>
+
+<form action="" method="get">
+<select name="status" onchange="this.form.submit()">
+<c:forEach items="${statuses}" var="status">
+  <c:choose>
+    <c:when test="${status == param.status}">
+      <option selected="selected">${status}</option>
+    </c:when>
+    <c:otherwise>
+      <option>${status}</option>
+    </c:otherwise>
+  </c:choose>
+</c:forEach>
+</select>
+</form>
 
 <table>
 <tbody>
