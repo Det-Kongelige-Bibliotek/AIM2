@@ -16,11 +16,11 @@
 <body>
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
+</div>
 
 <div class="container">
     <jsp:include page="includes/categoryTabs.jsp" />
 </div>
-
 
 <table>
 <tbody>
@@ -34,7 +34,6 @@
 </tr>
 </c:forEach>
 </table>
-</div>
 
 
 </body>
