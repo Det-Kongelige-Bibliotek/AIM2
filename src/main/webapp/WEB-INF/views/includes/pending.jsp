@@ -11,7 +11,6 @@
     </thead>
     <tbody>
     <c:forEach items="${words}" var="word">
-        <c:if test = "${word.status == 'PENDING'}">
         <tr>
             <td>${word.id}</td>
             <td>${word.text_en}</td>
@@ -21,7 +20,6 @@
             <td><button type="button" class="btn btn-success">Approve for all</button></td>
             <td><button type="button" class="btn btn-danger">Reject for all</button></td>
         </tr>
-        </c:if>
     </c:forEach>
     </tbody>
 </table>
