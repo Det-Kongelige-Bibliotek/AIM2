@@ -54,7 +54,7 @@ public class ImageRepository {
     }
 
     public int createImage(Image img) {
-        final String sql = "INSERT INTO images (path,cumulus_id,category,status) VALUES (?,?,?,?)";
+        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status) VALUES (?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -65,8 +65,9 @@ public class ImageRepository {
                                 con.prepareStatement(sql, new String[] {"id"});
                         pst.setString(1, img.getPath());
                         pst.setString(2, img.getCumulus_id());
-                        pst.setString(3, img.getCategory());
-                        pst.setString(4, img.getStatus().toString());
+                        pst.setString(3, img.getColor());
+                        pst.setString(4, img.getCategory());
+                        pst.setString(5, img.getStatus().toString());
                         return pst;
                     }
                 },
