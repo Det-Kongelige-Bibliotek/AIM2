@@ -25,6 +25,7 @@ public class WordController {
     @RequestMapping(value="/words/{category}")
     public String showImage(@PathVariable String category, Model model) {
         model.addAttribute("words",wordRepository.allWordsInCategory(category));
+        model.addAttribute("categories",wordRepository.getCategories());
         return "list-words";
     }
 
