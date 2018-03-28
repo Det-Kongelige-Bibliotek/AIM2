@@ -1,12 +1,17 @@
 package dk.kb.cumulus.workflow.steps;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.UUID;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,18 +19,9 @@ import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.workflow.steps.FrontBackStep;
 
 @SpringBootTest
 public class FrontBackStepTest {
-    
-    @Test
-    @Ignore
-    public void testStuff() {
-        String id = UUID.randomUUID().toString();
-        Assert.assertTrue(id, id.matches("[a-zA-Z0-9\\-]*"));
-    }
-
     @Test
     public void testGetFrontPage() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
@@ -94,6 +90,8 @@ public class FrontBackStepTest {
         verify(backRecord).addMasterAsset(eq(frontRecord));
         verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
+        verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -130,6 +128,8 @@ public class FrontBackStepTest {
         verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
+        verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -166,6 +166,8 @@ public class FrontBackStepTest {
         verify(backRecord, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
+        verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
         verifyNoMoreInteractions(backRecord);
         
         verify(records).iterator();

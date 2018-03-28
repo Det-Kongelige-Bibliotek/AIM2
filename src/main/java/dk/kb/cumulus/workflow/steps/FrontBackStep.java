@@ -77,7 +77,8 @@ public class FrontBackStep extends WorkflowStep {
             setDone(record);
         }
         
-        setResultOfRun("Found total: " + total + ", number of fronts: " + numberOfFronts + ", number of backs: " 
+        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! "
+                + "Found total: " + total + ", number of fronts: " + numberOfFronts + ", number of backs: " 
                 + numberOfBacks + ", number of errors: " + numberOfError);
     }
     
