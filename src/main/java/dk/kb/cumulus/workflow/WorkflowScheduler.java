@@ -1,8 +1,11 @@
 package dk.kb.cumulus.workflow;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * The workflow scheduler for scheduling the workflows.
@@ -10,6 +13,7 @@ import java.util.Timer;
  * Basically the timer checks whether to run any of workflows once every second.
  * It is the workflows themselves, who checks their conditions and performs their tasks if the conditions are met.
  */
+@Service
 public class WorkflowScheduler {
     /** The timer should run as a daemon.*/
     protected final static Boolean isDaemon = true;
@@ -18,7 +22,8 @@ public class WorkflowScheduler {
     protected final static long timerInterval = 1000L;
     
     /** The workflows running in this scheduler.*/
-    List<AimWorkflow> workflows;
+    @Autowired
+    AimWorkflow workflow;
     
     /** The timer for running the TimerTasks.*/
     Timer timer;
@@ -29,22 +34,14 @@ public class WorkflowScheduler {
      */
     public WorkflowScheduler() {
         this.timer = new Timer(isDaemon);
-        this.workflows = new ArrayList<AimWorkflow>();
     }
     
     /**
      * Adds a workflow to the scheduler and schedule it.
      * @param workflow The workflow
      */
-    public void scheduleWorkflow(AimWorkflow workflow) {
-        workflows.add(workflow);
+    @PostConstruct
+    public void scheduleWorkflow() {
         timer.scheduleAtFixedRate(workflow, timerInterval, timerInterval);
-    }
-    
-    /**
-     * @return All the current workflows.
-     */
-    public List<AimWorkflow> getWorkflows() {
-        return new ArrayList<AimWorkflow>(workflows);
     }
 }

@@ -17,7 +17,7 @@ import dk.kb.cumulus.CumulusRetriever;
 import dk.kb.cumulus.workflow.steps.FrontBackStep;
 
 @SpringBootTest
-public class FrontBackWorkflowTest {
+public class FrontBackStepTest {
     
     @Test
     @Ignore
@@ -90,8 +90,10 @@ public class FrontBackWorkflowTest {
         verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
         verifyNoMoreInteractions(retriever);
         
-        verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord, times(2)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(backRecord).addMasterAsset(eq(frontRecord));
+        verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
+                eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -126,6 +128,8 @@ public class FrontBackWorkflowTest {
         verifyNoMoreInteractions(retriever);
         
         verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
+                eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -159,7 +163,9 @@ public class FrontBackWorkflowTest {
         verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
         verifyNoMoreInteractions(retriever);
         
-        verify(backRecord).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
+                eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verifyNoMoreInteractions(backRecord);
         
         verify(records).iterator();

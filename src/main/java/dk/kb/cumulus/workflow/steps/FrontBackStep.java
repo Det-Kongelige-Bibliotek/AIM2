@@ -7,7 +7,6 @@ import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusRetriever;
-import dk.kb.cumulus.workflow.WorkflowStep;
 
 /**
  * The workflow for the FrontBack relations to be generated.
@@ -22,7 +21,7 @@ import dk.kb.cumulus.workflow.WorkflowStep;
  */
 public class FrontBackStep extends WorkflowStep {
     /** The log.*/
-    protected static Logger log = LoggerFactory.getLogger(FrontBackStep.class);
+    protected static final Logger log = LoggerFactory.getLogger(FrontBackStep.class);
 
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
@@ -43,20 +42,64 @@ public class FrontBackStep extends WorkflowStep {
     public void runStep() {
         CumulusRecordCollection records = retriever.getReadyForFrontBackRecords(catalogName);
 
+        int numberOfFronts = 0;
+        int numberOfBacks = 0;
+        int numberOfError = 0;
+        int total = 0;
+        
         for(CumulusRecord record : records) {
-            String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
-            String frontPage = getFrontPage(filename);
-            if(frontPage != null) {
-                log.info("The record '" + record + "' will have master asset '" + frontPage + "'");
-                CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
-                if(frontPageRecord != null) {
-                    record.addMasterAsset(frontPageRecord);
+            total++;
+            setInProgress(record);
+            try {
+                String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
+                String frontPage = getFrontPage(filename);
+                if(frontPage != null) {
+                    log.info("The record '[" + record.getClass().getCanonicalName() + " -> " 
+                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' will have master asset '" 
+                            + frontPage + "'");
+                    CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
+                    if(frontPageRecord != null) {
+                        record.addMasterAsset(frontPageRecord);
+                        numberOfBacks++;
+                    } else {
+                        numberOfError++;
+                        log.warn("The record '[" + record.getClass().getCanonicalName() + " -> " 
+                                + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' should have "
+                                + "a front page named '" + frontPage + "', but no such record could be found.");
+                    }
                 } else {
-                    log.warn("The record '" + record + "' should have a front page named '" + frontPage 
-                            + "', but no such record could be found.");
+                    numberOfFronts++;
                 }
+            } catch (Exception e) {
+                log.warn("Failed to find front/back.", e);
+                numberOfError++;
             }
+//            setDone(record);
         }
+        
+        setResultOfRun("Found total: " + total
+                + ", number of fronts: " + numberOfFronts
+                + ", number of backs: " + numberOfBacks
+                + ", number of errors: " + numberOfError);
+    }
+    
+    /**
+     * Sets the current record to 'IN PROCESS' regarding front/back.
+     * @param record The Cumulus record.
+     */
+    protected void setInProgress(CumulusRecord record) {
+        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS);
+    }
+    
+    /**
+     * Sets the current record to 'DONE' regarding front/back. And also removes the boolean for 'ready for front/back'.
+     * @param record The Cumulus record.
+     */
+    protected void setDone(CumulusRecord record) {
+        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        // TODO remove boolean.
     }
     
     /**
@@ -92,13 +135,17 @@ public class FrontBackStep extends WorkflowStep {
 
         if(lastChar.matches("[0-9]")) {
             int digit = Integer.parseInt(lastChar);
-            if (digit % 2 == 1) {
+            if (digit % 2 != 0) {
                 return prefix.substring(0,prefix.length() - 1) + (digit - 1) + suffix;
             }
         } else {
-            log.warn("Cannot find front page, when file '" + filename + "' does not have the required format: "
-                    + "[a-zA-Z0-9\\-]*[0-9].`suffix` or [a-zA-Z0-9]*[0-9]_[0-9]*.`suffix`");
+            return null;
         }
         return null;
     }
+    
+    @Override
+    public String getName() {
+        return "Front/Back step";
+    }    
 }

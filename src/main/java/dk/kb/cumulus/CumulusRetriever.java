@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.canto.cumulus.CategoryItem;
 import com.canto.cumulus.constants.CombineMode;
 import com.canto.cumulus.constants.FindFlag;
@@ -13,8 +18,8 @@ import dk.kb.cumulus.utils.StringUtils;
 /**
  * Class for accessing Cumulus and retrieving the CumulusRecords.
  */
+@Component
 public class CumulusRetriever {
-    // TODO: MAKE SURE THAT THE FIELD ACTUALLY HAVE THESE NAMES!!!!
     /** The Cumulus field name for AIM.*/
     public static final String FIELD_NAME_READY_FOR_AIM = "Klar til AIM";
     /** The value regarding 'Ready for AIM' for the Cumulus field 'AIM'. ̈́*/
@@ -35,16 +40,43 @@ public class CumulusRetriever {
     public static final String FIELD_NAME_READY_FOR_FRONT_BACK = "Klar til for- og bagside";
     /** The value regarding ready for Forside/Bagside workflow.*/
     public static final String FIELD_VALUE_FRONT_BACK_READY = "True";
-
+    /** The value regarding ready for Forside/Bagside workflow.*/
+    public static final String FIELD_VALUE_FRONT_BACK_DONE = "False";
+    
+    /** The Cumulus field name for Forside/Bagside status.*/
+    public static final String FIELD_NAME_FRONT_BACK_STATUS = "For- og bagside status";
+    /** The Front/Back state for 'in process'*/
+    public static final String FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS = "I proces";
+    /** The Front/Back state for 'done'.*/
+    public static final String FIELD_VALUE_FRONT_BACK_STATUS_DONE = "Afsluttet";
+    
+    
+    /** The Cumulus field name for Keywords.*/
+    public static final String FIELD_NAME_KEYWORDS = "Keywords";
+    
+    
     /** The Cumulus server.*/
-    protected final CumulusServer server;
+    protected CumulusServer server;
+    
+    /** The configuration. Auto-wired.*/
+    @Autowired
+    protected Configuration conf;
     
     /**
-     * Constructor.
-     * @param server The CumulusServer.
+     * Initializes this component.
      */
-    public CumulusRetriever(CumulusServer server) {
-        this.server = server;
+    @PostConstruct
+    protected void initialize() {
+        setCumulusServer(new CumulusServer(conf.getCumulusConf()));
+    }
+    
+    /**
+     * Sets the server. 
+     * Made as separate function to make testing possible.
+     * @param server The Cumulus server.
+     */
+    protected void setCumulusServer(CumulusServer server) {
+        this.server = server;        
     }
     
     /**

@@ -21,14 +21,14 @@ public class WorkflowController {
     @RequestMapping("/workflow")
     public String getWorkflow(Model model) {
         model.addAttribute("workflow", workflow);
-
+        
         return "workflow";
     }
-
+    
     @RequestMapping("/workflow/run")
     public RedirectView runWorkflow() {
         workflow.startManually();
-
+        
         try {
             synchronized(this) {
                 this.wait(1000);

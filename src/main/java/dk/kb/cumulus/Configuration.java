@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 import dk.kb.cumulus.config.CumulusConfiguration;
@@ -24,19 +27,21 @@ import dk.kb.cumulus.utils.FileUtils;
  * AIM:
  *   cumulus:
  *     server: $ URL for the Cumulus server
- *     user: $ Cumulus user name
+ *     username: $ Cumulus user name
  *     password: $ Cumulus user password
  *     catalog: $ Cumulus Catalog
  *   vision_credentials: $ the credentials for using the Google vision API
  *   workflow_interval: $ interval for how often to run the workflows
  *   jpeg_folder: $ The folder where the jpeg compressed are placed
+ *   jpeg_size_limit: $ The maximum size of the jpeg file, otherwise compress further.
  */
+@Component
 public class Configuration {
     
     /** Cumulus node-element.*/
     protected static final String CONF_CUMULUS = "cumulus";
     /** The cumulus server url leaf-element.*/
-    protected static final String CONF_CUMULUS_SERVER = "server_url";
+    protected static final String CONF_CUMULUS_SERVER = "server";
     /** The cumulus server username leaf-element.*/
     protected static final String CONF_CUMULUS_USERNAME = "username";
     /** The cumulus server password leaf-element.*/
@@ -48,6 +53,8 @@ public class Configuration {
     protected static final String CONF_WORKFLOW_INTERVAL = "workflow_interval";
     /** The path to the folder, where the JPEGs are kept.*/
     protected static final String CONF_JPEG_FOLDER = "jpeg_folder";
+    /** The maximum size of the JPEG file after the convertion. Otherwise it must be compressed further.*/
+    protected static final String CONF_JPEG_SIZE_LIMIT = "jpeg_size_limit";
     
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
@@ -58,30 +65,41 @@ public class Configuration {
     protected final Long workflowInterval;
     /** The folder for containing the images.*/
     protected final File jpegFolder;
+    /** The maximum size of the jpeg files.*/
+    protected final Long jpegSizeLimit;
 
     /** 
      * Constructor.
-     * @param f The file with the YAML configuration structure (as described in class header).
+     * @param path The path to the YAML file.
      * @throws IOException If it cannot load the configuration from the YAML file.
      */
-    public Configuration(File f) throws IOException {
-        try (InputStream in = new FileInputStream(f)) {
+    @Autowired
+    public Configuration(@Value("#{ @environment['aim.conf'] ?: 'aim.yml'}") String path) throws IOException {
+        File confFile = new File(path);
+        
+        try (InputStream in = new FileInputStream(confFile)) {
             Object o = new Yaml().load(in);
             if(!(o instanceof LinkedHashMap)) {
-                throw new IllegalArgumentException("The file '" + f + "' does not contain a valid AIM configuration.");
+                throw new IllegalArgumentException("The file '" + confFile + "' does not contain a valid AIM configuration.");
             }
-            LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) o;
+            LinkedHashMap<String, Object> rootMap = (LinkedHashMap<String, Object>) o;
+            ArgumentCheck.checkTrue(rootMap.containsKey("aim"), 
+                    "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
             
+            LinkedHashMap<String, Object> confMap = (LinkedHashMap<String, Object>) rootMap.get("aim");
             
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_WORKFLOW_INTERVAL), 
                     "Configuration must contain the '" + CONF_WORKFLOW_INTERVAL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_JPEG_FOLDER), 
                     "Configuration must contain the '" + CONF_JPEG_FOLDER + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_JPEG_SIZE_LIMIT), 
+                    "Configuration must contain the '" + CONF_JPEG_SIZE_LIMIT + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
             
-            this.workflowInterval = (Long) confMap.get(CONF_WORKFLOW_INTERVAL);
+            this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.jpegFolder = FileUtils.getDirectory((String) confMap.get(CONF_JPEG_FOLDER));
+            this.jpegSizeLimit = Long.valueOf((Integer) confMap.get(CONF_JPEG_SIZE_LIMIT));
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
         }
     }
@@ -120,6 +138,11 @@ public class Configuration {
     /** @return The folder for containing the images.*/
     public File getJpegFolder() {
         return jpegFolder;
+    }
+    
+    /** @return The maximum size of the jpeg images.*/
+    public Long getJpegSizeLimit() {
+        return jpegSizeLimit;
     }
     
     /**

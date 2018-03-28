@@ -1,6 +1,7 @@
 package dk.kb.cumulus.repository;
 
 import dk.kb.cumulus.ImageStatus;
+import dk.kb.cumulus.WordStatus;
 import dk.kb.cumulus.model.Image;
 import dk.kb.cumulus.model.ImageWord;
 import dk.kb.cumulus.model.Word;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +32,7 @@ public class ImageRepository {
 
     public Image getImage(int id){
         List<Image> rs = queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images "+
-                            "WHERE id='"+id+"'");
+                "WHERE id='"+id+"'");
         if (rs.size() > 0) {
             return rs.get(0);
         } else {
@@ -53,8 +55,13 @@ public class ImageRepository {
                 "AND status = '"+status+"'");
     }
 
+    public List<Image> listImagesWithStatus(ImageStatus status) {
+        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status " +
+                "FROM images WHERE status = '"+status+"'");
+    }
+    
     public int createImage(Image img) {
-        final String sql = "INSERT INTO images (path,cumulus_id,category,status) VALUES (?,?,?,?)";
+        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status) VALUES (?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -65,8 +72,9 @@ public class ImageRepository {
                                 con.prepareStatement(sql, new String[] {"id"});
                         pst.setString(1, img.getPath());
                         pst.setString(2, img.getCumulus_id());
-                        pst.setString(3, img.getCategory());
-                        pst.setString(4, img.getStatus().toString());
+                        pst.setString(3, img.getColor());
+                        pst.setString(4, img.getCategory());
+                        pst.setString(5, img.getStatus().toString());
                         return pst;
                     }
                 },
@@ -75,9 +83,11 @@ public class ImageRepository {
     }
 
     public void updateImage(Image img)  {
+        Object[] params = {img.getPath(),img.getCumulus_id(),img.getCategory(),img.getStatus(),img.getId()};
+        int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT};
         jdbcTemplate.update(
                 "UPDATE images SET (path,cumulus_id,category,status) = (?,?,?,?) WHERE id = ?",
-                img.getPath(),img.getCumulus_id(),img.getCategory(),img.getStatus(),img.getId());
+                params, types);
     }
 
     public void addWordToImage(int image_id, int word_id, int confidence) throws Exception {
@@ -91,14 +101,14 @@ public class ImageRepository {
         // reject if status is banned and has correct category
 
         jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)"
-        , image_id,word_id,confidence);
+                , image_id,word_id,confidence);
     }
 
     private List<Image> queryForImages(String sql) {
         return jdbcTemplate.query(sql,
                 (rs,rowNum) -> new Image(rs.getInt("id"), rs.getString("path"),
-                rs.getString("cumulus_id"), rs.getString("category"),
-                rs.getString("color"),rs.getString("ocr"),
+                        rs.getString("cumulus_id"), rs.getString("category"),
+                        rs.getString("color"),rs.getString("ocr"),
                         ImageStatus.valueOf(rs.getString("status"))));
     }
 
