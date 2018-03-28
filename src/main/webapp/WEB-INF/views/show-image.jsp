@@ -16,14 +16,21 @@
   <body>
     <div class="jumbotron text-center">
       <h1>AIM Image</h1>
-
-      <table>
-	<tr><th>id</th><td>${image_details.id}</td></tr>
-	<tr><th>path</th><td>${image_details.path}</td></tr>
-	<tr><th>status</th><td>${image_details.status}</td></tr>
-	<tr><td colspan="2"><img src="/image_store/${image_details.path}" alt="broken link, we presume."/></td></tr>
-      </table>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <table>
+                    <tr><th>id</th><td>${image_details.id}</td></tr>
+                    <tr><th>path</th><td>${image_details.path}</td></tr>
+                    <tr><th>status</th><td>${image_details.status}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-8">
+                <img src="/image_store/${image_details.path}" class="img-fluid" alt="Responsive image">
+            </div>
+        </div>
+    </div>
   </body>
 </html>
