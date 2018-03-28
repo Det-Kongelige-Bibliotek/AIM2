@@ -21,7 +21,7 @@
 	<tr><th>id</th><td>${image_details.id}</td></tr>
 	<tr><th>path</th><td>${image_details.path}</td></tr>
 	<tr><th>status</th><td>${image_details.status}</td></tr>
-	<tr><td colspan="2"><img src="/aim/image_store/${image_details.path}" alt="broken link, we presume."/></td></tr>
+	<tr><td colspan="2"><img src="/image_store/${image_details.path}" alt="broken link, we presume."/></td></tr>
       </table>
     </div>
 
