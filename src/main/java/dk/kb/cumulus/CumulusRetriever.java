@@ -51,7 +51,10 @@ public class CumulusRetriever {
     public static final String FIELD_VALUE_FRONT_BACK_STATUS_DONE = "Afsluttet";
     
     
-
+    /** The Cumulus field name for Keywords.*/
+    public static final String FIELD_NAME_KEYWORDS = "Keywords";
+    
+    
     /** The Cumulus server.*/
     protected CumulusServer server;
     

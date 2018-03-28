@@ -78,7 +78,8 @@ public class ImportToAimStep extends WorkflowStep {
      * @param record The Cumulus record to import.
      */
     protected void importRecord(CumulusRecord record) throws IOException {
-        log.info("Importing the Cumulus record '" + record + "' into AIM.");
+        log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
+                + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
         
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
@@ -92,9 +93,6 @@ public class ImportToAimStep extends WorkflowStep {
         File jpegFile = imageConverter.convertTiff(imageFile);
         
         googleRetriever.createImageAndRetreiveLabels(jpegFile, filename, category);
-
-        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
-                CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING);
     }
     
     /**
