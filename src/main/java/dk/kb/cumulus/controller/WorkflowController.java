@@ -1,14 +1,12 @@
 package dk.kb.cumulus.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 import dk.kb.cumulus.workflow.AimWorkflow;
-import dk.kb.cumulus.workflow.WorkflowScheduler;
 
 /**
  * Created by jolf on 19-03-2018.
@@ -16,22 +14,28 @@ import dk.kb.cumulus.workflow.WorkflowScheduler;
 @Controller
 public class WorkflowController {
 
-    /** The workflow scheduler.*/
-    protected WorkflowScheduler scheduler;
+    /** The workflow.*/
+    @Autowired
+    protected AimWorkflow workflow;
 
-    @RequestMapping("/workflows")
-    public List<AimWorkflow> allWorkflows(Model model) {
-        if(scheduler != null) {
-            return scheduler.getWorkflows();            
-        }
-        return new ArrayList<AimWorkflow>();
+    @RequestMapping("/workflow")
+    public String getWorkflow(Model model) {
+        model.addAttribute("workflow", workflow);
+
+        return "workflow";
     }
-    
-    /**
-     * Set the scheduler for the workflows.
-     * @param scheduler The scheduler.
-     */
-    public void setScheduler(WorkflowScheduler scheduler) {
-        this.scheduler = scheduler;
+
+    @RequestMapping("/workflow/run")
+    public RedirectView runWorkflow() {
+        workflow.startManually();
+
+        try {
+            synchronized(this) {
+                this.wait(1000);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new RedirectView("/workflow");
     }
 }
