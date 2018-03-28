@@ -55,14 +55,14 @@ public class GoogleRetreiver {
     }
 
     private void retreiveAndCreateImageWords(Image dbImage, List<AnnotateImageResponse> responses) {
-        logger.info("Received " + responses.size() + " image annotations.");
+        logger.debug("Received " + responses.size() + " image annotations.");
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
                 logger.error("Error: %s\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     String text_en = annotation.getDescription().trim();
-                    logger.info("Handling annotation: " + text_en);
+                    logger.debug("Handling annotation: " + text_en);
                     Word dbWord = wordRepository.getWordByText(text_en,dbImage.getCategory());
                     if (dbWord == null) {
                         // The word does not exist in database - create new
@@ -98,7 +98,7 @@ public class GoogleRetreiver {
             }
         }
         
-        logger.info("Found the colors: \n" + result);
+        logger.debug("Found the colors: \n" + result);
         return result;
     }
 
