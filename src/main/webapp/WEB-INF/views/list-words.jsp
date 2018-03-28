@@ -14,6 +14,7 @@
 </head>
 
 <body>
+
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
 </div>
@@ -22,18 +23,18 @@
     <jsp:include page="includes/categoryTabs.jsp" />
 </div>
 
-<table>
-<tbody>
-<c:forEach items="${words}" var="word">
+<%--<table>--%>
+<%--<tbody>--%>
+<%--<c:forEach items="${words}" var="word">--%>
 
-<tr>
-    <td>${word.id}</td>
-    <td>${word.text_en}</td>
-    <td>${word.text_da}</td>
-    <td>${word.status}</td>
-</tr>
-</c:forEach>
-</table>
+<%--<tr>--%>
+    <%--<td>${word.id}</td>--%>
+    <%--<td>${word.text_en}</td>--%>
+    <%--<td>${word.text_da}</td>--%>
+    <%--<td>${word.status}</td>--%>
+<%--</tr>--%>
+<%--</c:forEach>--%>
+<%--</table>--%>
 
 
 </body>
