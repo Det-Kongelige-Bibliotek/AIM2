@@ -6467,4 +6467,10 @@ a.text-dark:focus, a.text-dark:hover {
 .second-tab, .table {
   margin-top: 40px; }
 
+.navbar-brand {
+  height: 60px;
+  width: 160px;
+  background: url("/img/logo.png") no-repeat;
+  background-size: contain; }
+
 /*# sourceMappingURL=AIM.css.map */

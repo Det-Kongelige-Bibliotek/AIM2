@@ -14,6 +14,9 @@
 </head>
 
 <body>
+<jsp:include page="includes/topBar.jsp">
+    <jsp:param name="page" value="images"/>
+</jsp:include>
 <div class="jumbotron text-center">
     <h1>AIM Images</h1>
 </div>

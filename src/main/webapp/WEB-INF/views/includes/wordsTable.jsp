@@ -40,7 +40,7 @@
                 </td>
             </c:if>
             <td>
-                <a class="btn btn-info" href="/images" target="_blank" role="button">See images</a>
+                <a class="btn btn-info" href="/images" role="button">See images</a>
             </td>
         </tr>
     </c:forEach>
