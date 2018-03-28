@@ -7,10 +7,14 @@
         <th>id</th>
         <th>English</th>
         <th>Danish</th>
-        <th colspan="2"></th>
-        <c:if test="${status=='PENDING'}">
-            <th colspan="2"></th>
+        <c:if test="${status=='REJECTED'||status=='PENDING'}">
+            <th colspan="2">Approve</th>
         </c:if>
+
+        <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
+            <th colspan="2">Reject</th>
+        </c:if>
+        <th>Images</th>
     </tr>
     </thead>
     <tbody>
@@ -35,6 +39,9 @@
                     <button type="button" class="btn btn-danger">Reject for all</button>
                 </td>
             </c:if>
+            <td>
+                <a class="btn btn-info" href="/images" target="_blank" role="button">See images</a>
+            </td>
         </tr>
     </c:forEach>
     </tbody>
