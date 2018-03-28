@@ -16,26 +16,33 @@
 <body>
 <div class="jumbotron text-center">
     <h1>AIM Images</h1>
-
-<table>
-<tbody>
-<c:forEach items="${images}" var="image">
-<tr>
-    <td>${image.id}</td>
-    <td>${image.path}</td>
-
-    <td><a href="/images/${image.id}"><img src="/image_store/${image.path}" alt="broken image link, we presume."/></a></td>
-
-    <td>${image.status}</td>
-</tr>
-</c:forEach>
-</tbody>
-</table>
 </div>
-<!--
-commented out this, for the time being/Sigge
-div class="container">
-    <jsp:include page="includes/tabs.jsp" />
-</div-->
+
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row">
+
+            <c:forEach items="${images}" var="image">
+                <div class="col-md-4">
+                    <a href="/images/${image.id}">
+                    <div class="card mb-4 box-shadow">
+                        <img class="card-img-top"
+                             alt="broken image link, we presume." style="height: 225px; width: 100%; display: block;"
+                             src="/image_store/${image.path}"
+                             data-holder-rendered="true">
+                        <div class="card-body">
+                            <p class="card-text">${image.id}</p>
+                            <p class="card-text">${image.path}</p>
+                            <p class="card-text">${image.status}</p>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+            </c:forEach>
+
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
