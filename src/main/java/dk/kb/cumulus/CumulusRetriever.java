@@ -53,6 +53,8 @@ public class CumulusRetriever {
     
     /** The Cumulus field name for Keywords.*/
     public static final String FIELD_NAME_KEYWORDS = "Keywords";
+    /** The Cumulus field name for Color Codes.*/
+    public static final String FIELD_NAME_COLOR_CODES = "Color Codes";
     
     
     /** The Cumulus server.*/

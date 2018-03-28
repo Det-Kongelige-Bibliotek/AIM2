@@ -74,13 +74,11 @@ public class FrontBackStep extends WorkflowStep {
                 log.warn("Failed to find front/back.", e);
                 numberOfError++;
             }
-//            setDone(record);
+            setDone(record);
         }
         
-        setResultOfRun("Found total: " + total
-                + ", number of fronts: " + numberOfFronts
-                + ", number of backs: " + numberOfBacks
-                + ", number of errors: " + numberOfError);
+        setResultOfRun("Found total: " + total + ", number of fronts: " + numberOfFronts + ", number of backs: " 
+                + numberOfBacks + ", number of errors: " + numberOfError);
     }
     
     /**
@@ -100,7 +98,8 @@ public class FrontBackStep extends WorkflowStep {
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
                 CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
         // TODO remove boolean.
-    }
+//        record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK, Boolean.FALSE);
+        }
     
     /**
      * Retrieves the name of the record for the front-page (which should be set as master record).
