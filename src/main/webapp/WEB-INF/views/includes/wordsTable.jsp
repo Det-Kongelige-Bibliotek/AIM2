@@ -1,5 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="status" value="${param.status}"/>
+<%
+    java.util.List<dk.kb.cumulus.WordStatus> ws =java.util.Arrays.asList(dk.kb.cumulus.WordStatus.values());
+    pageContext.setAttribute("statuses", ws);
+%>
 
 <table class="table table-striped">
     <thead>
@@ -48,4 +52,5 @@
 </table>
 <script type="text/javascript">
     var categories = "${categories}".replace('[','').replace(']','').split(", ");
+    var statuses = "${statuses}".replace('[','').replace(']','').split(", ");
 </script>

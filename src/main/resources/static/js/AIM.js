@@ -9,9 +9,6 @@
 
 // Activate the correct tabs after loading the page
 $(document).ready(function () {
-    //var categories = "${categories}".replace('[','').replace(']','').split(", ");// converting java array to javascript array
-    console.log(categories);
-
     for (var i = 0; i < categories.length; i++) {
         if (window.location.href.indexOf(categories[i]) > -1)
         {
@@ -19,7 +16,6 @@ $(document).ready(function () {
             document.getElementById(categories[i]).className += (' show active');
             document.getElementsByClassName(categories[i])[0].className += (' active');
         }
-        var statuses = "${statuses}".replace('[','').replace(']','').split(", ");// converting java array to javascript array
         for (var j = 0; j < statuses.length; j++) {
             if (window.location.href.indexOf(statuses[j]) > -1)
             {
