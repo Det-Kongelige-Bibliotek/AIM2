@@ -20,17 +20,20 @@
 <div class="jumbotron text-center">
     <h1>AIM workflow</h1>
 </div>
-<div class="container">
-    <p>Current state: ${workflow.getState()}</p>
-    <p>Next run: ${workflow.getNextRunDate()}</p>
+<div id="main" class="container">
+    <p><b>Current state:</b> ${workflow.getState()}</p>
+    <p><b>Next run:</b> ${workflow.getNextRunDate()}</p>
 
-    <table>
+    <table class="table table-striped">
+        <thead>
         <tr>
-            <td><b>Name of step</b></td>
-            <td><b>State</b></td>
-            <td><b>Time for last run (in millis)</b></td>
-            <td><b>Results for last run</b></td>
+            <th>Name of step</th>
+            <th>State</th>
+            <th>Time for last run (in millis)</th>
+            <th>Results for last run</th>
         </tr>
+        </thead>
+        <tbody>
         <c:forEach items="${workflow.getSteps()}" var="step">
             <tr>
                 <td>${step.getName()}</td>
@@ -39,12 +42,13 @@
                 <td>${step.getResultOfLastRun()}</td>
             </tr>
         </c:forEach>
+        </tbody>
     </table>
 
 
-    <h2>Run workflow</h2>
+    <h2></h2>
     <form action="workflow/run" method="post">
-        <input type="submit" value="Execute now"/>
+        <button type="submit" class="btn btn-success" id="runWorkflow">Run now</button>
     </form>
     <div>
     </div>
