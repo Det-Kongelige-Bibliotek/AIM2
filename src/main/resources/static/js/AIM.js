@@ -7,8 +7,6 @@ $('.nav-tabs a').click(function (e) {
 });
 
 // Activate the correct tabs after loading the page
-
-
 $(document).ready(function () {
     if (typeof(categories) != "undefined") {
         for (var i = 0; i < categories.length; i++) {
