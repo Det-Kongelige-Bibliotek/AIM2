@@ -32,7 +32,10 @@ public class WordController {
             model.addAttribute("words",wordRepository.allWordsWithStatus(status));
         } else {
             model.addAttribute("words",wordRepository.allWords());
+
         }
+        model.addAttribute("categories",wordRepository.getCategories());
+
 
         return "list-words";
     }
@@ -52,6 +55,7 @@ public class WordController {
         } else {
             model.addAttribute("words",wordRepository.allWordsInCategory(category));
         }
+        model.addAttribute("categories",wordRepository.getCategories());
         return "list-words";
     }
 }

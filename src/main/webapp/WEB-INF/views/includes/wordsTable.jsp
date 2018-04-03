@@ -46,3 +46,6 @@
     </c:forEach>
     </tbody>
 </table>
+<script type="text/javascript">
+    var categories = "${categories}".replace('[','').replace(']','').split(", ");
+</script>

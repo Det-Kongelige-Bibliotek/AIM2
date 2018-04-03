@@ -76,7 +76,7 @@
 			<!--
 			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC_withoutJSON.jar</systemPath>
 			-->
-			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC.jar</systemPath>
+			<systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>dk.kb</groupId>
