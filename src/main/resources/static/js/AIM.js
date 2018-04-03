@@ -12,7 +12,6 @@ $(document).ready(function () {
     for (var i = 0; i < categories.length; i++) {
         if (window.location.href.indexOf(categories[i]) > -1)
         {
-            console.log(categories[i]);
             document.getElementById(categories[i]).className += (' show active');
             document.getElementsByClassName(categories[i])[0].className += (' active');
         }
