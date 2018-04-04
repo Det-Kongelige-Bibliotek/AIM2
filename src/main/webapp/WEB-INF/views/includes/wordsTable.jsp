@@ -32,7 +32,9 @@
                     <button type="button" class="btn btn-success">Approve</button>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-success">Approve for all</button>
+
+                    <button type="button" class="btn btn-success">Approve for AIM</button>
+
                 </td>
             </c:if>
             <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
@@ -40,7 +42,8 @@
                     <button type="button" class="btn btn-danger">Reject</button>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger">Reject for all</button>
+
+                    <button type="button" class="btn btn-danger">Reject for AIM</button>
                 </td>
             </c:if>
             <td>
@@ -54,3 +57,4 @@
     var categories = "${categories}".replace('[','').replace(']','').split(", ");
     var statuses = "${statuses}".replace('[','').replace(']','').split(", ");
 </script>
+
