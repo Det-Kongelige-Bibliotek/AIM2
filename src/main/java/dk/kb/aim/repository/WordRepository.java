@@ -68,6 +68,10 @@ public class WordRepository {
         }
     }
 
+    public void updateWordStatus(Word word)  {
+        jdbcTemplate.update(
+                "UPDATE words SET (status) = (?) WHERE id = ?",word.getStatus().toString(),word.getId());
+    }
 
     public void updateWord(Word word)  {
         jdbcTemplate.update(
