@@ -47,7 +47,10 @@
                 </td>
             </c:if>
             <td>
-                <a class="btn btn-info" href="/images" role="button">See images</a>
+                <c:url value = "/word_images/${word.id}" var = "imgUrl">
+                    <c:param name = "status" value = "PENDING"/>
+                </c:url>
+                <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>
             </td>
         </tr>
     </c:forEach>
