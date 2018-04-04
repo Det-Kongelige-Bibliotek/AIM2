@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
+import dk.kb.aim.WordStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -102,6 +103,14 @@ public class ImageRepository {
 
         jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)"
                 , image_id,word_id,confidence);
+    }
+
+    public List<Image> wordImages(int word_id, ImageStatus status) {
+        String sql = "SELECT id,path,cumulus_id,category,color,ocr,status " +
+                "FROM images WHERE id in " +
+                "(SELECT image_id FROM image_word WHERE word_id = "+word_id+") " +
+                "AND status = '" + status.toString() + "'";
+        return queryForImages(sql);
     }
 
     private List<Image> queryForImages(String sql) {
