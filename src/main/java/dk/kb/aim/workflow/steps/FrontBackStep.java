@@ -120,8 +120,8 @@ public class FrontBackStep extends WorkflowStep {
     protected String getFrontPage(String filename) {
         String nameWithoutSuffix = filename.split("\\.")[0];
         String suffix = "";
-        if(filename.contains("\\.")) {
-            suffix =  filename.split("[\\.]")[1];
+        if(filename.lastIndexOf(".") > 0) {
+            suffix =  filename.substring(filename.lastIndexOf("."));
         }
         
         // Deal with the multiple backs syntax.

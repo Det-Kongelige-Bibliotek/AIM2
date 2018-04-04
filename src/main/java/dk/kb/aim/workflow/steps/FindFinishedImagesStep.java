@@ -73,7 +73,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
             }
         }
 
-        setResultOfRun(numberOfNew + " new images, with " + numberOfNewFinished + " finished and "
+        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! "
+                + numberOfNew + " new images, with " + numberOfNewFinished + " finished and "
                 + numberOfNewNotFinished + " not finished; and " + numberOfUnfinished 
                 + " previously unfinished images, where " + numberOfPreviouslyUnfinished + " was finished.");
     }

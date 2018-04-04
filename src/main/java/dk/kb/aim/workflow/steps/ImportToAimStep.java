@@ -15,7 +15,6 @@ import dk.kb.cumulus.CumulusRecord;
 
 /**
  * Workflow for importing the Cumulus records, which are ready for AIM.
- * 
  */
 public class ImportToAimStep extends WorkflowStep {
     /** The log.*/
@@ -81,11 +80,17 @@ public class ImportToAimStep extends WorkflowStep {
         log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
                 + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
         
+        if(record.isSubAsset()) {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                    CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
+            return;
+        }
+        
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         // TODO: use the right image instead of this test one.
-//        File imageFile = record.getFile();
-        File imageFile = new File("src/test/resources/samename.tif");
+//        File imageFile = new File("src/test/resources/samename.tif");
+        File imageFile = record.getFile();
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
@@ -109,7 +114,7 @@ public class ImportToAimStep extends WorkflowStep {
             }
         }
         // TODO what should we do, if we cannot find the category?
-        log.warn("No AIM category found. Returning 'UNKNOWN'");
+        log.warn("No AIM category found. Returning '" + CATEGORY_UNKNOWN + "'");
         return CATEGORY_UNKNOWN;
     }
     
