@@ -18,7 +18,7 @@ public class WordController {
 
     @Autowired
     private WordRepository wordRepository;
-
+    
     @RequestMapping(value="/words")
     public String allWords(Model model) {
         model.addAttribute("words",wordRepository.allWords());
