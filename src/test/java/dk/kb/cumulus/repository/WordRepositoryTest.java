@@ -46,7 +46,7 @@ public class WordRepositoryTest {
         Assert.assertEquals(WordStatus.REJECTED,retrievedWord.getStatus());
     }
 
-    @Test
+//    @Test
     public void testRelationAndStuff() throws Exception{
         int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
         int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
@@ -73,5 +73,12 @@ public class WordRepositoryTest {
         Assert.assertFalse(wordRepository.isRejectedFor("Ship","cat3"));
         Assert.assertFalse(wordRepository.isAcceptedFor("Horse","cat2"));
         Assert.assertFalse(wordRepository.isRejectedFor("Horse","cat2"));
+    }
+
+    @Test
+    public void testCategories() {
+        List<String> categories = wordRepository.getCategories();
+        for(String cat : categories)
+            System.out.println(cat);
     }
 }

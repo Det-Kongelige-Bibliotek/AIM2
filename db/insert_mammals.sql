@@ -1,3 +1,8 @@
+INSERT INTO words (text_en,text_da,category,status) VALUES ('mirror','spejl','aim','ACCEPTED');
+INSERT INTO words (text_en,text_da,category,status) VALUES ('poster','plakat','aim','ACCEPTED');
+INSERT INTO words (text_en,text_da,category,status) VALUES ('human behavior','menneskelig adfærd','aim','REJECTED');
+
+INSERT INTO words (text_en,text_da,category,status) VALUES ('rectangle','rektangel','mammals','REJECTED');
 insert into images (path,cumulus_id,category,status) VALUES ('four_legged_mammal_1.jpeg','qerfasdtrqfas','mammals','UNFINISHED');
 insert into images (path,cumulus_id,category,status) VALUES ('four_legged_mammal_2.jpeg','qerty3dtrqfas','mammals','FINISHED');
 insert into images (path,cumulus_id,category,status) VALUES ('hest.jpeg','qerty4dtrqfas','mammals','NEW');
