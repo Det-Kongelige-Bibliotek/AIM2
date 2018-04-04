@@ -85,7 +85,7 @@ public class ImportToAimStep extends WorkflowStep {
         String category = getAimSubCategory(record);
         // TODO: use the right image instead of this test one.
 //        File imageFile = record.getFile();
-        File imageFile = new File("src/test/resources/image.tif");
+        File imageFile = new File("src/test/resources/samename.tif");
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);

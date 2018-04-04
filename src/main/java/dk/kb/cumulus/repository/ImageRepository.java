@@ -1,12 +1,12 @@
 package dk.kb.cumulus.repository;
 
-import dk.kb.cumulus.ImageStatus;
-import dk.kb.cumulus.WordStatus;
-import dk.kb.cumulus.model.Image;
-import dk.kb.cumulus.model.ImageWord;
-import dk.kb.cumulus.model.Word;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,12 +14,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.List;
-import java.util.Map;
+import dk.kb.cumulus.ImageStatus;
+import dk.kb.cumulus.model.Image;
 
 /**
  * Created by dgj on 05-03-2018.
@@ -90,13 +86,17 @@ public class ImageRepository {
                 params, types);
     }
 
-    public void addWordToImage(int image_id, int word_id, int confidence) throws Exception {
+    public void addWordToImage(int image_id, int word_id, int confidence) {
         Image img = getImage(image_id);
-        if (img == null) throw new Exception("Image does not exits");
+        if (img == null) {
+            throw new IllegalArgumentException("Image does not exits");
+        }
 
         SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT category,status FROM words " +
                 "WHERE id =" +word_id +" and category='"+img.getCategory()+"'");
-        if (!rows.next()) throw new Exception("Word does not exists");
+        if (!rows.next()) {
+            throw new IllegalStateException("Word does not exists");
+        }
 
         // reject if status is banned and has correct category
 

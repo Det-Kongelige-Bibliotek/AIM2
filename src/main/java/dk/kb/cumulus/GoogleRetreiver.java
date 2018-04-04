@@ -45,26 +45,24 @@ public class GoogleRetreiver {
     }
 
 
-    public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) {
-        try {
-            com.google.cloud.vision.v1.Image image = readImage(imageFile);
-            String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
-            Image dbImage = new Image(-1,imageFile.getAbsolutePath(),cumulusId,category,color,"",ImageStatus.NEW);
-            int image_id = imageRepository.createImage(dbImage);
-            dbImage.setId(image_id);
-            retreiveAndCreateImageWords(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
-        } catch (Exception e) {
-            logger.error("error creating image ",e);
-        }
+    public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) throws IOException {
+        com.google.cloud.vision.v1.Image image = readImage(imageFile);
+        String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
+        Image dbImage = new Image(-1,imageFile.getAbsolutePath(),cumulusId,category,color,"",ImageStatus.NEW);
+        int image_id = imageRepository.createImage(dbImage);
+        dbImage.setId(image_id);
+        retreiveAndCreateImageWords(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
     }
 
-    private void retreiveAndCreateImageWords(Image dbImage, List<AnnotateImageResponse> responses) throws Exception {
+    private void retreiveAndCreateImageWords(Image dbImage, List<AnnotateImageResponse> responses) {
+        logger.debug("Received " + responses.size() + " image annotations.");
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
                 logger.error("Error: %s\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     String text_en = annotation.getDescription().trim();
+                    logger.debug("Handling annotation: " + text_en);
                     Word dbWord = wordRepository.getWordByText(text_en,dbImage.getCategory());
                     if (dbWord == null) {
                         // The word does not exist in database - create new
@@ -80,22 +78,27 @@ public class GoogleRetreiver {
     }
 
     private String getDominatingColors(List<AnnotateImageResponse> responses) {
-        String result = null;
+        String result = "";
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
                 logger.error("Error: %s\n", res.getError().getMessage());
             } else {
                 DominantColorsAnnotation colors = res.getImagePropertiesAnnotation().getDominantColors();
                 for (ColorInfo color : colors.getColorsList()) {
-                    result += String.format("fraction: %f, r: %f, g: %f, b: %f;",
-                            color.getPixelFraction(),
-                            color.getColor().getRed(),
-                            color.getColor().getGreen(),
-                            color.getColor().getBlue());
+                    float fraction = color.getPixelFraction();
+                    if(fraction > 0.01f) {
+                        result += Float.valueOf(fraction*100.0f).intValue() + "% "
+                                + String.format("%02x%02x%02x",
+                                        Float.valueOf(color.getColor().getRed()).intValue(),
+                                        Float.valueOf(color.getColor().getGreen()).intValue(),
+                                        Float.valueOf(color.getColor().getBlue()).intValue())
+                                + "\n";
+                    }
                 }
             }
         }
-
+        
+        logger.debug("Found the colors: \n" + result);
         return result;
     }
 

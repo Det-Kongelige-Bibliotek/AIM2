@@ -11,6 +11,12 @@ import dk.kb.cumulus.model.Word;
 import dk.kb.cumulus.repository.ImageRepository;
 import dk.kb.cumulus.repository.WordRepository;
 
+/**
+ * The workflow step for finding the images which not longer has any pending words,
+ * and then putting their data back into Cumulus.
+ * 
+ * @author jolf
+ */
 public class FindFinishedImagesStep extends WorkflowStep {
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
@@ -44,7 +50,16 @@ public class FindFinishedImagesStep extends WorkflowStep {
         int numberOfUnfinished = 0;
         int numberOfPreviouslyUnfinished = 0;
         
-        // First go through 'new' 
+        // Go through unfinished first, since new will be set to unfinished if they don't succeed.
+        for(Image image : imageRepo.listImagesWithStatus(ImageStatus.UNFINISHED)) {
+            numberOfUnfinished++;
+            if(isFinished(image)) {
+                numberOfPreviouslyUnfinished++;
+                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
+                setFinished(record, image);
+            }
+        }
+
         // If they are not done, then set them to Unfinished, otherwise set them to done. 
         for(Image image : imageRepo.listImagesWithStatus(ImageStatus.NEW)) {
             numberOfNew++;
@@ -55,15 +70,6 @@ public class FindFinishedImagesStep extends WorkflowStep {
             } else {
                 numberOfNewNotFinished++;
                 setUnfinished(record, image);
-            }
-        }
-
-        for(Image image : imageRepo.listImagesWithStatus(ImageStatus.UNFINISHED)) {
-            numberOfUnfinished++;
-            if(isFinished(image)) {
-                numberOfPreviouslyUnfinished++;
-                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
-                setFinished(record, image);
             }
         }
 
@@ -83,29 +89,33 @@ public class FindFinishedImagesStep extends WorkflowStep {
         
         List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
         String keywords = getKeywords(words);
-        record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
-        // TODO: Which field for color or OCR?
-//        record.setStringValueInField(??, image.getColor());
+        if(keywords.isEmpty()) {
+            log.warn("No keywords found for '" + image.getCumulus_id() + "'");
+        } else {
+            record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
+        }
+        
+        record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
+        // TODO: OCR?
 //        record.setStringValueInField(??, image.getOcr());
         
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
         // TODO: SET RECORD TO NOT READY FOR AIM!
+//        record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);
     }
     
     /**
      * Retrieves the keywords from the list of words.
-     * TODO: should it be the danish words ?
+     * TODO: Are the words formatted correctly?
      * @param words The list of words.
      * @return The words combined into a single string.
      */
     protected String getKeywords(List<Word> words) {
-        if(words.isEmpty()) {
-            return "";
-        }
-        String res = words.get(0).getText_da();
-        for(int i = 1; i < words.size(); i++) {
-            res += ", " + words.get(i).getText_da();
+        String res = "";
+        for(Word word : words) {
+            res += word.getText_da() + "|da\n";
+            res += word.getText_en() + "|en\n";
         }
         return res;
     }

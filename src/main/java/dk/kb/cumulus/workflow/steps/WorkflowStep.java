@@ -23,7 +23,7 @@ public abstract class WorkflowStep {
      */
     protected WorkflowStep() {
         this.status = "Not yet run.";
-        this.resultsOfLastRun = "NOT YET RUN";
+        this.resultsOfLastRun = "Not yet run.";
         this.timeForLastRun = -1L;
     }
     
@@ -91,5 +91,5 @@ public abstract class WorkflowStep {
     /**
      * @return The human readable name of the step.
      */
-    public abstract String getName();    
+    public abstract String getName();
 }

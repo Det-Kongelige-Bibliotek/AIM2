@@ -24,7 +24,7 @@ public class GoogleRetreiverTest {
     ImageRepository imageRepository;
 
     @Test
-    public void testIt() {
+    public void testIt() throws Exception {
         GoogleRetreiver googleRetreiver = new GoogleRetreiver(imageRepository,wordRepository);
         String imgPath = "src" + File.separator +
                          "main" + File.separator +
