@@ -15,6 +15,10 @@
 
 <body>
 
+<jsp:include page="includes/topBar.jsp">
+    <jsp:param name="page" value="words"/>
+</jsp:include>
+
 <div class="jumbotron text-center">
     <h1>AIM Words</h1>
 </div>

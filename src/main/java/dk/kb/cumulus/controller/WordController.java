@@ -18,7 +18,7 @@ public class WordController {
 
     @Autowired
     private WordRepository wordRepository;
-
+    
     @RequestMapping(value="/words")
     public String allWords(Model model) {
         model.addAttribute("words",wordRepository.allWords());
@@ -27,6 +27,7 @@ public class WordController {
     }
 
     @RequestMapping(value="/words",params={"status"})
+
     public String statusWords( @RequestParam("status") WordStatus status, Model model) {
         model.addAttribute("categories",wordRepository.getCategories());
         if(status.toString().length()>0) {
@@ -34,6 +35,7 @@ public class WordController {
         } else {
             model.addAttribute("words",wordRepository.allWords());
         }
+
 
         return "list-words";
     }
@@ -47,6 +49,7 @@ public class WordController {
 
     @RequestMapping(value="/words/{category}",params={"status"})
     public String allWords(@PathVariable String category,
+
 			   @RequestParam("status") WordStatus status, Model model) {
         model.addAttribute("categories",wordRepository.getCategories());
 
