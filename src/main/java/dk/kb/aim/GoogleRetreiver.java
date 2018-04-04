@@ -1,25 +1,8 @@
 package dk.kb.aim;
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-
-import com.google.api.services.translate.model.TranslationsResource;
-import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
-import com.google.cloud.vision.v1.*;
-import com.google.common.collect.ImmutableList;
-import com.google.protobuf.ByteString;
-import dk.kb.cumulus.repository.ImageRepository;
-import dk.kb.cumulus.repository.WordRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -71,7 +57,7 @@ public class GoogleRetreiver {
         retreiveAndCreateImageWords(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
     }
 
-    private void retreiveAndCreateImageWords(Image dbImage, List<AnnotateImageResponse> responses) {
+    private void retreiveAndCreateImageWords(Image dbImage, List<AnnotateImageResponse> responses) throws IOException {
         logger.debug("Received " + responses.size() + " image annotations.");
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
@@ -84,7 +70,7 @@ public class GoogleRetreiver {
                     if (dbWord == null) {
                         // The word does not exist in database - create new
                         String text_da = translateText(text_en); //TODO: translate text
-                        dbWord = new dk.kb.cumulus.model.Word(text_en,text_da,dbImage.getCategory(),WordStatus.PENDING);
+                        dbWord = new dk.kb.aim.model.Word(text_en,text_da,dbImage.getCategory(),WordStatus.PENDING);
 
                         int word_id = wordRepository.createWord(dbWord);
                         dbWord.setId(word_id);
@@ -136,7 +122,8 @@ public class GoogleRetreiver {
         ByteString imgBytes = ByteString.readFrom(new FileInputStream(file));
         return com.google.cloud.vision.v1.Image.newBuilder().setContent(imgBytes).build();
     }
-    private String translateText(String text_en) throws GeneralSecurityException, IOException {
+    
+    private String translateText(String text_en) throws IOException {
         Translate translate = TranslateOptions.newBuilder().build().getService();
         Translate.TranslateOption srcLang = Translate.TranslateOption.sourceLanguage("en");
         Translate.TranslateOption tgtLang = Translate.TranslateOption.targetLanguage("da");
