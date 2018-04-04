@@ -58,21 +58,46 @@
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.4-1206-jdbc42</version>
 		</dependency>
 		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
+		</dependency>
+		<dependency>
+			<groupId>com.canto</groupId>
+			<artifactId>cumulus</artifactId>
+			<version>10</version>
+			<scope>system</scope>
+			<!--
+			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC_withoutJSON.jar</systemPath>
+			-->
+			<systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>dk.kb</groupId>
 			<artifactId>kb-cumulus-api</artifactId>
 			<version>0.1.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.canto</groupId>
+					<artifactId>cumulus</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<version>1.17</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-vision</artifactId>
+			<version>1.14.0</version>
 		</dependency>
                 <!-- TEST packages-->
 		<dependency>
@@ -104,7 +129,6 @@
 			<version>1.4.194</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-vision</artifactId>
@@ -126,5 +150,58 @@
 		</plugins>
 	</build>
 
+
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <dependencyLocationsEnabled>true</dependencyLocationsEnabled>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+           <failOnError>false</failOnError>
+           <formats>
+               <format>html</format>
+               <format>xml</format>
+           </formats>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.9.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
 </project>

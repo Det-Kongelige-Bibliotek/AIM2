@@ -80,7 +80,7 @@ public class WordRepository {
 
     public List<Word> allWordsWithStatus(WordStatus status) {
         return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-        "WHERE status = '"+status+"'");
+                "WHERE status = '"+status+"'");
     }
 
     public List<Word> allWordsInCategory(String category) {
@@ -115,7 +115,6 @@ public class WordRepository {
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),
                         WordStatus.valueOf(rs.getString("status"))));
-
     }
 
     public List<String> getCategories() {
@@ -128,6 +127,6 @@ public class WordRepository {
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),
                         WordStatus.valueOf(rs.getString("status")))
-        );
+                );
     }
 }

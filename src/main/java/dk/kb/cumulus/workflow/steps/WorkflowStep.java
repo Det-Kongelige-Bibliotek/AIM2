@@ -1,10 +1,16 @@
 package dk.kb.cumulus.workflow.steps;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Abstract class for dealing with the general stuff about the Workflow steps.
  * @author jolf
  */
 public abstract class WorkflowStep {
+    /** The log.*/
+    protected static final Logger log = LoggerFactory.getLogger(WorkflowStep.class);
+    
     /** The status of the workflow.*/
     protected String status;
     /** The results of the last run.*/
@@ -17,7 +23,7 @@ public abstract class WorkflowStep {
      */
     protected WorkflowStep() {
         this.status = "Not yet run.";
-        this.resultsOfLastRun = "NOT YET RUN";
+        this.resultsOfLastRun = "Not yet run.";
         this.timeForLastRun = -1L;
     }
     
@@ -64,11 +70,13 @@ public abstract class WorkflowStep {
      */
     public void run() {
         long startTime = System.currentTimeMillis();
+        timeForLastRun = -1;
         try {
             setStatus("Running");
             runStep();
             setStatus("Finished");
         } catch (Exception e) {
+            log.error("Failure when running step: " + getName(), e);
             setStatus("Failed");
             setResultOfRun("Failure: " + e.getMessage());
         }
@@ -83,5 +91,5 @@ public abstract class WorkflowStep {
     /**
      * @return The human readable name of the step.
      */
-    public abstract String getName();    
+    public abstract String getName();
 }

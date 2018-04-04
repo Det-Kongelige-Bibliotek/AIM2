@@ -44,7 +44,7 @@ public class ImageConverter {
         BufferedImage bm = jpgImage;
         ByteArrayOutputStream tmp = new ByteArrayOutputStream();
         long fileSize = res.length();
-        while (fileSize > 2999999){
+        while (fileSize > conf.getJpegSizeLimit()) {
             bm = resize(jpgImage,jpgImage.getWidth()-200, jpgImage.getHeight()-200);
             ImageIO.write(bm, JPG_NAME, tmp);
             tmp.close();

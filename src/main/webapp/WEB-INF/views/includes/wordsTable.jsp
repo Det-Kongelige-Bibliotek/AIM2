@@ -1,5 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="status" value="${param.status}"/>
+<%
+    java.util.List<dk.kb.cumulus.WordStatus> ws =java.util.Arrays.asList(dk.kb.cumulus.WordStatus.values());
+    pageContext.setAttribute("statuses", ws);
+%>
 
 <table class="table table-striped">
     <thead>
@@ -7,10 +11,14 @@
         <th>id</th>
         <th>English</th>
         <th>Danish</th>
-        <th colspan="2"></th>
-        <c:if test="${status=='PENDING'}">
-            <th colspan="2"></th>
+        <c:if test="${status=='REJECTED'||status=='PENDING'}">
+            <th colspan="2">Approve</th>
         </c:if>
+
+        <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
+            <th colspan="2">Reject</th>
+        </c:if>
+        <th>Images</th>
     </tr>
     </thead>
     <tbody>
@@ -24,7 +32,9 @@
                     <button type="button" class="btn btn-success">Approve</button>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-success">Approve for all</button>
+
+                    <button type="button" class="btn btn-success">Approve for AIM</button>
+
                 </td>
             </c:if>
             <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
@@ -32,10 +42,19 @@
                     <button type="button" class="btn btn-danger">Reject</button>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger">Reject for all</button>
+
+                    <button type="button" class="btn btn-danger">Reject for AIM</button>
                 </td>
             </c:if>
+            <td>
+                <a class="btn btn-info" href="/images" role="button">See images</a>
+            </td>
         </tr>
     </c:forEach>
     </tbody>
 </table>
+<script type="text/javascript">
+    var categories = "${categories}".replace('[','').replace(']','').split(", ");
+    var statuses = "${statuses}".replace('[','').replace(']','').split(", ");
+</script>
+
