@@ -74,7 +74,7 @@ public class Configuration {
      * @throws IOException If it cannot load the configuration from the YAML file.
      */
     @Autowired
-    public Configuration(@Value("#{ @environment['aim.conf'] ?: 'aim.yml'}") String path) throws IOException {
+    public Configuration(@Value("#{ @environment['AIM_CONF'] ?: 'aim.yml'}") String path) throws IOException {
         File confFile = new File(path);
         
         try (InputStream in = new FileInputStream(confFile)) {
