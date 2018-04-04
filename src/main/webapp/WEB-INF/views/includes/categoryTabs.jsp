@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-    java.util.List<dk.kb.cumulus.WordStatus> ws =java.util.Arrays.asList(dk.kb.cumulus.WordStatus.values());
+    java.util.List<dk.kb.aim.WordStatus> ws =java.util.Arrays.asList(dk.kb.aim.WordStatus.values());
     pageContext.setAttribute("statuses", ws);
 %>
 

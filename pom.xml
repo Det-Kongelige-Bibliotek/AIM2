@@ -68,26 +68,28 @@
 			<artifactId>json</artifactId>
 			<version>20140107</version>
 		</dependency>
+			<!--
 		<dependency>
 			<groupId>com.canto</groupId>
 			<artifactId>cumulus</artifactId>
 			<version>10</version>
 			<scope>system</scope>
-			<!--
 			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC_withoutJSON.jar</systemPath>
-			-->
 			<systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath>
 		</dependency>
+			-->
 		<dependency>
 			<groupId>dk.kb</groupId>
 			<artifactId>kb-cumulus-api</artifactId>
 			<version>0.1.1</version>
+			<!--
 			<exclusions>
 				<exclusion>
 					<groupId>com.canto</groupId>
 					<artifactId>cumulus</artifactId>
 				</exclusion>
 			</exclusions>
+			-->
 		</dependency>
 		<dependency>
 			<groupId>org.yaml</groupId>
