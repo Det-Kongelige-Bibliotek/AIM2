@@ -1,3 +1,8 @@
+<table class="table table-striped"
+       xmlns:spring="http://www.springframework.org/tags"
+       xmlns:jsp="http://java.sun.com/JSP/Page"
+       xmlns:c="http://java.sun.com/jsp/jstl/core"
+       xmlns="http://www.w3.org/1999/xhtml">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="status" value="${param.status}"/>
 <%
@@ -5,7 +10,7 @@
     pageContext.setAttribute("statuses", ws);
     String host = request.getHeader("HOST");
 %>
-<table class="table table-striped">
+
     <thead>
     <tr>
         <th>id</th>
@@ -30,21 +35,19 @@
             <td><input type="text" name="text_da" value="${word.text_da}"/></td>
 	    <input type="hidden" name="back_to" value="<%= "http://" +  host %>${requestScope['javax.servlet.forward.servlet_path']}?status=${word.status}"/>
             <c:if test="${status=='REJECTED'||status=='PENDING'}">
-	      <input type="hidden" name="status" value="ACCEPTED"/>
                 <td>
-                    <button type="submit" name="category" value="${word.category}" class="btn btn-success">Approve</button>
+                    <button type="submit" name="op_category" value="ACCEPTED:${word.category}" class="btn btn-success">Approve</button>
                 </td>
                 <td>
-                    <button type="submit" name="category" value="AIM" class="btn btn-success">Approve for AIM</button>
+                    <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve for AIM</button>
                 </td>
             </c:if>
             <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
-	      <input type="hidden" name="status" value="REJECTED"/>
                 <td>
-		  <button type="submit" name="category" value="${word.category}" class="btn btn-danger">Reject</button>
+		  <button type="submit" name="op_category" value="REJECTED:${word.category}" class="btn btn-danger">Reject</button>
                 </td>
                 <td>
-                    <button type="submit" name="category" value="AIM" class="btn btn-danger">Reject for AIM</button>
+                    <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for AIM</button>
                 </td>
             </c:if>
 
