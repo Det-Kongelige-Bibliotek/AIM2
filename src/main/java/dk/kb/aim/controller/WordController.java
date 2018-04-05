@@ -20,16 +20,17 @@ public class WordController {
     @Autowired
     private WordRepository wordRepository;
     
-    @RequestMapping(value="/update",params={"id","text_en","text_da","category","status"})
+    @RequestMapping(value="/update",params={"id","text_en","text_da","category","status","back_to"})
     public String updateWord( @RequestParam("id")       int id,
 			      @RequestParam("text_en")  String text_en,
 			      @RequestParam("text_da")  String text_da,
 			      @RequestParam("category") String category,
 			      @RequestParam("status")   WordStatus status,
+			      @RequestParam("back_to")  String back_to,
 			      Model model) {
 	Word word = new Word(id, text_en, text_da, category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
-        return "list-words";
+        return "redirect:"+back_to;
     }
 
 
