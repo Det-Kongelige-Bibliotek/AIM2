@@ -48,7 +48,7 @@
             </c:if>
             <td>
                 <c:url value = "/word_images/${word.id}" var = "imgUrl">
-                    <c:param name = "status" value = "PENDING"/>
+                    <c:param name = "status" value = "NEW"/>
                 </c:url>
                 <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>
             </td>
