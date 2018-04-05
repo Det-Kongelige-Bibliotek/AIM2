@@ -68,11 +68,11 @@ public class WordRepository {
         }
     }
 
-
-    public void updateWord(Word word)  {
+    public Word updateWord(Word word) {
         jdbcTemplate.update(
                 "UPDATE words SET (text_en,text_da,category,status) = (?,?,?,?) WHERE id = ?",
                 word.getText_en(),word.getText_da(),word.getCategory(),word.getStatus().toString(),word.getId());
+	return word;
     }
 
     public List<Word> allWords() {

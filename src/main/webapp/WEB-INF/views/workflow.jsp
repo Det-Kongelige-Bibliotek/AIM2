@@ -11,6 +11,7 @@
 <head>
     <title>AIM Workflow</title>
     <jsp:include page="includes/head.jsp"/>
+    <meta http-equiv="Refresh" content="5">
 </head>
 
 <body>
