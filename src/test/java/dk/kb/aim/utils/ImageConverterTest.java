@@ -30,7 +30,7 @@ public class ImageConverterTest {
         ImageConverter ic = new ImageConverter();
         ic.conf = conf;
         
-        File tiff = new File("src/test/resources/image.tif");
+        File tiff = new File("src/test/resources/KE051541.tif");
         File jpg = ic.convertTiff(tiff);
         
         Assert.assertTrue(jpg.length() < tiff.length());
@@ -46,7 +46,7 @@ public class ImageConverterTest {
         when(testConf.getJpegFolder()).thenReturn(conf.getJpegFolder());
         when(testConf.getJpegSizeLimit()).thenReturn(100000L);
         
-        File tiff = new File("src/test/resources/image.tif");
+        File tiff = new File("src/test/resources/KE051543.tif");
         File jpg = ic.convertTiff(tiff);
         
         Assert.assertTrue(jpg.length() < tiff.length());

@@ -99,7 +99,12 @@
 		<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-vision</artifactId>
-			<version>1.14.0</version>
+			<version>1.23.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-translate</artifactId>
+			<version>1.23.0</version>
 		</dependency>
                 <!-- TEST packages-->
 		<dependency>
@@ -130,16 +135,6 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.194</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-vision</artifactId>
-			<version>1.23.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.cloud</groupId>
-			<artifactId>google-cloud-translate</artifactId>
-			<version>1.23.0</version>
 		</dependency>
 	</dependencies>
 
