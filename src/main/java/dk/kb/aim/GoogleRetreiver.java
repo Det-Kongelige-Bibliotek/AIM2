@@ -35,6 +35,7 @@ import dk.kb.aim.repository.WordRepository;
 @Component
 public class GoogleRetreiver {
 
+    public static final String AIM_category = "AIM";
     private static final Logger logger = LoggerFactory.getLogger(GoogleRetreiver.class);
 
     @Autowired
@@ -67,6 +68,9 @@ public class GoogleRetreiver {
                     String text_en = annotation.getDescription().trim();
                     logger.debug("Handling annotation: " + text_en);
                     Word dbWord = wordRepository.getWordByText(text_en,dbImage.getCategory());
+		    if (dbWord == null) {
+			dbWord = wordRepository.getWordByText(text_en,AIM_category);
+		    }
                     if (dbWord == null) {
                         // The word does not exist in database - create new
                         String text_da = translateText(text_en); //TODO: translate text
