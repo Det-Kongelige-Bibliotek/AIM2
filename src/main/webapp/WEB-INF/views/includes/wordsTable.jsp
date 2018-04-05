@@ -35,7 +35,7 @@
                     <button type="submit" name="category" value="${word.category}" class="btn btn-success">Approve</button>
                 </td>
                 <td>
-                    <button type="submit" name="category" value="aim" class="btn btn-success">Approve for AIM</button>
+                    <button type="submit" name="category" value="AIM" class="btn btn-success">Approve for AIM</button>
                 </td>
             </c:if>
             <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
@@ -44,7 +44,7 @@
 		  <button type="submit" name="category" value="${word.category}" class="btn btn-danger">Reject</button>
                 </td>
                 <td>
-                    <button type="submit" name="category" value="aim" class="btn btn-danger">Reject for AIM</button>
+                    <button type="submit" name="category" value="AIM" class="btn btn-danger">Reject for AIM</button>
                 </td>
             </c:if>
 
