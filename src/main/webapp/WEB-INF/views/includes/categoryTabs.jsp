@@ -4,21 +4,6 @@
     pageContext.setAttribute("statuses", ws);
 %>
 
-<%--<form action="" method="get">--%>
-    <%--<select name="status" onchange="this.form.submit()">--%>
-        <%--<c:forEach items="${statuses}" var="status">--%>
-            <%--<c:choose>--%>
-                <%--<c:when test="${status == param.status}">--%>
-                    <%--<option selected="selected">${status}</option>--%>
-                <%--</c:when>--%>
-                <%--<c:otherwise>--%>
-                    <%--<option>${status}</option>--%>
-                <%--</c:otherwise>--%>
-            <%--</c:choose>--%>
-        <%--</c:forEach>--%>
-    <%--</select>--%>
-<%--</form>--%>
-
 <ul class="nav nav-tabs" id="categories">
 <c:forEach  items="${categories}"  var="category">
     <li class="nav-item">

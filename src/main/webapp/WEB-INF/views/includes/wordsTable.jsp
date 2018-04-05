@@ -27,6 +27,7 @@
             <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
             <td>${word.text_en}<input type="hidden" name="text_en" value="${word.text_en}"/></td>
             <td><input type="text" name="text_da" value="${word.text_da}"/></td>
+	    <input type="hidden" name="back_to" value="/words/${word.category}?status=${word.status}"/>
             <c:if test="${status=='REJECTED'||status=='PENDING'}">
 	      <input type="hidden" name="status" value="ACCEPTED"/>
                 <td>
@@ -45,6 +46,9 @@
                     <button type="submit" name="category" value="aim" class="btn btn-success">Reject for AIM</button>
                 </td>
             </c:if>
+
+
+
 	  </form>
             <td>
                 <a class="btn btn-info" href="/images" role="button">See images</a>

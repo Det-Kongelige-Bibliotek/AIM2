@@ -27,19 +27,5 @@
     <jsp:include page="includes/categoryTabs.jsp" />
 </div>
 
-<!--<table>-->
-<!--<tbody>-->
-<!--<c:forEach items="${words}" var="word">-->
-
-<!--<tr>-->
-    <!--<td>${word.id}</td>-->
-    <!--<td>${word.text_en}</td>-->
-    <!--<td>${word.text_da}</td>-->
-    <!--<td>${word.status}</td>-->
-<!--</tr>-->
-<!--</c:forEach>-->
-<!--</table>-->
-
-
 </body>
 </html>
