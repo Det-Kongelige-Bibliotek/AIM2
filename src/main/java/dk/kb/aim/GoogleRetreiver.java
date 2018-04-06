@@ -52,7 +52,7 @@ public class GoogleRetreiver {
     public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) throws IOException {
         com.google.cloud.vision.v1.Image image = readImage(imageFile);
         String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
-        Image dbImage = new Image(-1,imageFile.getAbsolutePath(),cumulusId,category,color,"",ImageStatus.NEW);
+        Image dbImage = new Image(-1,imageFile.getName(),cumulusId,category,color,"",ImageStatus.NEW);
         int image_id = imageRepository.createImage(dbImage);
         dbImage.setId(image_id);
         retreiveAndCreateImageWords(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));

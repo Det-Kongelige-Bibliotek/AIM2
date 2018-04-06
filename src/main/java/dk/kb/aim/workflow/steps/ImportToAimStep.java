@@ -89,12 +89,16 @@ public class ImportToAimStep extends WorkflowStep {
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
         // TODO: use the right image instead of this test one.
-//        File imageFile = new File("src/test/resources/samename.tif");
-        File imageFile = record.getFile();
+        File imageFile = new File("src/test/resources/" + filename);
+//        File imageFile = record.getFile();
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
 
+        if(!imageFile.isFile()) {
+            throw new IllegalStateException("Cannot find the file '" + imageFile.getAbsolutePath() + "'");
+        }
+        
         File jpegFile = imageConverter.convertTiff(imageFile);
         
         googleRetriever.createImageAndRetreiveLabels(jpegFile, filename, category);
