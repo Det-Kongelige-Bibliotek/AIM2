@@ -7,3 +7,29 @@
   background: url("/img/logo.png") no-repeat;
   background-size: contain;
 }
+.album {
+  .dl-horizontal {
+    color: #333333;
+    dt {
+      width: 150px;
+      clear: left;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      &:after {
+        content: " ";
+        display: table;
+      }
+    }
+
+    dd {
+      margin-bottom: 4px;
+      margin-left: 35px;
+      &:before {
+        content: " ";
+        display: table;
+      }
+    }
+  }
+}

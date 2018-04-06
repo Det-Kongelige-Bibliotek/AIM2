@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" 
+<html lang="en"
       xmlns:spring="http://www.springframework.org/tags"
       xmlns:jsp="http://java.sun.com/JSP/Page"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -9,37 +9,46 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <head>
-  <title>List all images for word</title>
-  <jsp:include page="includes/head.jsp" />
+    <title>List all images for word</title>
+    <jsp:include page="includes/head.jsp"/>
 </head>
 
 <body>
+<c:set var="URLPath" value="${requestScope['javax.servlet.forward.servlet_path']}"/>
+
 <jsp:include page="includes/topBar.jsp">
     <jsp:param name="page" value="images"/>
 </jsp:include>
 <div class="jumbotron text-center">
     <h1>AIM Images</h1>
-    ${word.text_da}
 </div>
 
-<div class="album py-5 bg-light">
+<div class="album py-5">
     <div class="container">
+        <c:if test="${not empty word.id}">
+            <div class="text-center pb-3">
+                <p>Keyword: <b>${word.text_en}</b> (en) / <b>${word.text_da}</b> (da)</p>
+            </div>
+        </c:if>
         <div class="row">
-
             <c:forEach items="${images}" var="image">
                 <div class="col-md-4">
                     <a href="/images/${image.id}">
-                    <div class="card mb-4 box-shadow">
-                        <img class="card-img-top"
-                             alt="broken image link, we presume." style="height: 225px; width: 100%; display: block;"
-                             src="/image_store/${image.path}"
-                             data-holder-rendered="true">
-                        <div class="card-body">
-                            <p class="card-text">${image.id}</p>
-                            <p class="card-text">${image.path}</p>
-                            <p class="card-text">${image.status}</p>
+                        <div class="card mb-4 box-shadow">
+                            <img class="card-img-top"
+                                 alt="broken image link, we presume."
+                                 style="height: 225px; width: 100%; display: block;"
+                                 src="/image_store/${image.path}"
+                                 data-holder-rendered="true">
+                            <div class="card-body bg-light">
+                                <p class="card-text">${image.path}</p>
+                                <dl class="dl-horizontal">
+                                    <dt>Keywords</dt>
+                                    <dd>Black hot drink</dd>
+                                    <dd>White cold drink</dd>
+                                </dl>
+                            </div>
                         </div>
-                    </div>
                     </a>
                 </div>
             </c:forEach>

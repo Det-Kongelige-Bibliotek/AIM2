@@ -6473,4 +6473,23 @@ a.text-dark:focus, a.text-dark:hover {
   background: url("/img/logo.png") no-repeat;
   background-size: contain; }
 
+.album .dl-horizontal {
+  color: #333333; }
+  .album .dl-horizontal dt {
+    width: 150px;
+    clear: left;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .album .dl-horizontal dt:after {
+      content: " ";
+      display: table; }
+  .album .dl-horizontal dd {
+    margin-bottom: 4px;
+    margin-left: 35px; }
+    .album .dl-horizontal dd:before {
+      content: " ";
+      display: table; }
+
 /*# sourceMappingURL=AIM.css.map */
