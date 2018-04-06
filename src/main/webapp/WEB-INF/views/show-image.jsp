@@ -34,6 +34,9 @@
                 <img src="/image_store/${image_details.path}" class="img-fluid" alt="Responsive image">
             </div>
         </div>
+        <c:forEach items="${image_words}" var="word">
+            ${word.text_en}
+        </c:forEach>
     </div>
   </body>
 </html>

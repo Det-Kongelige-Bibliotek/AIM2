@@ -9,7 +9,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <head>
-  <title>List all images</title>
+  <title>List all images for word</title>
   <jsp:include page="includes/head.jsp" />
 </head>
 
@@ -19,6 +19,7 @@
 </jsp:include>
 <div class="jumbotron text-center">
     <h1>AIM Images</h1>
+    ${word.text_da}
 </div>
 
 <div class="album py-5 bg-light">
