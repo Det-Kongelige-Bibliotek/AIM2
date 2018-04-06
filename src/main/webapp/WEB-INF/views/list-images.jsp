@@ -44,8 +44,8 @@
                                 <p class="card-text">${image.path}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
-                                    <dd>Black hot drink</dd>
-                                    <dd>White cold drink</dd>
+                                    <dd>cat</dd>
+                                    <dd>mammal</dd>
                                 </dl>
                             </div>
                         </div>
