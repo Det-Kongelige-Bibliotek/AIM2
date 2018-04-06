@@ -41,7 +41,7 @@
                                  src="/image_store/${image.path}"
                                  data-holder-rendered="true">
                             <div class="card-body bg-light">
-                                <p class="card-text">${image.path}</p>
+                                <p class="card-text">${image.cumulus_id}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
                                     <dd>cat</dd>
