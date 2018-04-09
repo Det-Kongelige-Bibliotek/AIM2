@@ -20,17 +20,21 @@
     <div class="jumbotron text-center">
       <h1>AIM Image</h1>
     </div>
-
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <table>
-                    <tr><th>id</th><td>${image_details.id}</td></tr>
-                    <tr><th>path</th><td>${image_details.path}</td></tr>
-                    <tr><th>status</th><td>${image_details.status}</td></tr>
-                </table>
+            <div class="col-md-6">
+                <dl class="dl-horizontal">
+                    <dt>id</dt><dd>${image_details.id}</dd>
+                    <dt>cumulus id</dt><dd>${image_details.cumulus_id}</dd>
+                    <dt>status</dt><dd>${image_details.status}</dd>
+                    <dt>Keywords</dt><dd>
+                    <c:forEach items="${image_words}" var="word">
+                        <p><a href="/words/${word.category}?status=${word.status}">${word.text_da} (${word.text_en})</a></p>
+                    </c:forEach>
+                    &nbsp;</dd>
+                </dl>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-6">
                 <img src="/image_store/${image_details.path}" class="img-fluid" alt="Responsive image">
             </div>
         </div>

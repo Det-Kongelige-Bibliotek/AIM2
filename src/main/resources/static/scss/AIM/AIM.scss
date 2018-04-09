@@ -1,9 +1,39 @@
-.second-tab, .table{
-  margin-top: 40px ;
+.second-tab, .table {
+  margin-top: 40px;
 }
-.navbar-brand{
+
+.navbar-brand {
   height: 60px;
   width: 160px;
   background: url("/img/logo.png") no-repeat;
   background-size: contain;
+}
+
+.dl-horizontal {
+  color: #333333;
+  dt {
+    width: 100px;
+    clear: left;
+    float: left;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:after {
+      content: " ";
+      display: table;
+    }
+  }
+
+  dd {
+    margin-bottom: 4px;
+    margin-left: 110px;
+    p {
+      margin-bottom: 0;
+    }
+    &:before {
+      content: " ";
+      display: table;
+    }
+  }
 }

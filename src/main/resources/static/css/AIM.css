@@ -6473,4 +6473,26 @@ a.text-dark:focus, a.text-dark:hover {
   background: url("/img/logo.png") no-repeat;
   background-size: contain; }
 
+.dl-horizontal {
+  color: #333333; }
+  .dl-horizontal dt {
+    width: 100px;
+    clear: left;
+    float: left;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .dl-horizontal dt:after {
+      content: " ";
+      display: table; }
+  .dl-horizontal dd {
+    margin-bottom: 4px;
+    margin-left: 110px; }
+    .dl-horizontal dd p {
+      margin-bottom: 0; }
+    .dl-horizontal dd:before {
+      content: " ";
+      display: table; }
+
 /*# sourceMappingURL=AIM.css.map */
