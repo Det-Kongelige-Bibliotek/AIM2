@@ -67,14 +67,14 @@ public class GoogleRetreiver {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     String text_en = annotation.getDescription().trim();
                     logger.debug("Handling annotation: " + text_en);
-                    Word dbWord = wordRepository.getWordByText(text_en,dbImage.getCategory());
-		    if (dbWord == null) {
-			dbWord = wordRepository.getWordByText(text_en,AIM_category);
-		    }
+                    Word dbWord = wordRepository.getWordByText(text_en, dbImage.getCategory());
+                    if (dbWord == null) {
+                        dbWord = wordRepository.getWordByText(text_en, AIM_category);
+                    }
                     if (dbWord == null) {
                         // The word does not exist in database - create new
-                        String text_da = translateText(text_en); //TODO: translate text
-                        dbWord = new dk.kb.aim.model.Word(text_en,text_da,dbImage.getCategory(),WordStatus.PENDING);
+                        String text_da = translateText(text_en);
+                        dbWord = new Word(text_en, text_da, dbImage.getCategory(), WordStatus.PENDING);
 
                         int word_id = wordRepository.createWord(dbWord);
                         dbWord.setId(word_id);
@@ -105,7 +105,7 @@ public class GoogleRetreiver {
                 }
             }
         }
-        
+
         logger.debug("Found the colors: \n" + result);
         return result;
     }
@@ -126,7 +126,7 @@ public class GoogleRetreiver {
         ByteString imgBytes = ByteString.readFrom(new FileInputStream(file));
         return com.google.cloud.vision.v1.Image.newBuilder().setContent(imgBytes).build();
     }
-    
+
     private String translateText(String text_en) throws IOException {
         Translate translate = TranslateOptions.newBuilder().build().getService();
         Translate.TranslateOption srcLang = Translate.TranslateOption.sourceLanguage("en");

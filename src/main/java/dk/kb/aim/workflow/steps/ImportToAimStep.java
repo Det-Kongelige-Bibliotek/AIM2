@@ -57,12 +57,19 @@ public class ImportToAimStep extends WorkflowStep {
         int numberOfFailures = 0;
         
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
+            log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
+                    + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
+            
             numberOfRecords++;
             try {
                 importRecord(record);
                 numberOfSuccess++;
+                log.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
+                        + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
             } catch (Exception e) {
-                log.warn("Failure to import image.", e);
+                // TODO
+                log.info("Failure to import images: " + e.getMessage());
+//                log.warn("Failure to import image.", e);
                 numberOfFailures++;
             }
         }
@@ -77,9 +84,6 @@ public class ImportToAimStep extends WorkflowStep {
      * @param record The Cumulus record to import.
      */
     protected void importRecord(CumulusRecord record) throws IOException {
-        log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
-                + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
-        
         if(record.isSubAsset()) {
             record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                     CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
