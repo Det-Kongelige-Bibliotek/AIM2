@@ -33,12 +33,12 @@
         <div class="row">
             <c:forEach items="${images}" var="image">
                 <div class="col-md-4">
-                    <a href="/images/${image.id}">
+                    <a href="${pageContext.request.contextPath}/images/${image.id}">
                         <div class="card mb-4 box-shadow">
                             <img class="card-img-top"
                                  alt="broken image link, we presume."
                                  style="height: 225px; width: 100%; display: block;"
-                                 src="/image_store/${image.path}"
+                                 src="${pageContext.request.contextPath}/image_store/${image.path}"
                                  data-holder-rendered="true">
                             <div class="card-body bg-light">
                                 <p class="card-text">${image.cumulus_id}</p>

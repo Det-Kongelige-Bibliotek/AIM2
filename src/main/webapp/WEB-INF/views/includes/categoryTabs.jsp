@@ -7,7 +7,7 @@
 <ul class="nav nav-tabs" id="categories">
 <c:forEach  items="${categories}"  var="category">
     <li class="nav-item">
-        <a class="${category} nav-link"  href="/words/${category}">${category}</a>
+        <a class="${category} nav-link"  href="${pageContext.request.contextPath}/words/${category}">${category}</a>
     </li>
 </c:forEach >
 </ul>
