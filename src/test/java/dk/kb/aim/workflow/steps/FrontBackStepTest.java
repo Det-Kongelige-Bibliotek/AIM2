@@ -15,6 +15,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.workflow.steps.FrontBackStep;
 import dk.kb.cumulus.Constants;
@@ -26,8 +27,10 @@ public class FrontBackStepTest {
     @Test
     public void testGetFrontPage() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
+        Configuration conf = mock(Configuration.class);
+        
         String catalogName = UUID.randomUUID().toString();
-        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
+        FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
         String suffix = "." + UUID.randomUUID().toString();
 
 //        addStep("Test with uuid filename with non-digit as last character", "Does not find a front-page");
@@ -68,8 +71,9 @@ public class FrontBackStepTest {
     @Test
     public void testGetTrailingDigits() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
+        Configuration conf = mock(Configuration.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
+        FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
 
         Assert.assertEquals(fbw.getTrailingDigits(""), "");
         Assert.assertEquals(fbw.getTrailingDigits("1234"), "1234");
@@ -81,8 +85,9 @@ public class FrontBackStepTest {
     @Test
     public void testRunWorkflowWhenFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
+        Configuration conf = mock(Configuration.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
+        FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -110,6 +115,7 @@ public class FrontBackStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
                 CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        verify(backRecord).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK), eq(Boolean.FALSE));
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -121,8 +127,9 @@ public class FrontBackStepTest {
     @Test
     public void testRunWorkflowWhenNoFrontPageFound() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
+        Configuration conf = mock(Configuration.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
+        FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -148,6 +155,7 @@ public class FrontBackStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
                 CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        verify(backRecord).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK), eq(Boolean.FALSE));
         verifyNoMoreInteractions(backRecord);
         
         verifyZeroInteractions(frontRecord);
@@ -159,8 +167,9 @@ public class FrontBackStepTest {
     @Test
     public void testRunWorkflowWhenFrontPageRecordCouldNotBeFoundInCumulus() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
+        Configuration conf = mock(Configuration.class);
         String catalogName = UUID.randomUUID().toString();
-        FrontBackStep fbw = new FrontBackStep(retriever, catalogName);
+        FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
         
         String id = UUID.randomUUID().toString();
         
@@ -186,6 +195,7 @@ public class FrontBackStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
                 CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        verify(backRecord).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK), eq(Boolean.FALSE));
         verifyNoMoreInteractions(backRecord);
         
         verify(records).iterator();

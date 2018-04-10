@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.GoogleRetreiver;
 import dk.kb.aim.utils.ImageConverter;
@@ -26,6 +27,8 @@ public class ImportToAimStep extends WorkflowStep {
     /** The name of the root category for AIM.*/
     protected static final String CATEGORY_NAME_AIM = "AIM";
     
+    /** The configuration */
+    protected final Configuration conf;
     /** The Cumulus retriever.*/
     protected final CumulusRetriever cumulusRetriever;
     /** The name of the catalog, where the Cumulus record should be imported from.*/
@@ -37,13 +40,15 @@ public class ImportToAimStep extends WorkflowStep {
     
     /**
      * Constructor.
+     * @param conf The configuration.
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
      * @param imageConverter The image converter.
      * @param googleRetriever The retriever for the google vision and translation APIs.
      */
-    public ImportToAimStep(CumulusRetriever cumulusRetriever, String catalogName, ImageConverter imageConverter, 
-            GoogleRetreiver googleRetriever) {
+    public ImportToAimStep(Configuration conf, CumulusRetriever cumulusRetriever, String catalogName, 
+            ImageConverter imageConverter, GoogleRetreiver googleRetriever) {
+        this.conf = conf;
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
         this.imageConverter = imageConverter;
@@ -74,9 +79,14 @@ public class ImportToAimStep extends WorkflowStep {
             }
         }
         
-        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! Found total: " + numberOfRecords
+        String results = "";
+        if(conf.isTest()) {
+            results += "RUNNING IN TEST-MODE!!! ";
+        }
+        results += "Found total: " + numberOfRecords
                 + ", number successfully imported: " + numberOfSuccess
-                + ", number of failures: " + numberOfFailures);
+                + ", number of failures: " + numberOfFailures;
+        setResultOfRun(results);
     }
     
     /**
@@ -85,16 +95,22 @@ public class ImportToAimStep extends WorkflowStep {
      */
     protected void importRecord(CumulusRecord record) throws IOException {
         if(record.isSubAsset()) {
-            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
-                    CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
+            if(conf.isTest()) {
+                record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, "");
+            } else {
+                record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
+            }
             return;
         }
         
         String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
-        // TODO: use the right image instead of this test one.
-        File imageFile = new File("src/test/resources/" + filename);
-//        File imageFile = record.getFile();
+        File imageFile;
+        if(conf.isTest()) {
+            imageFile = new File(conf.getTestDir(), filename);
+        } else {
+            imageFile = record.getFile();
+        }
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);

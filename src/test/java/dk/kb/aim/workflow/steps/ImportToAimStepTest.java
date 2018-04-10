@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.GoogleRetreiver;
 import dk.kb.aim.utils.ImageConverter;
@@ -31,7 +32,8 @@ public class ImportToAimStepTest {
         String catalogName = UUID.randomUUID().toString();
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
-        ImportToAimStep step = new ImportToAimStep(retriever, catalogName, imageConverter, googleRetriever);
+        Configuration conf = mock(Configuration.class);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
         
         CumulusRecordCollection records = mock(CumulusRecordCollection.class);
         when(records.iterator()).thenReturn(new ArrayList<CumulusRecord>().iterator());
@@ -54,7 +56,8 @@ public class ImportToAimStepTest {
         String catalogName = UUID.randomUUID().toString();
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
-        ImportToAimStep step = new ImportToAimStep(retriever, catalogName, imageConverter, googleRetriever);
+        Configuration conf = mock(Configuration.class);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
 
         CumulusRecordCollection records = mock(CumulusRecordCollection.class);
         CumulusRecord record = mock(CumulusRecord.class);
@@ -94,7 +97,8 @@ public class ImportToAimStepTest {
         String catalogName = UUID.randomUUID().toString();
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
-        ImportToAimStep step = new ImportToAimStep(retriever, catalogName, imageConverter, googleRetriever);
+        Configuration conf = mock(Configuration.class);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
 
         CumulusRecord record = mock(CumulusRecord.class);
         
@@ -122,7 +126,8 @@ public class ImportToAimStepTest {
         String catalogName = UUID.randomUUID().toString();
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
-        ImportToAimStep step = new ImportToAimStep(retriever, catalogName, imageConverter, googleRetriever);
+        Configuration conf = mock(Configuration.class);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
 
         CumulusRecord record = mock(CumulusRecord.class);
         

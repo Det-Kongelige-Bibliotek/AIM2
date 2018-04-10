@@ -35,6 +35,8 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   jpeg_folder: $ The folder where the jpeg compressed are placed
  *   jpeg_size_limit: $ The maximum size of the jpeg file, otherwise compress further.
  *   jpeg_url: $ The URL to the image-server where the jpegs can be found.
+ *   test: $ ONLY FOR TESTS -> will use local images and it will revert the state after finish 
+ *       instead of finishing. It must be the path to the test-files.
  */
 @Component
 public class Configuration {
@@ -58,6 +60,8 @@ public class Configuration {
     protected static final String CONF_JPEG_SIZE_LIMIT = "jpeg_size_limit";
     /** The root URL for the JPEG images.*/
     protected static final String CONF_JPEG_URL = "jpeg_url";
+    /** The configuration for whether */
+    protected static final String CONF_TEST = "test";
     
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
@@ -72,6 +76,10 @@ public class Configuration {
     protected final Long jpegSizeLimit;
     /** The root URL for the jpegs. */
     protected final String jpegUrl;
+    /** Whether or not this is running in test-mode.*/
+    protected final Boolean test;
+    /** The directory with the test files. Will only have a value in test-mode.*/
+    protected File testDir = null;
 
     /** 
      * Constructor.
@@ -109,6 +117,11 @@ public class Configuration {
             this.jpegSizeLimit = Long.valueOf((Integer) confMap.get(CONF_JPEG_SIZE_LIMIT));
             this.jpegUrl = (String) confMap.get(CONF_JPEG_URL);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
+            
+            this.test = confMap.containsKey(CONF_TEST);
+            if(this.test) {
+                this.testDir = FileUtils.getDirectory((String) confMap.get(CONF_TEST));
+            }
         }
     }
     
@@ -156,6 +169,16 @@ public class Configuration {
     /** @return The root URL for the jpeg images.*/
     public String getJpegUrl() {
         return jpegUrl;
+    }
+    
+    /** @return Whether or not we are running in test-mode.*/
+    public boolean isTest() {
+        return test;
+    }
+    
+    /** @return The directory for the test-files.*/
+    public File getTestDir() {
+        return testDir;
     }
     
     /**
