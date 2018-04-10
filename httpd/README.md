@@ -13,7 +13,8 @@ Maven will drop the war file in the target directory
 ## install
 
 1. Copy the war file to your tomcat, naming it aim.war
-2. It seems that maven doesn't copy the CumulusJC.jar to the war file because <scope>system</scope>. It somehow takes for granted that it will be available through classpath upon deployment. 
+2. It seems that maven doesn't copy the CumulusJC.jar to the war file because <scope>system</scope>. It somehow takes for granted that it will be available through classpath upon deployment. Do it yourself. Destination is webapps/aim/WEB-INF/lib
+3. setenv.sh need to be edited in order to 
 3. Edit aim.yml and set the parameters needed for communicating with Cumulus and for storing and retrieving images in the jpeg_folder parameter.
 4. 
 
