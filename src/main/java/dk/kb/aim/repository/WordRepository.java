@@ -110,7 +110,7 @@ public class WordRepository {
 
     public List<Word> getImageWords(int image_id) {
         String sql = "SELECT * " +
-                "from image_word i NATURAL JOIN words w WHERE " +
+                "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = "+image_id;
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
@@ -120,7 +120,7 @@ public class WordRepository {
 
     public List<Word> getImageWords(int image_id,WordStatus status) {
         String sql = "SELECT * " +
-                "from image_word i NATURAL JOIN words w WHERE " +
+                "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = "+image_id+ " AND " +
                 "w.status='"+status+"'";
         return jdbcTemplate.query(sql,

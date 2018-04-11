@@ -2,6 +2,9 @@ package dk.kb.aim.workflow.steps;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.ImageStatus;
 import dk.kb.aim.WordStatus;
@@ -18,6 +21,9 @@ import dk.kb.cumulus.CumulusRecord;
  * @author jolf
  */
 public class FindFinishedImagesStep extends WorkflowStep {
+    /** The log.*/
+    protected static final Logger log = LoggerFactory.getLogger(FindFinishedImagesStep.class);
+
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
     /** The name of the catalog.*/

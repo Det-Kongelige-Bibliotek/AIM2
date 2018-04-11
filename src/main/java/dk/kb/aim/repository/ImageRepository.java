@@ -7,6 +7,9 @@ import java.sql.Types;
 import java.util.List;
 
 import dk.kb.aim.WordStatus;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -15,6 +18,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import dk.kb.aim.GoogleRetreiver;
 import dk.kb.aim.ImageStatus;
 import dk.kb.aim.model.Image;
 
@@ -23,6 +27,8 @@ import dk.kb.aim.model.Image;
  */
 @Repository
 public class ImageRepository {
+    /** The log.*/
+    private static final Logger logger = LoggerFactory.getLogger(ImageRepository.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -90,26 +96,27 @@ public class ImageRepository {
     public void addWordToImage(int image_id, int word_id, int confidence) {
         Image img = getImage(image_id);
         if (img == null) {
-            throw new IllegalArgumentException("Image does not exits");
+            throw new IllegalArgumentException("Image ('" + image_id + "') does not exits");
         }
 
         SqlRowSet rows = jdbcTemplate.queryForRowSet("SELECT category,status FROM words " +
-                "WHERE id =" +word_id +" and category='"+img.getCategory()+"'");
+                "WHERE id =" + word_id);
         if (!rows.next()) {
-            throw new IllegalStateException("Word does not exists");
+            throw new IllegalStateException("Word ('" + word_id + "') does not exists");
         }
 
         // reject if status is banned and has correct category
-
-        jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)"
-                , image_id,word_id,confidence);
+        
+        logger.debug("Image '" + image_id + "' has word '" + word_id + "'");
+        jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)", 
+                image_id, word_id, confidence);
     }
 
     public List<Image> wordImages(int word_id, ImageStatus status) {
         String sql = "SELECT id,path,cumulus_id,category,color,ocr,status " +
                 "FROM images WHERE id in " +
                 "(SELECT image_id FROM image_word WHERE word_id = "+word_id+") " +
-                "AND status = '" + status.toString() + "'";
+                "AND status = '" + status.name() + "'";
         return queryForImages(sql);
     }
 
