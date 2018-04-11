@@ -17,6 +17,8 @@ import dk.kb.aim.repository.WordRepository;
 @Controller
 public class WordController {
 
+    String defStatus = "PENDING";
+
     @Autowired
     private WordRepository wordRepository;
 
@@ -44,14 +46,9 @@ public class WordController {
 
 
     @RequestMapping(value="/words")
-    public String allWords(Model model) {
-        model.addAttribute("words",wordRepository.allWords());
-        model.addAttribute("categories",wordRepository.getCategories());
-        return "list-words";
-    }
+	public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
 
-    @RequestMapping(value="/words",params={"status"})
-    public String statusWords( @RequestParam("status") WordStatus status, Model model) {
+	model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
         if(status.toString().length()>0) {
             model.addAttribute("words",wordRepository.allWordsWithStatus(status));
@@ -63,15 +60,10 @@ public class WordController {
     }
 
     @RequestMapping(value="/words/{category}")
-    public String categoryWords(@PathVariable String category, Model model) {
-        model.addAttribute("words",wordRepository.allWordsInCategory(category));
-        model.addAttribute("categories",wordRepository.getCategories());
-        return "list-words";
-    }
-
-    @RequestMapping(value="/words/{category}",params={"status"})
     public String allWords(@PathVariable String category,
-            @RequestParam("status") WordStatus status, Model model) {
+			   @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
+
+	model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
 
         if(status.toString().length()>0) {
