@@ -36,6 +36,6 @@ public class WorkflowController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new RedirectView("/workflow");
+        return new RedirectView("../workflow",true);
     }
 }

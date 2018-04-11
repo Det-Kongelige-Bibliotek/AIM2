@@ -48,7 +48,7 @@
 
 
     <h2></h2>
-    <form action="workflow/run" method="post">
+    <form action="${pageContext.request.contextPath}/workflow/run" method="post">
         <button type="submit" class="btn btn-success" id="runWorkflow">Run now</button>
     </form>
     <div>
