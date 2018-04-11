@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,7 +42,9 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  */
 @Component
 public class Configuration {
-    
+    /** The log.*/
+    protected static final Logger log = LoggerFactory.getLogger(Configuration.class);
+
     /** Cumulus node-element.*/
     protected static final String CONF_CUMULUS = "cumulus";
     /** The cumulus server url leaf-element.*/
@@ -90,6 +94,10 @@ public class Configuration {
     public Configuration(@Value("#{ @environment['AIM_CONF'] ?: 'aim.yml'}") String path) throws IOException {
         File confFile = new File(path);
         
+        if(!confFile.isFile()) {
+            throw new IllegalArgumentException("No configuration file at: " + confFile.getAbsolutePath());
+        }
+        
         try (InputStream in = new FileInputStream(confFile)) {
             Object o = new Yaml().load(in);
             if(!(o instanceof LinkedHashMap)) {
@@ -120,6 +128,7 @@ public class Configuration {
             
             this.test = confMap.containsKey(CONF_TEST);
             if(this.test) {
+                log.info("Running in TEST mode.");
                 this.testDir = FileUtils.getDirectory((String) confMap.get(CONF_TEST));
             }
         }

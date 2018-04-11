@@ -106,11 +106,9 @@ public class FrontBackStep extends WorkflowStep {
      * @param record The Cumulus record.
      */
     protected void setDone(CumulusRecord record) {
-        if(conf.isTest()) {
-            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, "");
-        } else {
-            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
-                    CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
+                CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
+        if(!conf.isTest()) {
             record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK, Boolean.FALSE);
         }
     }
