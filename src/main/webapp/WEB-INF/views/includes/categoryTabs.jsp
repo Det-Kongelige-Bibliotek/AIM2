@@ -1,15 +1,16 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-    java.util.List<dk.kb.aim.WordStatus> ws =java.util.Arrays.asList(dk.kb.aim.WordStatus.values());
+    java.util.List<dk.kb.aim.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.WordStatus.values());
     pageContext.setAttribute("statuses", ws);
 %>
+<c:set var="status" value="${controller_status}"/>
 
 <ul class="nav nav-tabs" id="categories">
-<c:forEach  items="${categories}"  var="category">
-    <li class="nav-item">
-        <a class="${category} nav-link"  href="${pageContext.request.contextPath}/words/${category}">${category}</a>
-    </li>
-</c:forEach >
+    <c:forEach items="${categories}" var="category">
+        <li class="nav-item">
+            <a class="${category} nav-link" href="${pageContext.request.contextPath}/words/${category}">${category}</a>
+        </li>
+    </c:forEach>
 </ul>
 <div class="tab-content">
     <c:forEach items="${categories}" var="category">
@@ -29,23 +30,19 @@
 
     // Activate the correct tabs after loading the page
     $(document).ready(function () {
-        var categories = "${categories}".replace('[','').replace(']','').split(", ");// converting java array to javascript array
+        var categories = "${categories}".replace('[', '').replace(']', '').split(", ");// converting java array to javascript array
         for (var i = 0; i < categories.length; i++) {
-            if (window.location.href.indexOf(categories[i]) > -1)
-            {
+            if (window.location.href.indexOf(categories[i]) > -1) {
                 document.getElementById(categories[i]).className += (' show active');
                 document.getElementsByClassName(categories[i])[0].className += (' active');
             }
-            var statuses = "${statuses}".replace('[','').replace(']','').split(", ");// converting java array to javascript array
+            var statuses = "${statuses}".replace('[', '').replace(']', '').split(", ");// converting java array to javascript array
             for (var j = 0; j < statuses.length; j++) {
-                if (window.location.href.indexOf(statuses[j]) > -1)
-                {
-                    document.getElementById(statuses[j]+"_"+categories[i]).className += (' show active');
+                if ('${status}' == statuses[j]) {
+                    document.getElementById(statuses[j] + "_" + categories[i]).className += (' show active');
                     document.getElementsByClassName(statuses[j])[i].className += (' active');
                 }
             }
         }
     });
-
 </script>
-
