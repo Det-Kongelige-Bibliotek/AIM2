@@ -20,26 +20,21 @@
     <div class="tab-content">
 
         <div class="tab-pane fade container" id="PENDING_${category}">
-            <c:if test="${controller_status == 'PENDING'}">
-                <jsp:include page="wordsTable.jsp">
-                    <jsp:param name="status" value="${status}"/>
-                </jsp:include>
-            </c:if>
+           
         </div>
         <div class="tab-pane fade container" id="ACCEPTED_${category}">
-            <c:if test="${controller_status == 'ACCEPTED'}">
-                <jsp:include page="wordsTable.jsp">
-                    <jsp:param name="status" value="${status}"/>
-                </jsp:include>
-            </c:if>
+
         </div>
         <div class="tab-pane fade container" id="REJECTED_${category}">
-            <c:if test="${controller_status == 'REJECTED'}">
-                <jsp:include page="wordsTable.jsp">
-                    <jsp:param name="status" value="${status}"/>
-                </jsp:include>
-            </c:if>
+
         </div>
+
+
+	<jsp:include page="wordsTable.jsp">
+	  <jsp:param name="status" value="${status}"/>
+	</jsp:include>
+
+
     </div>
 </div>
 <script>console.log('${currentCategoryPath}');</script>
