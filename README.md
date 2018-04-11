@@ -18,7 +18,7 @@ To build:
  * Then make sure, that the pom.xml only refers to the maven-installed Cumulus jar (remove scope="system" and systemPath, also exclude Cumulus from KB-Cumulus-API dependency)
 * Retrieve the Google credentials (AIMapis-XXXX.json)
 * Make maven installation of AIM2:
- * `GOOGLE_APPLICATION_CREDENTIALS=/path/to/AIMapis-XXXX.json mvn clean test install`
+ * `GOOGLE_APPLICATION_CREDENTIALS=/path/to/AIMapis-XXXX.json mvn -Dcom.canto.cumulus.path=/usr/local/Cumulus_Java_SDK clean test install`
 * Deploy the aim.war to tomcat
  * `cp target/aim-*.war /path/to/tomcat/webaps/.`
 
