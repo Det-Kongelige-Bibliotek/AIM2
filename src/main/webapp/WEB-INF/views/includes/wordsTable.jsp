@@ -61,7 +61,6 @@
             </form>
             <td>
                 <c:url value = "${pageContext.request.contextPath}/word_images/${word.id}" var = "imgUrl">
-                    <c:param name = "status" value = "FINISHED"/>
                 </c:url>
                 <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>
             </td>

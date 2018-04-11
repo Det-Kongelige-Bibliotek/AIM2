@@ -39,9 +39,9 @@ public class ImageController {
         return "show-image";
     }
 
-    @RequestMapping(value="/word_images/{wordId}",params={"status"})
+    @RequestMapping(value="/word_images/{wordId}")
     public String wordImages(@PathVariable String wordId,
-                             @RequestParam("status") ImageStatus status, Model model) {
+                             @RequestParam(value="status", required = false) ImageStatus status, Model model) {
         model.addAttribute("images",imageRepository.wordImages(new Integer(wordId),status));
         model.addAttribute("word",wordRepository.getWord(new Integer(wordId)));
         return "list-images";
