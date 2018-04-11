@@ -106,12 +106,16 @@ public class FrontBackStep extends WorkflowStep {
      * Retrieves the name of the record for the front-page (which should be set as master record).
      * If filename does not have a front-page (thus the file itself being a front page), then it will return a null.
      * 
-     * The name (without the suffix) of front-pages ends with even numbers, and the name 
-     * (also without suffix) of the back-pages ends with odd numbers.
+     * The name (without the suffix) of front-pages ends with odd numbers, and the name 
+     * (also without suffix) of the back-pages ends with even numbers.
      * If there is multiple back-pages, then they will be granted the name of the first back-page, and have added 
      * an underscore and their index.
-     * E.g. 'id-123.tiff' will be a front-page, 'id-124.tiff' will be a back-page, and 'id-124_2.tiff' will be a 
+     * E.g. 'id-124.tiff' will be a front-page, 'id-125.tiff' will be a back-page, and 'id-125_2.tiff' will be a 
      * secondary back-page.
+     * 
+     * It also handles the border scenario, when the digit-count of the integer is normally would be reduced when 
+     * finding the frontpage.
+     * E.g. 'id-100.tiff' will have the frontpage 'id-099.tiff' and not 'id-99.tiff'. 
      * 
      * @param filename The name of the file, whose front-page file should be found.
      * @return The name of the front-page, or null if no front-page was found 
@@ -131,17 +135,39 @@ public class FrontBackStep extends WorkflowStep {
         } else {
             prefix = nameWithoutSuffix;
         }
-        String lastChar = prefix.substring(prefix.length()-1);
+        
+        String digits = getTrailingDigits(prefix);
 
-        if(lastChar.matches("[0-9]")) {
-            int digit = Integer.parseInt(lastChar);
-            if (digit % 2 != 0) {
-                return prefix.substring(0,prefix.length() - 1) + (digit - 1) + suffix;
+        if(digits.matches("[0-9]{1,}")) {
+            long digit = Long.parseLong(digits);
+            if (digit % 2 == 0) {
+                return String.format("%s%0" + digits.length() + "d%s", 
+                        prefix.substring(0, prefix.length()-digits.length()), digit-1, suffix);
             }
         } else {
             return null;
         }
         return null;
+    }
+    
+    /**
+     * Extracts the trailing digits of a string.
+     * E.g. 'id123' will be '123', and '123id456' will be '456'.
+     * It will return an empty string, if the argument does not end with any digits.
+     * @param s The string.
+     * @return The digits in the end of the string.
+     */
+    protected String getTrailingDigits(String s) {
+        String digits = "";
+        for(int i = s.length() -1; i >= 0; i--) {
+            String digit = s.substring(i, i+1);
+            if(digit.matches("[0-9]")) {
+                digits = digit + digits;
+            } else {
+                return digits;
+            }
+        }
+        return digits;
     }
     
     @Override
