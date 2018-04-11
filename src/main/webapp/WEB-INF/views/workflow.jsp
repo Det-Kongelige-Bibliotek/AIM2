@@ -7,11 +7,11 @@
 
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<c:set var = "disable" value = "false"/>
 <head>
     <title>AIM Workflow</title>
     <jsp:include page="includes/head.jsp"/>
-    <meta http-equiv="Refresh" content="5">
+    <meta http-equiv="Refresh" content="2">
 </head>
 
 <body>
@@ -36,6 +36,9 @@
         </thead>
         <tbody>
         <c:forEach items="${workflow.getSteps()}" var="step">
+            <c:if test="${step.getStatus() eq 'Running'}">
+                <c:set var = "disable" value = "true"/>
+            </c:if>
             <tr>
                 <td>${step.getName()}</td>
                 <td>${step.getStatus()}</td>
@@ -49,7 +52,7 @@
 
     <h2></h2>
     <form action="${pageContext.request.contextPath}/workflow/run" method="post">
-        <button type="submit" class="btn btn-success" id="runWorkflow">Run now</button>
+        <button type="submit" class="btn btn-success" id="runWorkflow" <c:if test="${disable eq true}">disabled</c:if>>Run now</button>
     </form>
     <div>
     </div>
