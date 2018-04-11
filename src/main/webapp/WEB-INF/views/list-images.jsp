@@ -33,7 +33,7 @@
         <div class="row">
             <c:forEach items="${images}" var="image">
                 <div class="col-md-4">
-                    <a href="/images/${image.id}">
+                    <a href="${pageContext.request.contextPath}/images/${image.id}">
                         <div class="card mb-4 box-shadow">
                             <img class="card-img-top"
                                  alt="broken image link, we presume."
