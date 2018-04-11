@@ -45,13 +45,6 @@ public class WordController {
     }
 
 
-    /* @RequestMapping(value="/words")
-    public String allWords(Model model) {
-        model.addAttribute("words",wordRepository.allWords());
-        model.addAttribute("categories",wordRepository.getCategories());
-        return "list-words";
-	}*/
-
     @RequestMapping(value="/words")
 	public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
 
@@ -65,13 +58,6 @@ public class WordController {
 
         return "list-words";
     }
-
-    /*@RequestMapping(value="/words/{category}")
-    public String categoryWords(@PathVariable String category, Model model) {
-        model.addAttribute("words",wordRepository.allWordsInCategory(category));
-        model.addAttribute("categories",wordRepository.getCategories());
-        return "list-words";
-	}*/
 
     @RequestMapping(value="/words/{category}")
     public String allWords(@PathVariable String category,
