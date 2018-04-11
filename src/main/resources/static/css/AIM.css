@@ -6470,7 +6470,6 @@ a.text-dark:focus, a.text-dark:hover {
 .navbar-brand {
   height: 60px;
   width: 160px;
-  background: url("/img/logo.png") no-repeat;
   background-size: contain; }
 
 .dl-horizontal {
