@@ -3,7 +3,7 @@
 <c:set var="category" value="${param.category}"/>
 <c:set var="status" value="${controller_status}"/>
 <c:set var="currentCategoryPath" value="${requestScope['javax.servlet.forward.servlet_path']}"/>
-<p> variable status: ${status} and status from controller: ${controller_status} and from param ${param.status} </p>
+
 <div class="second-tab container">
     <ul class="nav nav-tabs" id="words">
         <li class="nav-item">
