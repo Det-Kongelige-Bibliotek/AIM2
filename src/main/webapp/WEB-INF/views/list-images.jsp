@@ -9,7 +9,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <head>
-    <title>List all images for word</title>
+    <title>AIM-Images</title>
     <jsp:include page="includes/head.jsp"/>
 </head>
 
