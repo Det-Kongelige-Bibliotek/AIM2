@@ -19,7 +19,7 @@
     <jsp:param name="page" value="workflow"/>
 </jsp:include>
 <div class="jumbotron text-center">
-    <h1>AIM workflow</h1>
+    <h1>AIM-Workflow</h1>
 </div>
 <div id="main" class="container">
     <p><b>Current state:</b> ${workflow.getState()}</p>
