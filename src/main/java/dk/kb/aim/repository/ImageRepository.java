@@ -126,7 +126,7 @@ public class ImageRepository {
         if (status != null)
                 sql += " AND status = '" + status.toString() + "'";
         sql += " ORDER BY id DESC";
-        logger.info(sql);
+        logger.info("..."+sql);
         return queryForImages(sql);
     }
 
