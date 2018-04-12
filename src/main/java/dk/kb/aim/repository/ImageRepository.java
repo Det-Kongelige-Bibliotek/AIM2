@@ -33,7 +33,7 @@ public class ImageRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public Image getImage(int id){
+    public Image getImage(int id) {
         List<Image> rs = queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images "+
                 "WHERE id='"+id+"'");
         if (rs.size() > 0) {
@@ -41,7 +41,12 @@ public class ImageRepository {
         } else {
             return null;
         }
-    };
+    }
+    
+    public boolean hasImageWithCumulusId(String cumulusId) {
+        int count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM images WHERE cumulus_id='" + cumulusId + "'" , Integer.class);
+        return count == 1;
+    }
 
     public List<Image> listAllImages() {
         return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images");

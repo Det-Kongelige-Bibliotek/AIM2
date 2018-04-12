@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.GoogleRetreiver;
+import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.utils.ImageConverter;
 import dk.kb.aim.workflow.steps.ImportToAimStep;
 import dk.kb.cumulus.Constants;
@@ -30,10 +31,11 @@ public class ImportToAimStepTest {
     public void testRunWhenNothingToRetrieve() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
+        ImageRepository imageRepository = mock(ImageRepository.class);
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
         Configuration conf = mock(Configuration.class);
-        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever, imageRepository);
         
         CumulusRecordCollection records = mock(CumulusRecordCollection.class);
         when(records.iterator()).thenReturn(new ArrayList<CumulusRecord>().iterator());
@@ -54,10 +56,11 @@ public class ImportToAimStepTest {
     public void testRunStepWithOneSucces() throws IOException {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
+        ImageRepository imageRepository = mock(ImageRepository.class);
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
         Configuration conf = mock(Configuration.class);
-        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever, imageRepository);
 
         CumulusRecordCollection records = mock(CumulusRecordCollection.class);
         CumulusRecord record = mock(CumulusRecord.class);
@@ -76,7 +79,7 @@ public class ImportToAimStepTest {
         step.runStep();
         
         verify(record).getCategories();
-        verify(record, times(2)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(record, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS));
         //verifyNoMoreInteractions(record);
@@ -95,10 +98,11 @@ public class ImportToAimStepTest {
     public void testGetAimSubCategoryWithCategory() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
+        ImageRepository imageRepository = mock(ImageRepository.class);
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
         Configuration conf = mock(Configuration.class);
-        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever, imageRepository);
 
         CumulusRecord record = mock(CumulusRecord.class);
         
@@ -124,10 +128,11 @@ public class ImportToAimStepTest {
     public void testGetAimSubCategoryWithoutCategory() {
         CumulusRetriever retriever = mock(CumulusRetriever.class);
         String catalogName = UUID.randomUUID().toString();
+        ImageRepository imageRepository = mock(ImageRepository.class);
         ImageConverter imageConverter = mock(ImageConverter.class);
         GoogleRetreiver googleRetriever = mock(GoogleRetreiver.class);
         Configuration conf = mock(Configuration.class);
-        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever);
+        ImportToAimStep step = new ImportToAimStep(conf, retriever, catalogName, imageConverter, googleRetriever, imageRepository);
 
         CumulusRecord record = mock(CumulusRecord.class);
         

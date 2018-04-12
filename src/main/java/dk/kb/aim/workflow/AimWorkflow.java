@@ -67,7 +67,8 @@ public class AimWorkflow extends TimerTask {
     @PostConstruct
     protected void init() {
         steps.add(new FrontBackStep(conf, cumulusRetriever, conf.getCumulusCatalog()));
-        steps.add(new ImportToAimStep(conf, cumulusRetriever, conf.getCumulusCatalog(), imageConverter, googleRetriever));
+        steps.add(new ImportToAimStep(conf, cumulusRetriever, conf.getCumulusCatalog(), imageConverter, 
+                googleRetriever, imageRepo));
         steps.add(new FindFinishedImagesStep(conf, cumulusRetriever, conf.getCumulusCatalog(), imageRepo, wordRepo));
         
         readyForNextRun();
