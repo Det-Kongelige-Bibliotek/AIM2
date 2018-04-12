@@ -125,8 +125,7 @@ public class ImageRepository {
                 "(SELECT image_id FROM image_word WHERE word_id = "+word_id+")";
         if (status != null)
                 sql += " AND status = '" + status.toString() + "'";
-        sql += " ORDER BY id DESC";
-        logger.info("..."+sql);
+        sql += " ORDER BY id DESC LIMIT "+limit;
         return queryForImages(sql);
     }
 

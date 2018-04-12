@@ -52,8 +52,9 @@ public class ImageController {
 
     @RequestMapping(value="/word_images/{wordId}")
     public String wordImages(@PathVariable String wordId,
+                             @RequestParam(value="limit", required=false, defaultValue="10") int limit,
                              @RequestParam(value="status", required = false) ImageStatus status, Model model) {
-        List<Image> images = imageRepository.wordImages(new Integer(wordId),status);
+        List<Image> images = imageRepository.wordImages(new Integer(wordId),status,limit);
 
         /* fetch the words for each image
            This is not the most efficient way of doing it, but it will have to do for now

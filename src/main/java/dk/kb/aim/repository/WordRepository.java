@@ -128,7 +128,6 @@ public class WordRepository {
                 "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = "+image_id+ " AND " +
                 "w.status='"+status+"'";
-        logger.info(sql);
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),
