@@ -32,7 +32,6 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *     username: $ Cumulus user name
  *     password: $ Cumulus user password
  *     catalog: $ Cumulus Catalog
- *   vision_credentials: $ the credentials for using the Google vision API
  *   workflow_interval: $ interval for how often to run the workflows
  *   jpeg_folder: $ The folder where the jpeg compressed are placed
  *   jpeg_size_limit: $ The maximum size of the jpeg file, otherwise compress further.
