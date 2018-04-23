@@ -44,8 +44,10 @@
                                 <p class="card-text">${image.cumulus_id}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
-                                    <dd>cat</dd>
-                                    <dd>mammal</dd>
+                                    <c:forEach items="${image_words.get(image.id)}" var="word">
+                                        <dd>blah</dd>
+                                        <dd>${word.text_da} (${word.text_en})</dd>
+                                    </c:forEach>
                                 </dl>
                             </div>
                         </div>

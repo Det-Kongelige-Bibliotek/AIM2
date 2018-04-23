@@ -1,5 +1,7 @@
 package dk.kb.aim.repository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -22,6 +24,8 @@ import java.util.List;
  */
 @Repository
 public class WordRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(WordRepository.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -112,6 +116,7 @@ public class WordRepository {
         String sql = "SELECT * " +
                 "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = "+image_id;
+        logger.info(sql);
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),
