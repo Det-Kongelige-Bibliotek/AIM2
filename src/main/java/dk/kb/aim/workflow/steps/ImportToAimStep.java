@@ -7,8 +7,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.GoogleRetreiver;
+import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.utils.ImageConverter;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
@@ -26,6 +28,8 @@ public class ImportToAimStep extends WorkflowStep {
     /** The name of the root category for AIM.*/
     protected static final String CATEGORY_NAME_AIM = "AIM";
     
+    /** The configuration */
+    protected final Configuration conf;
     /** The Cumulus retriever.*/
     protected final CumulusRetriever cumulusRetriever;
     /** The name of the catalog, where the Cumulus record should be imported from.*/
@@ -34,38 +38,64 @@ public class ImportToAimStep extends WorkflowStep {
     protected final ImageConverter imageConverter;
     /** The google retreiver.*/
     protected final GoogleRetreiver googleRetriever;
+    /** The image repository. */
+    protected final ImageRepository imageRepository;
     
     /**
      * Constructor.
+     * @param conf The configuration.
      * @param cumulusRetriever The Cumulus retriever.
      * @param catalogName The name of the catalog.
      * @param imageConverter The image converter.
      * @param googleRetriever The retriever for the google vision and translation APIs.
      */
-    public ImportToAimStep(CumulusRetriever cumulusRetriever, String catalogName, ImageConverter imageConverter, 
-            GoogleRetreiver googleRetriever) {
+    public ImportToAimStep(Configuration conf, CumulusRetriever cumulusRetriever, String catalogName, 
+            ImageConverter imageConverter, GoogleRetreiver googleRetriever, ImageRepository imageRepository) {
+        this.conf = conf;
         this.cumulusRetriever = cumulusRetriever;
         this.catalogName = catalogName;
         this.imageConverter = imageConverter;
         this.googleRetriever = googleRetriever;
+        this.imageRepository = imageRepository;
     }
     
     @Override
     public void runStep() {
         int numberOfRecords = 0;
+        int numberOfBackPages = 0;
+        int numberOfAlreadyImported = 0;
         int numberOfSuccess = 0;
         int numberOfFailures = 0;
         
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
+            String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
+            if(imageRepository.hasImageWithCumulusId(cumulusId)) {
+                setDone(record);
+                numberOfAlreadyImported++;
+                log.info("Found record which has already been imported into AIM: '[" 
+                        + record.getClass().getCanonicalName() + " -> " 
+                        + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
+                continue;
+            }
+            
             log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
                     + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
             
             numberOfRecords++;
             try {
-                importRecord(record);
-                numberOfSuccess++;
-                log.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
-                        + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
+                // handle the case, when it is a sub-asset, and thus a back-side.
+                if(record.isSubAsset()) {
+                    setDone(record);
+                    numberOfBackPages++;
+                    log.info("Found back-page which will not be imported into AIM: '[" 
+                            + record.getClass().getCanonicalName() + " -> " 
+                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
+                } else {
+                    importRecord(record);
+                    numberOfSuccess++;
+                    log.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
+                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
+                }
             } catch (Exception e) {
                 // TODO
                 log.info("Failure to import images: " + e.getMessage());
@@ -74,9 +104,28 @@ public class ImportToAimStep extends WorkflowStep {
             }
         }
         
-        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! Found total: " + numberOfRecords
+        String results = "";
+        if(conf.isTest()) {
+            results += "RUNNING IN TEST-MODE!!! ";
+        }
+        results += "Found total: " + numberOfRecords
                 + ", number successfully imported: " + numberOfSuccess
-                + ", number of failures: " + numberOfFailures);
+                + ", number of backpages: " + numberOfBackPages
+                + ", number of already imported: " + numberOfAlreadyImported
+                + ", number of failures: " + numberOfFailures;
+        setResultOfRun(results);
+    }
+    
+    /**
+     * Sets a given record to 'DONE'.
+     * @param record The record to set to done.
+     */
+    protected void setDone(CumulusRecord record) {
+        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
+        if(!conf.isTest()) {
+            record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
+        }
     }
     
     /**
@@ -84,17 +133,14 @@ public class ImportToAimStep extends WorkflowStep {
      * @param record The Cumulus record to import.
      */
     protected void importRecord(CumulusRecord record) throws IOException {
-        if(record.isSubAsset()) {
-            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
-                    CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
-            return;
-        }
-        
-        String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
+        String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
-        // TODO: use the right image instead of this test one.
-        File imageFile = new File("src/test/resources/" + filename);
-//        File imageFile = record.getFile();
+        File imageFile;
+        if(conf.isTest()) {
+            imageFile = new File(conf.getTestDir(), cumulusId);
+        } else {
+            imageFile = record.getFile();
+        }
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
@@ -105,7 +151,7 @@ public class ImportToAimStep extends WorkflowStep {
         
         File jpegFile = imageConverter.convertTiff(imageFile);
         
-        googleRetriever.createImageAndRetreiveLabels(jpegFile, filename, category);
+        googleRetriever.createImageAndRetreiveLabels(jpegFile, cumulusId, category);
     }
     
     /**

@@ -35,7 +35,7 @@
                 </dl>
             </div>
             <div class="col-md-6">
-                <img src="${pageContext.request.contextPath}/image_store/${image_details.path}" class="img-fluid" alt="Responsive image">
+                <img src="${image_url}/${image_details.path}" class="img-fluid" alt="Responsive image">
             </div>
         </div>
     </div>

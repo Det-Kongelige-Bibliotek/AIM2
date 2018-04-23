@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.ImageStatus;
 import dk.kb.aim.WordStatus;
@@ -24,6 +25,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(FindFinishedImagesStep.class);
 
+    /** The configuration */
+    protected final Configuration conf;
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
     /** The name of the catalog.*/
@@ -35,13 +38,15 @@ public class FindFinishedImagesStep extends WorkflowStep {
     
     /**
      * Constructor.
+     * @param conf The configuration.
      * @param retriever The Cumulus retriever.
      * @param catalogName The catalog.
      * @param imageRepo The repository for the images.
      * @param wordRepo The repository for the words.
      */
-    public FindFinishedImagesStep(CumulusRetriever retriever, String catalogName, ImageRepository imageRepo,
-            WordRepository wordRepo) {
+    public FindFinishedImagesStep(Configuration conf, CumulusRetriever retriever, String catalogName, 
+            ImageRepository imageRepo, WordRepository wordRepo) {
+        this.conf = conf;
         this.retriever = retriever;
         this.catalogName = catalogName;
         this.imageRepo = imageRepo;
@@ -79,10 +84,14 @@ public class FindFinishedImagesStep extends WorkflowStep {
             }
         }
 
-        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! "
-                + numberOfNew + " new images, with " + numberOfNewFinished + " finished and "
+        String results = "";
+        if(conf.isTest()) {
+            results += "RUNNING IN TEST-MODE!!! ";
+        }
+        results += numberOfNew + " new images, with " + numberOfNewFinished + " finished and "
                 + numberOfNewNotFinished + " not finished; and " + numberOfUnfinished 
-                + " previously unfinished images, where " + numberOfPreviouslyUnfinished + " was finished.");
+                + " previously unfinished images, where " + numberOfPreviouslyUnfinished + " was finished.";
+        setResultOfRun(results);
     }
     
     /**
@@ -108,8 +117,13 @@ public class FindFinishedImagesStep extends WorkflowStep {
         
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
-        // TODO: SET RECORD TO NOT READY FOR AIM!
-//        record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);
+        
+        // SET RECORD TO NOT READY FOR AIM!
+        if(conf.isTest()) {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, "");
+        } else {
+            record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
+        }
     }
     
     /**

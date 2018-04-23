@@ -38,7 +38,7 @@
                             <img class="card-img-top"
                                  alt="broken image link, we presume."
                                  style="height: 225px; width: 100%; display: block;"
-                                 src="${pageContext.request.contextPath}/image_store/${image.path}"
+                                 src="${image_url}/${image.path}"
                                  data-holder-rendered="true">
                             <div class="card-body bg-light">
                                 <p class="card-text">${image.cumulus_id}</p>
@@ -54,7 +54,6 @@
                     </a>
                 </div>
             </c:forEach>
-
         </div>
     </div>
 </div>

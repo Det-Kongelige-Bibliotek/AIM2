@@ -3,6 +3,7 @@ package dk.kb.aim.workflow.steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
@@ -23,6 +24,8 @@ public class FrontBackStep extends WorkflowStep {
     /** The log.*/
     protected static final Logger log = LoggerFactory.getLogger(FrontBackStep.class);
 
+    /** The configuration */
+    protected final Configuration conf;
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
     protected final CumulusRetriever retriever;
     /** The name of the catalog.*/
@@ -30,10 +33,12 @@ public class FrontBackStep extends WorkflowStep {
 
     /**
      * Constructor.
+     * @param conf The configuration.
      * @param retriever The Cumulus retriever.
      * @param catalogName The catalog.
      */
-    public FrontBackStep(CumulusRetriever retriever, String catalogName) {
+    public FrontBackStep(Configuration conf, CumulusRetriever retriever, String catalogName) {
+        this.conf = conf;
         this.retriever = retriever;
         this.catalogName = catalogName;
     }
@@ -77,9 +82,14 @@ public class FrontBackStep extends WorkflowStep {
             setDone(record);
         }
         
-        setResultOfRun("NOT FINISHED IMPLEMENTATION!!! "
-                + "Found total: " + total + ", number of fronts: " + numberOfFronts + ", number of backs: " 
-                + numberOfBacks + ", number of errors: " + numberOfError);
+        String results = "";
+        if(conf.isTest()) {
+            results += "RUNNING IN TEST-MODE!!! ";
+        }
+        results += "Found total: " + total + ", number of fronts: " + numberOfFronts + ", number of backs: " 
+                + numberOfBacks + ", number of errors: " + numberOfError;
+        
+        setResultOfRun(results);
     }
     
     /**
@@ -98,9 +108,10 @@ public class FrontBackStep extends WorkflowStep {
     protected void setDone(CumulusRecord record) {
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 
                 CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_DONE);
-        // TODO remove boolean.
-//        record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK, Boolean.FALSE);
+        if(!conf.isTest()) {
+            record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK, Boolean.FALSE);
         }
+    }
     
     /**
      * Retrieves the name of the record for the front-page (which should be set as master record).

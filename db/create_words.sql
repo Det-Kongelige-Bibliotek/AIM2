@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS image_word;
-DROP TABLE IF EXISTS words;
 CREATE TABLE words (
   id SERIAL NOT NULL,
   text_en text,
@@ -9,7 +7,6 @@ CREATE TABLE words (
   PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS images;
 CREATE TABLE images (
   id SERIAL NOT NULL,
   path text,
