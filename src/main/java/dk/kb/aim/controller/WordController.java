@@ -46,9 +46,8 @@ public class WordController {
 
 
     @RequestMapping(value="/words")
-	public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
-
-	model.addAttribute("controller_status",status);
+    public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
+        model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
         if(status.toString().length()>0) {
             model.addAttribute("words",wordRepository.allWordsWithStatus(status));
@@ -61,9 +60,8 @@ public class WordController {
 
     @RequestMapping(value="/words/{category}")
     public String allWords(@PathVariable String category,
-			   @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
-
-	model.addAttribute("controller_status",status);
+            @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
+        model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
 
         if(status.toString().length()>0) {
