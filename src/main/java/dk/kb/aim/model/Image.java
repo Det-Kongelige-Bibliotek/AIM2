@@ -84,6 +84,14 @@ public class Image {
         this.status = status;
     }
 
+    public List<ImageWord> getImageWords() {
+        return imageWords;
+    }
+
+    public void setImageWords(List<ImageWord> imageWords) {
+        this.imageWords = imageWords;
+    }
+
     @Override
     public String toString() {
         return "Image{" +

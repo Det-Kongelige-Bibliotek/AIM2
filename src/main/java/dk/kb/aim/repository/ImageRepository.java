@@ -7,7 +7,6 @@ import java.sql.Types;
 import java.util.List;
 
 import dk.kb.aim.WordStatus;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
-import dk.kb.aim.GoogleRetreiver;
 import dk.kb.aim.ImageStatus;
 import dk.kb.aim.model.Image;
 
@@ -111,17 +109,28 @@ public class ImageRepository {
         }
 
         // reject if status is banned and has correct category
-        
-        logger.debug("Image '" + image_id + "' has word '" + word_id + "'");
-        jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)", 
-                image_id, word_id, confidence);
+
+        jdbcTemplate.update("INSERT INTO image_word (image_id, word_id, confidence) VALUES (?,?,?)"
+                , image_id,word_id,confidence);
     }
 
+    /*
+        Get a list of words associated with an image
+        word_id : the id of the word
+        status: restrict to images with status (if null no all images are returned)
+        limit: the max number of images returned
+     */
     public List<Image> wordImages(int word_id, ImageStatus status) {
+        return wordImages(word_id,status,10);
+    }
+
+    public List<Image> wordImages(int word_id, ImageStatus status, int limit) {
         String sql = "SELECT id,path,cumulus_id,category,color,ocr,status " +
                 "FROM images WHERE id in " +
-                "(SELECT image_id FROM image_word WHERE word_id = "+word_id+") " +
-                "AND status = '" + status.name() + "'";
+                "(SELECT image_id FROM image_word WHERE word_id = "+word_id+")";
+        if (status != null)
+                sql += " AND status = '" + status.toString() + "'";
+        sql += " ORDER BY id DESC LIMIT "+limit;
         return queryForImages(sql);
     }
 
