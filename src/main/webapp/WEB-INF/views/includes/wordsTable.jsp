@@ -60,7 +60,6 @@
                 </c:if>
             </form>
             <td>
-                <!-- c:url value = "${pageContext.request.contextPath}/word_images/${word.id}" var = "imgUrl"-->
                 <c:url value = "/word_images/${word.id}" var = "imgUrl">
                     <c:param name = "limit" value = "10"/>
                 </c:url>
