@@ -97,9 +97,7 @@ public class ImportToAimStep extends WorkflowStep {
                             + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
                 }
             } catch (Exception e) {
-                // TODO
-                log.info("Failure to import images: " + e.getMessage());
-//                log.warn("Failure to import image.", e);
+                log.warn("Failure to import image.", e);
                 numberOfFailures++;
             }
         }
