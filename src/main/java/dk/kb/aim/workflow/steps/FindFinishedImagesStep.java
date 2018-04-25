@@ -135,8 +135,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
     protected String getKeywords(List<Word> words) {
         String res = "";
         for(Word word : words) {
-            res += word.getText_da() + "|da\n";
-            res += word.getText_en() + "|en\n";
+            res += "da|" + word.getText_da() + "\n";
+            res += "en|" + word.getText_en() + "\n";
         }
         return res;
     }
