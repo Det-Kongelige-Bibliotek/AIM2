@@ -104,17 +104,14 @@ public class FindFinishedImagesStep extends WorkflowStep {
         imageRepo.updateImage(image);
         
         List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
-        String keywords = getKeywords(words);
-        if(keywords.isEmpty()) {
+        if(words.isEmpty()) {
             log.warn("No keywords found for '" + image.getCumulus_id() + "'");
         } else {
+            String keywords = getKeywords(words);
             record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
         }
         
         record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
-        // TODO: OCR?
-//        record.setStringValueInField(??, image.getOcr());
-        
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
         
@@ -128,7 +125,6 @@ public class FindFinishedImagesStep extends WorkflowStep {
     
     /**
      * Retrieves the keywords from the list of words.
-     * TODO: Are the words formatted correctly?
      * @param words The list of words.
      * @return The words combined into a single string.
      */

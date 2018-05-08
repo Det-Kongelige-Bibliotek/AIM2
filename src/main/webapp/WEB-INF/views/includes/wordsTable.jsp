@@ -33,7 +33,7 @@
                 <td>${word.text_en}<input type="hidden" name="text_en" value="${word.text_en}"/></td>
                 <td><input type="text" name="text_da" value="${word.text_da}"/></td>
                 <input type="hidden" name="back_to"
-                       value="<%= "http://" +  host %>${requestScope['javax.servlet.forward.servlet_path']}?status=${word.status}"/>
+                       value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
                         <button type="submit" name="op_category" value="ACCEPTED:${word.category}"
