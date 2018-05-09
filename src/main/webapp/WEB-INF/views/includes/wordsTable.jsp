@@ -28,7 +28,7 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <form action="${pageContext.request.contextPath}/update" id="word_form_id_${word.id}">
+            <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
                 <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
                 <td>${word.text_en}<input type="hidden" name="text_en" value="${word.text_en}"/></td>
                 <td><input type="text" name="text_da" value="${word.text_da}"/></td>

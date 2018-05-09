@@ -22,7 +22,7 @@ public class WordController {
     @Autowired
     private WordRepository wordRepository;
 
-    @RequestMapping(value="/update",params={"id","text_en","text_da","op_category","back_to"})
+    @RequestMapping(value="/words/update",params={"id","text_en","text_da","op_category","back_to"})
     public String updateWord( @RequestParam("id")       int id,
             @RequestParam("text_en")  String text_en,
             @RequestParam("text_da")  String text_da,
