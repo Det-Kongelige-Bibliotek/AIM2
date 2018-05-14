@@ -1,7 +1,10 @@
 package dk.kb.aim.repository;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -9,23 +12,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import dk.kb.aim.ImageStatus;
 import dk.kb.aim.WordStatus;
-import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Created by dgj on 22-02-2018.
  */
 @Repository
 public class WordRepository {
-
-    private static final Logger logger = LoggerFactory.getLogger(WordRepository.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -116,7 +110,6 @@ public class WordRepository {
         String sql = "SELECT * " +
                 "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = "+image_id;
-        logger.info(sql);
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                         rs.getString("text_da"), rs.getString("category"),

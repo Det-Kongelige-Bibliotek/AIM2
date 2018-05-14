@@ -1,5 +1,7 @@
 package dk.kb.aim.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,8 @@ import dk.kb.aim.repository.WordRepository;
  */
 @Controller
 public class WordController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(WordController.class);
 
     String defStatus = "PENDING";
 
@@ -41,6 +45,7 @@ public class WordController {
         String category = parts[1];
         Word word       = new Word(id, text_en, text_da, category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
+        logger.info("Updating word: " + word);
         return "redirect:"+back_to;
     }
 
