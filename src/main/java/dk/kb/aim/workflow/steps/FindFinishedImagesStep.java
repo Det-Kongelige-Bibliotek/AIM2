@@ -60,27 +60,38 @@ public class FindFinishedImagesStep extends WorkflowStep {
         int numberOfNewFinished = 0;
         int numberOfUnfinished = 0;
         int numberOfPreviouslyUnfinished = 0;
+        int numberOfFailures = 0;
         
         // Go through unfinished first, since new will be set to unfinished if they don't succeed.
         for(Image image : imageRepo.listImagesWithStatus(ImageStatus.UNFINISHED)) {
-            numberOfUnfinished++;
-            if(isFinished(image)) {
-                numberOfPreviouslyUnfinished++;
-                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
-                setFinished(record, image);
+            try {
+                numberOfUnfinished++;
+                if(isFinished(image)) {
+                    numberOfPreviouslyUnfinished++;
+                    CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
+                    setFinished(record, image);
+                }
+            } catch(Exception e) {
+                log.warn("Failed to handle image: '" + image + "'", e);
+                numberOfFailures++;
             }
         }
 
         // If they are not done, then set them to Unfinished, otherwise set them to done. 
         for(Image image : imageRepo.listImagesWithStatus(ImageStatus.NEW)) {
-            numberOfNew++;
-            CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
-            if(isFinished(image)) {
-                numberOfNewFinished++;
-                setFinished(record, image);
-            } else {
-                numberOfNewNotFinished++;
-                setUnfinished(record, image);
+            try {
+                numberOfNew++;
+                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
+                if(isFinished(image)) {
+                    numberOfNewFinished++;
+                    setFinished(record, image);
+                } else {
+                    numberOfNewNotFinished++;
+                    setUnfinished(record, image);
+                }
+            } catch(Exception e) {
+                log.warn("Failed to handle image: '" + image + "'", e);
+                numberOfFailures++;
             }
         }
 
@@ -91,6 +102,9 @@ public class FindFinishedImagesStep extends WorkflowStep {
         results += numberOfNew + " new images, with " + numberOfNewFinished + " finished and "
                 + numberOfNewNotFinished + " not finished; and " + numberOfUnfinished 
                 + " previously unfinished images, where " + numberOfPreviouslyUnfinished + " was finished.";
+        if(numberOfFailures > 0) {
+            results += " Number of failures: " + numberOfFailures;
+        }
         setResultOfRun(results);
     }
     

@@ -10,6 +10,7 @@ import dk.kb.aim.ImageStatus;
 public class Image {
     private int id;
     private String path;
+    /** Value of the Cumulus field: Record Name. */
     private String cumulus_id;
     private String category;
     private String color;
