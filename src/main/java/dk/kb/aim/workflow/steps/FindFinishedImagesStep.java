@@ -72,7 +72,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     setFinished(record, image);
                 }
             } catch(Exception e) {
-                log.warn("Failed to handle image: '" + image + "'", e);
+                log.warn("Failed to handle image: '" + image.getCumulus_id() + "'", e);
                 numberOfFailures++;
             }
         }
@@ -90,7 +90,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     setUnfinished(record, image);
                 }
             } catch(Exception e) {
-                log.warn("Failed to handle image: '" + image + "'", e);
+                log.warn("Failed to handle image: '" + image.getCumulus_id() + "'", e);
                 numberOfFailures++;
             }
         }
