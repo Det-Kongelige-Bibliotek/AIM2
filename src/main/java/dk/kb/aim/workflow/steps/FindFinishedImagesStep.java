@@ -114,27 +114,31 @@ public class FindFinishedImagesStep extends WorkflowStep {
      * @param image The image to set to finished.
      */
     protected void setFinished(CumulusRecord record, Image image) {
-        image.setStatus(ImageStatus.FINISHED);
-        imageRepo.updateImage(image);
+        log.info("Setting image '" + image.getCumulus_id() + "' to finished!");
         
         List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
+        String keywords;
         if(words.isEmpty()) {
-            log.warn("No keywords found for '" + image.getCumulus_id() + "'");
+            keywords = "";
+            log.warn("No keywords found for '" + image.getCumulus_id() + "'. Setting the field to empty.");
         } else {
-            String keywords = getKeywords(words);
-            record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
+            keywords = getKeywords(words);
+            log.info("Found keywords: \n" + keywords);
         }
         
+        record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
         record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
-        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
-                CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
         
         // SET RECORD TO NOT READY FOR AIM!
         if(conf.isTest()) {
             record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, "");
         } else {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+                    CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
             record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
         }
+        image.setStatus(ImageStatus.FINISHED);
+        imageRepo.updateImage(image);
     }
     
     /**
@@ -145,7 +149,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
     protected String getKeywords(List<Word> words) {
         String res = "";
         for(Word word : words) {
-            res += "da|" + word.getText_da() + "\n";
+            res += word.getText_da() + "\n";
             res += "en|" + word.getText_en() + "\n";
         }
         return res;
