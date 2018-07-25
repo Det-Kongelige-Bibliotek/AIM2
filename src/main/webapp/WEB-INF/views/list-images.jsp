@@ -45,7 +45,6 @@
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
                                     <c:forEach items="${image_words.get(image.id)}" var="word">
-                                        <dd>blah</dd>
                                         <dd>${word.text_da} (${word.text_en})</dd>
                                     </c:forEach>
                                 </dl>

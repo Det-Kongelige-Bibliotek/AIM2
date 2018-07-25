@@ -28,12 +28,12 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <form action="${pageContext.request.contextPath}/update" id="word_form_id_${word.id}">
+            <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
                 <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
                 <td>${word.text_en}<input type="hidden" name="text_en" value="${word.text_en}"/></td>
                 <td><input type="text" name="text_da" value="${word.text_da}"/></td>
                 <input type="hidden" name="back_to"
-                       value="<%= "http://" +  host %>${requestScope['javax.servlet.forward.servlet_path']}?status=${word.status}"/>
+                       value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
                         <button type="submit" name="op_category" value="ACCEPTED:${word.category}"
@@ -60,7 +60,7 @@
                 </c:if>
             </form>
             <td>
-                <c:url value = "${pageContext.request.contextPath}/word_images/${word.id}" var = "imgUrl">
+                <c:url value = "/word_images/${word.id}" var = "imgUrl">
                     <c:param name = "limit" value = "10"/>
                 </c:url>
                 <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>

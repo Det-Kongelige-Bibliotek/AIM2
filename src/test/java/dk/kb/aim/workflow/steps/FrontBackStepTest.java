@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
-import dk.kb.aim.workflow.steps.FrontBackStep;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
@@ -99,10 +98,10 @@ public class FrontBackStepTest {
         
         when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
         when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(frontRecord);
-        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator()).thenReturn(Arrays.asList(backRecord).iterator());
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
-        
+
         fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
@@ -120,7 +119,7 @@ public class FrontBackStepTest {
         
         verifyZeroInteractions(frontRecord);
         
-        verify(records).iterator();
+        verify(records, times(2)).iterator();
         verifyNoMoreInteractions(records);
     }
     
@@ -141,10 +140,10 @@ public class FrontBackStepTest {
         
         when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
         when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(frontRecord);
-        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator()).thenReturn(Arrays.asList(backRecord).iterator());
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
-        
+
         fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
@@ -160,7 +159,7 @@ public class FrontBackStepTest {
         
         verifyZeroInteractions(frontRecord);
         
-        verify(records).iterator();
+        verify(records, times(2)).iterator();
         verifyNoMoreInteractions(records);
     }
     
@@ -180,10 +179,10 @@ public class FrontBackStepTest {
         
         when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
         when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(null);
-        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator());
+        when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator()).thenReturn(Arrays.asList(backRecord).iterator());
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
-        
+
         fbw.runStep();
         
         verify(retriever).getReadyForFrontBackRecords(eq(catalogName));
@@ -198,7 +197,7 @@ public class FrontBackStepTest {
         verify(backRecord).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_FRONT_BACK), eq(Boolean.FALSE));
         verifyNoMoreInteractions(backRecord);
         
-        verify(records).iterator();
+        verify(records, times(2)).iterator();
         verifyNoMoreInteractions(records);
     }
     

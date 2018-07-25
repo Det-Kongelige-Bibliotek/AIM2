@@ -70,7 +70,6 @@ public class ImportToAimStep extends WorkflowStep {
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
             String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
             if(imageRepository.hasImageWithCumulusId(cumulusId)) {
-                setDone(record);
                 numberOfAlreadyImported++;
                 log.info("Found record which has already been imported into AIM: '[" 
                         + record.getClass().getCanonicalName() + " -> " 
@@ -97,9 +96,7 @@ public class ImportToAimStep extends WorkflowStep {
                             + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
                 }
             } catch (Exception e) {
-                // TODO
-                log.info("Failure to import images: " + e.getMessage());
-//                log.warn("Failure to import image.", e);
+                log.warn("Failure to import image.", e);
                 numberOfFailures++;
             }
         }
@@ -121,8 +118,6 @@ public class ImportToAimStep extends WorkflowStep {
      * @param record The record to set to done.
      */
     protected void setDone(CumulusRecord record) {
-        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
-                CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
         if(!conf.isTest()) {
             record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
         }

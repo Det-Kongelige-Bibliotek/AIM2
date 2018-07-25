@@ -73,9 +73,10 @@ public abstract class WorkflowStep {
         timeForLastRun = -1;
         try {
             setStatus("Running");
+            setResultOfRun("Running...");
             runStep();
             setStatus("Finished");
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Failure when running step: " + getName(), e);
             setStatus("Failed");
             setResultOfRun("Failure: " + e.getMessage());

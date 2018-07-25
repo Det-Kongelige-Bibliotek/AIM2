@@ -1,5 +1,7 @@
 package dk.kb.aim.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +18,15 @@ import dk.kb.aim.repository.WordRepository;
  */
 @Controller
 public class WordController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(WordController.class);
 
     String defStatus = "PENDING";
 
     @Autowired
     private WordRepository wordRepository;
 
-    @RequestMapping(value="/update",params={"id","text_en","text_da","op_category","back_to"})
+    @RequestMapping(value="/words/update",params={"id","text_en","text_da","op_category","back_to"})
     public String updateWord( @RequestParam("id")       int id,
             @RequestParam("text_en")  String text_en,
             @RequestParam("text_da")  String text_da,
@@ -41,14 +45,14 @@ public class WordController {
         String category = parts[1];
         Word word       = new Word(id, text_en, text_da, category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
+        logger.info("Updating word: " + word);
         return "redirect:"+back_to;
     }
 
 
     @RequestMapping(value="/words")
-	public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
-
-	model.addAttribute("controller_status",status);
+    public String statusWords( @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
+        model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
         if(status.toString().length()>0) {
             model.addAttribute("words",wordRepository.allWordsWithStatus(status));
@@ -61,9 +65,8 @@ public class WordController {
 
     @RequestMapping(value="/words/{category}")
     public String allWords(@PathVariable String category,
-			   @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
-
-	model.addAttribute("controller_status",status);
+            @RequestParam(value="status",defaultValue="PENDING") WordStatus status, Model model) {
+        model.addAttribute("controller_status",status);
         model.addAttribute("categories",wordRepository.getCategories());
 
         if(status.toString().length()>0) {

@@ -133,7 +133,12 @@ public class CumulusRetriever {
      * @return The record with the given name from the given catalog.
      */
     public CumulusRecord findRecord(String catalogName, String filename) {
-        return server.findCumulusRecordByName(catalogName, filename);
+        CumulusRecord record = server.findCumulusRecordByName(catalogName, filename);
+        if(record == null) {
+            throw new IllegalStateException("Cannot find the file '" + filename + "' from the catalog '"
+                    + catalogName + "'");
+        }
+        return record;
     }
     
     /**

@@ -79,6 +79,10 @@ public class FrontBackStep extends WorkflowStep {
                 log.warn("Failed to find front/back.", e);
                 numberOfError++;
             }
+        }
+        
+        // Need to set to done after the relationship assignments (otherwise we might no be able to find relations)
+        for(CumulusRecord record : records) {
             setDone(record);
         }
         

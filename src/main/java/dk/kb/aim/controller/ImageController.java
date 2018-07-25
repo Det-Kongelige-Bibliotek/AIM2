@@ -1,13 +1,12 @@
 package dk.kb.aim.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import dk.kb.aim.ImageStatus;
-import dk.kb.aim.WordStatus;
-import dk.kb.aim.model.Image;
-import dk.kb.aim.model.Word;
-import dk.kb.aim.repository.WordRepository;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,12 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.ImageStatus;
+import dk.kb.aim.model.Image;
+import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
