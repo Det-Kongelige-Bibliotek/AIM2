@@ -17,6 +17,8 @@ public abstract class WorkflowStep {
     protected String resultsOfLastRun;
     /** The time it has taken for the last run, in millis.*/
     protected long timeForLastRun;
+    /** The start time for the current run (0 when not running)*/
+    protected long currentRunStart = 0L;
 
     /**
      * Constructor.
@@ -58,8 +60,25 @@ public abstract class WorkflowStep {
     /**
      * @return The time it took for the latest run.
      */
+    public String getExecutionTime() {
+        if(currentRunStart > 0) {
+            return "" + getCurrentRunTime() + "...";
+        }
+        return "" + timeForLastRun;
+    }
+
+    /**
+     * @return The time it took for the latest run.
+     */
     public Long getTimeForLastRun() {
         return timeForLastRun;
+    }
+    
+    /**
+     * @return The current runtime in millis. 
+     */
+    public Long getCurrentRunTime() {
+        return System.currentTimeMillis() - currentRunStart;
     }
     
     /**
@@ -69,7 +88,7 @@ public abstract class WorkflowStep {
      * The actual methods for the step will be implemented in the step themselves.
      */
     public void run() {
-        long startTime = System.currentTimeMillis();
+        currentRunStart = System.currentTimeMillis();
         timeForLastRun = -1;
         try {
             setStatus("Running");
@@ -81,7 +100,8 @@ public abstract class WorkflowStep {
             setStatus("Failed");
             setResultOfRun("Failure: " + e.getMessage());
         }
-        timeForLastRun = System.currentTimeMillis() - startTime;
+        timeForLastRun = System.currentTimeMillis() - currentRunStart;
+        currentRunStart = 0L;
     }
     
     /**

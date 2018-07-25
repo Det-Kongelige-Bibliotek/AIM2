@@ -11,7 +11,7 @@
 <head>
     <title>AIM Workflow</title>
     <jsp:include page="includes/head.jsp"/>
-    <meta http-equiv="Refresh" content="2">
+    <meta http-equiv="Refresh" content="10">
 </head>
 
 <body>
@@ -42,7 +42,7 @@
             <tr>
                 <td>${step.getName()}</td>
                 <td>${step.getStatus()}</td>
-                <td>${step.getTimeForLastRun()}</td>
+                <td>${step.getExecutionTime()}</td>
                 <td>${step.getResultOfLastRun()}</td>
             </tr>
         </c:forEach>
