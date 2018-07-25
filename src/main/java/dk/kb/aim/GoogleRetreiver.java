@@ -37,6 +37,9 @@ public class GoogleRetreiver {
 
     public static final String AIM_category = "AIM";
     private static final Logger logger = LoggerFactory.getLogger(GoogleRetreiver.class);
+    
+    protected ImageAnnotatorClient annotationClient;
+    protected Translate translate = TranslateOptions.newBuilder().build().getService();
 
     @Autowired
     private ImageRepository imageRepository;
@@ -47,7 +50,6 @@ public class GoogleRetreiver {
         this.imageRepository = imageRepository;
         this.wordRepository = wordRepository;
     }
-
 
     public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) throws IOException {
         com.google.cloud.vision.v1.Image image = readImage(imageFile);
@@ -110,15 +112,15 @@ public class GoogleRetreiver {
         return result;
     }
 
-    private List<AnnotateImageResponse> sendRequest(com.google.cloud.vision.v1.Image image, Feature.Type type) throws IOException {
+    private List<AnnotateImageResponse> sendRequest(com.google.cloud.vision.v1.Image image, Feature.Type type) 
+            throws IOException {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         Feature feat = Feature.newBuilder().setType(type).build();
         AnnotateImageRequest request =
                 AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image).build();
         requests.add(request);
 
-        ImageAnnotatorClient client = ImageAnnotatorClient.create();
-        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+        BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
         return response.getResponsesList();
     }
 
@@ -128,10 +130,16 @@ public class GoogleRetreiver {
     }
 
     private String translateText(String text_en) throws IOException {
-        Translate translate = TranslateOptions.newBuilder().build().getService();
         Translate.TranslateOption srcLang = Translate.TranslateOption.sourceLanguage("en");
         Translate.TranslateOption tgtLang = Translate.TranslateOption.targetLanguage("da");
         Translation translation = translate.translate(text_en,srcLang,tgtLang);
         return translation.getTranslatedText();
+    }
+    
+    private ImageAnnotatorClient getAnnotationClient() throws IOException {
+        if(annotationClient == null || annotationClient.isShutdown() || annotationClient.isTerminated()) {
+            annotationClient = ImageAnnotatorClient.create();
+        }
+        return annotationClient;
     }
 }
