@@ -1,8 +1,12 @@
 package dk.kb.aim.workflow;
 
 import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,24 +28,26 @@ public class WorkflowScheduler {
     /** The workflows running in this scheduler.*/
     @Autowired
     AimWorkflow workflow;
-    
+
     /** The timer for running the TimerTasks.*/
-    Timer timer;
+    ScheduledExecutorService executorService;
     
     /**
-     * Constructor.
-     * Instantiates the timer as a daemon.
+     * Method for shutting down this service.
      */
-    public WorkflowScheduler() {
-        this.timer = new Timer(isDaemon);
+    @PreDestroy
+    public void shutDown() {
+        workflow.cancel();
+        executorService.shutdownNow();
     }
     
     /**
-     * Adds a workflow to the scheduler and schedule it.
-     * @param workflow The workflow
+     * Scedules the workflows.
      */
     @PostConstruct
-    public void scheduleWorkflow() {
-        timer.scheduleAtFixedRate(workflow, timerInterval, timerInterval);
+    public void scheduleWorkflows() {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        
+        executorService.scheduleAtFixedRate(workflow, timerInterval, timerInterval, TimeUnit.MILLISECONDS);
     }
 }

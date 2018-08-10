@@ -5,7 +5,7 @@
 
 	<groupId>dk.kb.cumulus</groupId>
 	<artifactId>aim</artifactId>
-	<version>1.0.1-RC2</version>
+	<version>1.0.2-RC1</version>
 	<packaging>war</packaging>
 
 	<name>AIM</name>
@@ -72,9 +72,9 @@
 			<groupId>com.canto</groupId>
 			<artifactId>cumulus</artifactId>
 			<version>10</version>
-<!--
  			<scope>system</scope> 
 			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC.jar</systemPath>
+<!--
 -->
 			<!-- systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath --> 			
 		</dependency>

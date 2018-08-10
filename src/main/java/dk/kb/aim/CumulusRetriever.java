@@ -5,7 +5,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,9 @@ import dk.kb.cumulus.utils.StringUtils;
  */
 @Component
 public class CumulusRetriever {
+    /** The log.*/
+    protected final Logger log = LoggerFactory.getLogger(CumulusRetriever.class);
+
     /** The Cumulus field name for AIM.*/
     public static final String FIELD_NAME_READY_FOR_AIM = "Klar til AIM";
     /** The value regarding 'Ready for AIM' for the Cumulus field 'AIM'. ̈́*/
@@ -68,13 +74,25 @@ public class CumulusRetriever {
     /** The configuration. Auto-wired.*/
     @Autowired
     protected Configuration conf;
-    
+
     /**
      * Initializes this component.
      */
     @PostConstruct
     protected void initialize() {
         setCumulusServer(new CumulusServer(conf.getCumulusConf()));
+    }
+    
+    /**
+     * Close the Cumulus client.
+     */
+    @PreDestroy
+    protected void tearDown() {
+        try {
+            server.close();
+        } catch (Exception e) {
+            log.error("Issue while closing the Cumulus client.", e);
+        }
     }
     
     /**
