@@ -20,7 +20,7 @@ import dk.kb.cumulus.CumulusRecord;
  */
 public class ImportToAimStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(ImportToAimStep.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ImportToAimStep.class);
     
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
@@ -48,6 +48,7 @@ public class ImportToAimStep extends WorkflowStep {
      * @param catalogName The name of the catalog.
      * @param imageConverter The image converter.
      * @param googleRetriever The retriever for the google vision and translation APIs.
+     * @param imageRepository The database access for the images.
      */
     public ImportToAimStep(Configuration conf, CumulusRetriever cumulusRetriever, String catalogName, 
             ImageConverter imageConverter, GoogleRetreiver googleRetriever, ImageRepository imageRepository) {
@@ -71,13 +72,13 @@ public class ImportToAimStep extends WorkflowStep {
             String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
             if(imageRepository.hasImageWithCumulusId(cumulusId)) {
                 numberOfAlreadyImported++;
-                log.info("Found record which has already been imported into AIM: '[" 
+                LOGGER.info("Found record which has already been imported into AIM: '[" 
                         + record.getClass().getCanonicalName() + " -> " 
                         + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
                 continue;
             }
             
-            log.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
+            LOGGER.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
                     + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
             
             numberOfRecords++;
@@ -86,17 +87,17 @@ public class ImportToAimStep extends WorkflowStep {
                 if(record.isSubAsset()) {
                     setDone(record);
                     numberOfBackPages++;
-                    log.info("Found back-page which will not be imported into AIM: '[" 
+                    LOGGER.info("Found back-page which will not be imported into AIM: '[" 
                             + record.getClass().getCanonicalName() + " -> " 
                             + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
                 } else {
                     importRecord(record);
                     numberOfSuccess++;
-                    log.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
-                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
+                    LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() 
+                            + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
                 }
             } catch (Exception e) {
-                log.warn("Failure to import image.", e);
+                LOGGER.warn("Failure to import image.", e);
                 numberOfFailures++;
             }
         }
@@ -163,7 +164,7 @@ public class ImportToAimStep extends WorkflowStep {
             }
         }
         // TODO what should we do, if we cannot find the category?
-        log.warn("No AIM category found. Returning '" + CATEGORY_UNKNOWN + "'");
+        LOGGER.warn("No AIM category found. Returning '" + CATEGORY_UNKNOWN + "'");
         return CATEGORY_UNKNOWN;
     }
     

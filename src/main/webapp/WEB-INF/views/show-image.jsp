@@ -25,11 +25,11 @@
             <div class="col-md-6">
                 <dl class="dl-horizontal">
                     <dt>id</dt><dd>${image_details.id}</dd>
-                    <dt>cumulus id</dt><dd>${image_details.cumulus_id}</dd>
+                    <dt>cumulus id</dt><dd>${image_details.cumulusId}</dd>
                     <dt>status</dt><dd>${image_details.status}</dd>
                     <dt>Keywords</dt><dd>
                     <c:forEach items="${image_words}" var="word">
-                        <p><a href="${pageContext.request.contextPath}/words/${word.category}?status=${word.status}">${word.text_da} (${word.text_en})</a></p>
+                        <p><a href="${pageContext.request.contextPath}/words/${word.category}?status=${word.status}">${word.textDa} (${word.textEn})</a></p>
                     </c:forEach>
                     &nbsp;</dd>
                 </dl>

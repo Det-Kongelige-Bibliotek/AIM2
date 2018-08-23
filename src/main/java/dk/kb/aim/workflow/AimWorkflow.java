@@ -30,7 +30,7 @@ import dk.kb.aim.workflow.steps.WorkflowStep;
 @Component
 public class AimWorkflow extends TimerTask {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(AimWorkflow.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AimWorkflow.class);
 
     /** The date for the next run of the workflow.*/
     protected Date nextRun;
@@ -105,7 +105,7 @@ public class AimWorkflow extends TimerTask {
                 step.run();
             }
         } catch (Exception e) {
-            log.error("Faild to run all the workflow steps.", e);
+            LOGGER.error("Faild to run all the workflow steps.", e);
             status = "Failure during last run: " + e.getMessage();
         }
     }
@@ -133,11 +133,14 @@ public class AimWorkflow extends TimerTask {
     
     /**
      * Sets this workflow ready for the next run by setting the date for the next run and the state to 'waiting'.
-     * 
-     * TODO: this should also handle the situation for negative interval - only run manually??
+     * If the interval for the workflow is non-positive, then it is set to infinitely far out in the future.
      */
     protected void readyForNextRun() {
-        nextRun = new Date(System.currentTimeMillis() + conf.getWorkflowInterval());
+        if(conf.getWorkflowInterval() > 0) {
+            nextRun = new Date(System.currentTimeMillis() + conf.getWorkflowInterval());
+        } else {
+            nextRun = new Date(Long.MAX_VALUE);
+        }
         state = WorkflowState.WAITING;        
     }
     

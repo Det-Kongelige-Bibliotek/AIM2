@@ -29,7 +29,7 @@ import dk.kb.cumulus.utils.StringUtils;
 @Component
 public class CumulusRetriever {
     /** The log.*/
-    protected final Logger log = LoggerFactory.getLogger(CumulusRetriever.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(CumulusRetriever.class);
 
     /** The Cumulus field name for AIM.*/
     public static final String FIELD_NAME_READY_FOR_AIM = "Klar til AIM";
@@ -91,7 +91,7 @@ public class CumulusRetriever {
         try {
             server.close();
         } catch (Exception e) {
-            log.error("Issue while closing the Cumulus client.", e);
+            LOGGER.error("Issue while closing the Cumulus client.", e);
         }
     }
     

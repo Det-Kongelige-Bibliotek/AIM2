@@ -1,6 +1,5 @@
 package dk.kb.aim.workflow;
 
-import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -19,11 +18,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class WorkflowScheduler {
-    /** The timer should run as a daemon.*/
-    protected final static Boolean isDaemon = true;
-    
-    /** The interval for the timer, so it .*/
-    protected final static long timerInterval = 1000L;
+    /** The interval for the timer for how often to check the workflow.*/
+    protected static final long TIMER_INTERVAL = 1000L;
     
     /** The workflows running in this scheduler.*/
     @Autowired
@@ -48,6 +44,6 @@ public class WorkflowScheduler {
     public void scheduleWorkflows() {
         executorService = Executors.newSingleThreadScheduledExecutor();
         
-        executorService.scheduleAtFixedRate(workflow, timerInterval, timerInterval, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(workflow, TIMER_INTERVAL, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 }

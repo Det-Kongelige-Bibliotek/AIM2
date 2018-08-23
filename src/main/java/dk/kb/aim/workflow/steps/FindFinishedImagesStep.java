@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
-import dk.kb.aim.ImageStatus;
-import dk.kb.aim.WordStatus;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
+import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
+import dk.kb.aim.repository.WordStatus;
 import dk.kb.cumulus.CumulusRecord;
 
 /**
@@ -23,7 +23,7 @@ import dk.kb.cumulus.CumulusRecord;
  */
 public class FindFinishedImagesStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(FindFinishedImagesStep.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FindFinishedImagesStep.class);
 
     /** The configuration */
     protected final Configuration conf;
@@ -68,11 +68,11 @@ public class FindFinishedImagesStep extends WorkflowStep {
                 numberOfUnfinished++;
                 if(isFinished(image)) {
                     numberOfPreviouslyUnfinished++;
-                    CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
+                    CumulusRecord record = retriever.findRecord(catalogName, image.getCumulusId());
                     setFinished(record, image);
                 }
             } catch(Exception e) {
-                log.warn("Failed to handle image: '" + image.getCumulus_id() + "'", e);
+                LOGGER.warn("Failed to handle image: '" + image.getCumulusId() + "'", e);
                 numberOfFailures++;
             }
         }
@@ -81,7 +81,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
         for(Image image : imageRepo.listImagesWithStatus(ImageStatus.NEW)) {
             try {
                 numberOfNew++;
-                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulus_id());
+                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulusId());
                 if(isFinished(image)) {
                     numberOfNewFinished++;
                     setFinished(record, image);
@@ -90,7 +90,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     setUnfinished(record, image);
                 }
             } catch(Exception e) {
-                log.warn("Failed to handle image: '" + image.getCumulus_id() + "'", e);
+                LOGGER.warn("Failed to handle image: '" + image.getCumulusId() + "'", e);
                 numberOfFailures++;
             }
         }
@@ -114,16 +114,16 @@ public class FindFinishedImagesStep extends WorkflowStep {
      * @param image The image to set to finished.
      */
     protected void setFinished(CumulusRecord record, Image image) {
-        log.info("Setting image '" + image.getCumulus_id() + "' to finished!");
+        LOGGER.info("Setting image '" + image.getCumulusId() + "' to finished!");
         
         List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
         String keywords;
         if(words.isEmpty()) {
             keywords = "";
-            log.warn("No keywords found for '" + image.getCumulus_id() + "'. Setting the field to empty.");
+            LOGGER.warn("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
         } else {
             keywords = getKeywords(words);
-            log.info("Found keywords: \n" + keywords);
+            LOGGER.info("Found keywords: \n" + keywords);
         }
         
         record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
@@ -147,12 +147,12 @@ public class FindFinishedImagesStep extends WorkflowStep {
      * @return The words combined into a single string.
      */
     protected String getKeywords(List<Word> words) {
-        String res = "";
+        StringBuffer res = new StringBuffer();
         for(Word word : words) {
-            res += word.getText_da() + "\n";
-            res += "en|" + word.getText_en() + "\n";
+            res.append(word.getTextDa() + "\n");
+            res.append("en|" + word.getTextEn() + "\n");
         }
-        return res;
+        return res.toString();
     }
     
     /**

@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import dk.kb.aim.ImageStatus;
-import dk.kb.aim.WordStatus;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
@@ -40,7 +38,7 @@ public class ImageRepositoryTest  {
     public void searchForImages() {
         List<Image> result = imageRepository.listAllImages();
         for(Image image : result) {
-            System.out.println(image.getId() + ", " + image.getCumulus_id() + ", " + image.getCategory() + ", " + image.getPath() + ", " + image.getColor() + ", " + image.getOcr() + ", " + image.getStatus());
+            System.out.println(image.getId() + ", " + image.getCumulusId() + ", " + image.getCategory() + ", " + image.getPath() + ", " + image.getColor() + ", " + image.getOcr() + ", " + image.getStatus());
         }
         System.out.println(result.size());
         result = imageRepository.listImagesInCategory("category");

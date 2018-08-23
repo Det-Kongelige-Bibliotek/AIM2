@@ -4,30 +4,54 @@ package dk.kb.aim.model;
  * Created by dgj on 06-03-2018.
  */
 public class ImageWord {
-    int word_id;
-    int image_id;
+    /** The ID of the word.*/
+    int wordId;
+    /** The ID of the image.*/
+    int imageId;
+    /** The confidence in the association between the word and the image. In percent.*/
     int confidence;
-
-    public int getWord_id() {
-        return word_id;
+    
+    /**
+     * @return The ID of the word.
+     */
+    public int getWordId() {
+        return wordId;
     }
-
-    public void setWord_id(int word_id) {
-        this.word_id = word_id;
+    
+    /**
+     * Set the new ID of the word.
+     * @param wordId The new ID of the word.
+     */
+    public void setWordId(int wordId) {
+        this.wordId = wordId;
     }
-
-    public int getImage_id() {
-        return image_id;
+    
+    /**
+     * @return The ID of the image.
+     */
+    public int getImageId() {
+        return imageId;
     }
-
-    public void setImage_id(int image_id) {
-        this.image_id = image_id;
+    
+    /**
+     * Set the new ID of the image.
+     * @param imageId The new ID of the image.
+     */
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
     }
-
+    
+    /**
+     * @return The confidence in the association between the word and the image. In percent.
+     */
     public int getConfidence() {
         return  confidence;
     }
-
+    
+    /**
+     * Set the new confidence in the association between the word and the image. In percent.
+     * @param confidence The new confidence in the association between the word and the image. In percent.
+     */
     public void setConfidence(int confidence) {
         this.confidence = confidence;
     }

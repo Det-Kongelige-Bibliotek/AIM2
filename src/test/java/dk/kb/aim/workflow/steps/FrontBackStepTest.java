@@ -178,7 +178,7 @@ public class FrontBackStepTest {
         CumulusRecordCollection records = mock(CumulusRecordCollection.class);
         
         when(retriever.getReadyForFrontBackRecords(eq(catalogName))).thenReturn(records);
-        when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenReturn(null);
+        when(retriever.findRecord(eq(catalogName), eq(frontRecordName))).thenThrow(new IllegalStateException("TESTING"));
         when(records.iterator()).thenReturn(Arrays.asList(backRecord).iterator()).thenReturn(Arrays.asList(backRecord).iterator());
         
         when(backRecord.getFieldValue(eq(Constants.FieldNames.RECORD_NAME))).thenReturn(backRecordName);
@@ -189,7 +189,7 @@ public class FrontBackStepTest {
         verify(retriever).findRecord(eq(catalogName), eq(frontRecordName));
         verifyNoMoreInteractions(retriever);
         
-        verify(backRecord, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
+        verify(backRecord, times(2)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(backRecord).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_FRONT_BACK_STATUS_IN_PROCESS));
         verify(backRecord).setStringEnumValueForField(CumulusRetriever.FIELD_NAME_FRONT_BACK_STATUS, 

@@ -17,7 +17,12 @@ public class WorkflowController {
     /** The workflow.*/
     @Autowired
     protected AimWorkflow workflow;
-
+    
+    /**
+     * The view for the workflow.
+     * @param model The model.
+     * @return The name of the jsp page.
+     */
     @RequestMapping("/workflow")
     public String getWorkflow(Model model) {
         model.addAttribute("workflow", workflow);
@@ -25,6 +30,10 @@ public class WorkflowController {
         return "workflow";
     }
     
+    /**
+     * Mapping for starting the workflow.
+     * @return Redirects to the workflow page again, when the workflow has been started.
+     */
     @RequestMapping("/workflow/run")
     public RedirectView runWorkflow() {
         workflow.startManually();

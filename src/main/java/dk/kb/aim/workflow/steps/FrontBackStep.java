@@ -22,7 +22,7 @@ import dk.kb.cumulus.CumulusRecordCollection;
  */
 public class FrontBackStep extends WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(FrontBackStep.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FrontBackStep.class);
 
     /** The configuration */
     protected final Configuration conf;
@@ -59,24 +59,17 @@ public class FrontBackStep extends WorkflowStep {
                 String filename = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
                 String frontPage = getFrontPage(filename);
                 if(frontPage != null) {
-                    log.info("The record '[" + record.getClass().getCanonicalName() + " -> " 
+                    LOGGER.info("The record '[" + record.getClass().getCanonicalName() + " -> " 
                             + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' will have master asset '" 
                             + frontPage + "'");
                     CumulusRecord frontPageRecord = retriever.findRecord(catalogName, frontPage);
-                    if(frontPageRecord != null) {
-                        record.addMasterAsset(frontPageRecord);
-                        numberOfBacks++;
-                    } else {
-                        numberOfError++;
-                        log.warn("The record '[" + record.getClass().getCanonicalName() + " -> " 
-                                + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' should have "
-                                + "a front page named '" + frontPage + "', but no such record could be found.");
-                    }
+                    record.addMasterAsset(frontPageRecord);
+                    numberOfBacks++;
                 } else {
                     numberOfFronts++;
                 }
             } catch (Exception e) {
-                log.warn("Failed to find front/back.", e);
+                LOGGER.warn("Failed to find front/back.", e);
                 numberOfError++;
             }
         }

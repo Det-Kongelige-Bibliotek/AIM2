@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class WorkflowStep {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(WorkflowStep.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(WorkflowStep.class);
     
     /** The status of the workflow.*/
     protected String status;
@@ -96,7 +96,7 @@ public abstract class WorkflowStep {
             runStep();
             setStatus("Finished");
         } catch (Throwable e) {
-            log.error("Failure when running step: " + getName(), e);
+            LOGGER.error("Failure when running step: " + getName(), e);
             setStatus("Failed");
             setResultOfRun("Failure: " + e.getMessage());
         }

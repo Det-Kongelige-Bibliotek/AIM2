@@ -27,7 +27,7 @@
     <div class="container">
         <c:if test="${not empty word.id}">
             <div class="text-center pb-3">
-                <p>Keyword: <b>${word.text_en}</b> (en) / <b>${word.text_da}</b> (da)</p>
+                <p>Keyword: <b>${word.textEn}</b> (en) / <b>${word.textDa}</b> (da)</p>
             </div>
         </c:if>
         <div class="row">
@@ -41,11 +41,11 @@
                                  src="${image_url}/${image.path}"
                                  data-holder-rendered="true">
                             <div class="card-body bg-light">
-                                <p class="card-text">${image.cumulus_id}</p>
+                                <p class="card-text">${image.cumulusId}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
                                     <c:forEach items="${image_words.get(image.id)}" var="word">
-                                        <dd>${word.text_da} (${word.text_en})</dd>
+                                        <dd>${word.textDa} (${word.textEn})</dd>
                                     </c:forEach>
                                 </dl>
                             </div>

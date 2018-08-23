@@ -1,72 +1,124 @@
 package dk.kb.aim.model;
 
-import java.util.List;
-
-import dk.kb.aim.WordStatus;
+import dk.kb.aim.repository.WordStatus;
 
 /**
  * Created by dgj on 22-02-2018.
  */
 public class Word {
+    /** The ID of the word.*/
     private int id;
-    private String text_en;
-    private String text_da;
+    /** The english text.*/
+    private String textEn;
+    /** The danish translated text.*/
+    private String textDa;
+    /** The category of the word.*/
     private String category;
+    /** The status of the word.*/
     private WordStatus status;
-    private List<ImageWord> imageWords;
-
-    public Word(int id, String text_en, String text_da, String category, WordStatus status) {
+    
+    /**
+     * Constructor.
+     * @param id The ID of the word.
+     * @param textEn The english text.
+     * @param textDa The danish translated text.
+     * @param category The category of the word.
+     * @param status The status of the word.
+     */
+    public Word(int id, String textEn, String textDa, String category, WordStatus status) {
         this.id = id;
-        this.text_en = text_en;
-        this.text_da = text_da;
+        this.textEn = textEn;
+        this.textDa = textDa;
         this.category = category;
         this.status = status;
     }
-
-    public Word(String text_en, String text_da, String category, WordStatus status) {
+    
+    /**
+     * Constructor, before the word has been given an ID.
+     * @param textEn The english text.
+     * @param textDa The danish translated text.
+     * @param category The category of the word.
+     * @param status The status of the word.
+     */
+    public Word(String textEn, String textDa, String category, WordStatus status) {
         this.id = -1;
-        this.text_en = text_en;
-        this.text_da = text_da;
+        this.textEn = textEn;
+        this.textDa = textDa;
         this.category = category;
         this.status = status;
     }
-
+    
+    /**
+     * @return The ID of the word.
+     */
     public int getId() {
         return id;
     }
-
+    
+    /**
+     * Set a new ID of the word.
+     * @param id The new ID of the word.
+     */
     public void setId(int id) {
         this.id = id;
     }
-
-    public String getText_en() {
-        return text_en;
+    
+    /**
+     * @return The english text.
+     */
+    public String getTextEn() {
+        return textEn;
     }
-
-    public void setText_en(String text_en) {
-        this.text_en = text_en;
+    
+    /**
+     * Set a new english text.
+     * @param textEn The new english text.
+     */
+    public void setTextEn(String textEn) {
+        this.textEn = textEn;
     }
-
-    public String getText_da() {
-        return text_da;
+    
+    /**
+     * @return The danish translated text.
+     */
+    public String getTextDa() {
+        return textDa;
     }
-
-    public void setText_da(String text_da) {
-        this.text_da = text_da;
+    
+    /**
+     * Set a new danish translated text.
+     * @param textDa The new danish translated text.
+     */
+    public void setTextDa(String textDa) {
+        this.textDa = textDa;
     }
-
+    
+    /**
+     * @return The category of the word.
+     */
     public String getCategory() {
         return category;
     }
-
+    
+    /**
+     * Set a new category of the word.
+     * @param category The new category of the word.
+     */
     public void setCategory(String category) {
         this.category = category;
     }
-
+    
+    /**
+     * @return The status of the word.
+     */
     public WordStatus getStatus() {
         return status;
     }
-
+    
+    /**
+     * Set the new status of the word.
+     * @param status The new status of the word.
+     */
     public void setStatus(WordStatus status) {
         this.status = status;
     }
@@ -75,8 +127,8 @@ public class Word {
     public String toString() {
         return "Word{" +
                 "id=" + id +
-                ", text_en='" + text_en + '\'' +
-                ", text_da='" + text_da + '\'' +
+                ", text_en='" + textEn + '\'' +
+                ", text_da='" + textDa + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }

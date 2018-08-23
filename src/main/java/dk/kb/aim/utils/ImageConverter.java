@@ -21,9 +21,10 @@ import java.io.ByteArrayOutputStream;
 @Component
 public class ImageConverter {
 
-    /** The name for JPG.*/
-    public final static String JPG_NAME = "jpg";
+    /** The suffix name for JPG.*/
+    public static final String JPG_NAME = "jpg";
     
+    /** The configuration.*/
     @Autowired
     protected Configuration conf;
 
@@ -71,7 +72,8 @@ public class ImageConverter {
         int w = Math.round(image.getWidth() * scale);
         int h = Math.round(image.getHeight() * scale);
 
-        int type = image.getTransparency() == Transparency.OPAQUE ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        int type = image.getTransparency() == Transparency.OPAQUE ? BufferedImage.TYPE_INT_RGB 
+                : BufferedImage.TYPE_INT_ARGB;
 
         boolean scaleDown = scale < 1;
 
@@ -93,7 +95,8 @@ public class ImageConverter {
             }
             return resized;
         } else {
-            Object hint = scale > 2 ? RenderingHints.VALUE_INTERPOLATION_BICUBIC : RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+            Object hint = scale > 2 ? RenderingHints.VALUE_INTERPOLATION_BICUBIC 
+                    : RenderingHints.VALUE_INTERPOLATION_BILINEAR;
 
             BufferedImage resized = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = resized.createGraphics();

@@ -6,7 +6,7 @@
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     <c:set var="status" value="${controller_status}"/>
     <%
-        java.util.List<dk.kb.aim.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.WordStatus.values());
+        java.util.List<dk.kb.aim.repository.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.repository.WordStatus.values());
         pageContext.setAttribute("statuses", ws);
         String host = request.getHeader("HOST");
     %>
@@ -30,8 +30,8 @@
         <tr>
             <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
                 <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
-                <td>${word.text_en}<input type="hidden" name="text_en" value="${word.text_en}"/></td>
-                <td><input type="text" name="text_da" value="${word.text_da}"/></td>
+                <td>${word.textEn}<input type="hidden" name="text_en" value="${word.textEn}"/></td>
+                <td><input type="text" name="text_da" value="${word.textDa}"/></td>
                 <input type="hidden" name="back_to"
                        value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">

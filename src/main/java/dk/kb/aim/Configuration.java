@@ -42,7 +42,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
 @Component
 public class Configuration {
     /** The log.*/
-    protected static final Logger log = LoggerFactory.getLogger(Configuration.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     /** Cumulus node-element.*/
     protected static final String CONF_CUMULUS = "cumulus";
@@ -100,7 +100,8 @@ public class Configuration {
         try (InputStream in = new FileInputStream(confFile)) {
             Object o = new Yaml().load(in);
             if(!(o instanceof LinkedHashMap)) {
-                throw new IllegalArgumentException("The file '" + confFile + "' does not contain a valid AIM configuration.");
+                throw new IllegalArgumentException("The file '" + confFile 
+                        + "' does not contain a valid AIM configuration.");
             }
             LinkedHashMap<String, Object> rootMap = (LinkedHashMap<String, Object>) o;
             ArgumentCheck.checkTrue(rootMap.containsKey("aim"), 
@@ -127,7 +128,7 @@ public class Configuration {
             
             this.test = confMap.containsKey(CONF_TEST);
             if(this.test) {
-                log.info("Running in TEST mode.");
+                LOGGER.info("Running in TEST mode.");
                 this.testDir = FileUtils.getDirectory((String) confMap.get(CONF_TEST));
             }
         }

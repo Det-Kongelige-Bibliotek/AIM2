@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
-    java.util.List<dk.kb.aim.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.WordStatus.values());
+    java.util.List<dk.kb.aim.repository.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.repository.WordStatus.values());
     pageContext.setAttribute("statuses", ws);
 %>
-<c:set var="status" value="${controller_status}"/>
+<c:set var="status" value="${controllerStatus}"/>
 
 <ul class="nav nav-tabs" id="categories">
     <c:forEach items="${categories}" var="category">
