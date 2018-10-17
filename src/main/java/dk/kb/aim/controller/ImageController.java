@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.model.Image;
-import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
@@ -86,7 +86,7 @@ public class ImageController {
         /* fetch the words for each image
            This is not the most efficient way of doing it, but it will have to do for now
          */
-        Map<Integer, List<Word>> imageWords = new HashMap<Integer, List<Word>>();
+        Map<Integer, List<WordConfidence>> imageWords = new HashMap<Integer, List<WordConfidence>>();
         for (Image img : images) {
             imageWords.put(img.getId(),wordRepository.getImageWords(img.getId()));
         }

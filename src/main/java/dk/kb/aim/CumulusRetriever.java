@@ -16,6 +16,7 @@ import com.canto.cumulus.CategoryItem;
 import com.canto.cumulus.constants.CombineMode;
 import com.canto.cumulus.constants.FindFlag;
 
+import dk.kb.aim.exception.MissingRecordException;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusQuery;
 import dk.kb.cumulus.CumulusRecord;
@@ -111,11 +112,14 @@ public class CumulusRetriever {
      */
     public CumulusRecordCollection getReadyForAIMRecords(String catalogName) {
         String queryString = String.format(
-                StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s"),
+                StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s\nand %s is %s\nor %s has no value"),
+                Constants.FieldNames.CATALOG_NAME,
+                catalogName,
                 FIELD_NAME_READY_FOR_AIM,
                 FIELD_VALUE_AIM_READY_TRUE,
-                Constants.FieldNames.CATALOG_NAME,
-                catalogName);
+                FIELD_NAME_AIM_STATUS,
+                FIELD_VALUE_AIM_STATUS_IN_PROCESS,
+                FIELD_NAME_AIM_STATUS);
         EnumSet<FindFlag> findFlags = EnumSet.of(
                 FindFlag.FIND_MISSING_FIELDS_ARE_ERROR, 
                 FindFlag.FIND_MISSING_STRING_LIST_VALUES_ARE_ERROR);    
@@ -153,8 +157,8 @@ public class CumulusRetriever {
     public CumulusRecord findRecord(String catalogName, String filename) {
         CumulusRecord record = server.findCumulusRecordByName(catalogName, filename);
         if(record == null) {
-            throw new IllegalStateException("Cannot find the file '" + filename + "' from the catalog '"
-                    + catalogName + "'");
+            throw new MissingRecordException("Cannot find the file '" + filename + "' from the catalog '"
+                    + catalogName + "'", filename);
         }
         return record;
     }

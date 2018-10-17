@@ -1,5 +1,6 @@
 package dk.kb.aim.repository;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +60,9 @@ public class ImageRepositoryTest  {
         image.setOcr("Unrecognizable jibberish");
         
         imageRepository.updateImage(image);
-        
-        
     }
     
-//    @Test
+    @Test
     public void testFindFinishedImages() throws Exception {
         int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW));
         int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", "category", "blue", "ocr", ImageStatus.NEW));
@@ -77,6 +76,35 @@ public class ImageRepositoryTest  {
         imageRepository.addWordToImage(imageId2, wordId2, 80);
         imageRepository.addWordToImage(imageId3, wordId3, 90);
         
-        imageRepository.listImagesWithStatus(ImageStatus.NEW);
+//        Assert.assertEquals(3, imageRepository.listAllImages().size());
+//        Assert.assertEquals(3, imageRepository.listImagesWithStatus(ImageStatus.NEW).size());
+//        Assert.assertEquals(0, imageRepository.listImagesWithStatus(ImageStatus.FINISHED).size());
+//        Assert.assertEquals(3, imageRepository.listImagesInCategory("category").size());
+//        Assert.assertEquals(0, imageRepository.listImagesInCategory("NOT THE CATEGORY").size());
+//        Assert.assertEquals(3, imageRepository.listImagesInCategoryWithStatus("category", ImageStatus.NEW).size());
+//        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("category", ImageStatus.UNFINISHED).size());
+//        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("NOT THE CATEGORY", ImageStatus.UNFINISHED).size());
+    }
+    
+    @Test
+    public void testRemovingImages() throws Exception {
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW));
+        
+        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", "category", WordStatus.PENDING));
+        
+        imageRepository.addWordToImage(imageId1, wordId1, 70);
+
+        Image image1 = imageRepository.getImage(imageId1);
+        
+        Assert.assertEquals(1, wordRepository.getImageWords(image1.getId()).size());
+        Assert.assertEquals(1, imageRepository.wordImages(wordId1, ImageStatus.NEW).size());
+        
+        imageRepository.removeImage(image1);
+        
+        Assert.assertNull(imageRepository.getImage(imageId1));
+        Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.NEW).size());
+        Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.FINISHED).size());
+        Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.UNFINISHED).size());
+        
     }
 }

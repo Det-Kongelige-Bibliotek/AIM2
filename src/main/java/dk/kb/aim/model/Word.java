@@ -7,15 +7,15 @@ import dk.kb.aim.repository.WordStatus;
  */
 public class Word {
     /** The ID of the word.*/
-    private int id;
+    protected int id;
     /** The english text.*/
-    private String textEn;
+    protected String textEn;
     /** The danish translated text.*/
-    private String textDa;
+    protected String textDa;
     /** The category of the word.*/
-    private String category;
+    protected String category;
     /** The status of the word.*/
-    private WordStatus status;
+    protected WordStatus status;
     
     /**
      * Constructor.

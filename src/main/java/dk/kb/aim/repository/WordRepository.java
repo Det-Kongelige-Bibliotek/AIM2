@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -162,13 +163,13 @@ public class WordRepository {
      * @param imageId The Id of the image.
      * @return The list of words associated with the image.
      */
-    public List<Word> getImageWords(int imageId) {
+    public List<WordConfidence> getImageWords(int imageId) {
         String sql = "SELECT * " +
                 "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = " + imageId;
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new WordConfidence(
                 rs.getInt("id"), rs.getString("text_en"), rs.getString("text_da"), rs.getString("category"), 
-                WordStatus.valueOf(rs.getString("status"))));
+                WordStatus.valueOf(rs.getString("status")), rs.getInt("confidence")));
     }
     
     /**
@@ -177,13 +178,14 @@ public class WordRepository {
      * @param status The status for the words.
      * @return The list of words with the status associated with the image.
      */
-    public List<Word> getImageWords(int imageId, WordStatus status) {
+    public List<WordConfidence> getImageWords(int imageId, WordStatus status) {
         String sql = "SELECT * " +
                 "from image_word i INNER JOIN words w ON i.word_id = w.id WHERE " +
                 "i.image_id = " + imageId + " AND " +
                 "w.status='" + status + "'";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"), 
-                rs.getString("text_da"), rs.getString("category"), WordStatus.valueOf(rs.getString("status"))));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new WordConfidence(
+                rs.getInt("id"), rs.getString("text_en"), rs.getString("text_da"), rs.getString("category"), 
+                WordStatus.valueOf(rs.getString("status")), rs.getInt("confidence")));
     }
     
     /**

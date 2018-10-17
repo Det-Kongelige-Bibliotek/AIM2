@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
+import dk.kb.aim.exception.MissingRecordException;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
@@ -28,7 +30,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
     /** The configuration */
     protected final Configuration conf;
     /** The CumulusRetriever for fetching stuff out of Cumulus.*/
-    protected final CumulusRetriever retriever;
+    protected final CumulusRetriever cumulusRetriever;
     /** The name of the catalog.*/
     protected final String catalogName;
     /** The repository for the images.*/
@@ -47,7 +49,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
     public FindFinishedImagesStep(Configuration conf, CumulusRetriever retriever, String catalogName, 
             ImageRepository imageRepo, WordRepository wordRepo) {
         this.conf = conf;
-        this.retriever = retriever;
+        this.cumulusRetriever = retriever;
         this.catalogName = catalogName;
         this.imageRepo = imageRepo;
         this.wordRepo = wordRepo;
@@ -68,7 +70,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
                 numberOfUnfinished++;
                 if(isFinished(image)) {
                     numberOfPreviouslyUnfinished++;
-                    CumulusRecord record = retriever.findRecord(catalogName, image.getCumulusId());
+                    CumulusRecord record = cumulusRetriever.findRecord(catalogName, image.getCumulusId());
                     setFinished(record, image);
                 }
             } catch(Exception e) {
@@ -81,7 +83,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
         for(Image image : imageRepo.listImagesWithStatus(ImageStatus.NEW)) {
             try {
                 numberOfNew++;
-                CumulusRecord record = retriever.findRecord(catalogName, image.getCumulusId());
+                CumulusRecord record = cumulusRetriever.findRecord(catalogName, image.getCumulusId());
                 if(isFinished(image)) {
                     numberOfNewFinished++;
                     setFinished(record, image);
@@ -89,6 +91,10 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     numberOfNewNotFinished++;
                     setUnfinished(record, image);
                 }
+            } catch(MissingRecordException e) {
+                LOGGER.error("The image '" + image + "' is missing in Cumulus. Removing it from AIM!", e);
+                imageRepo.removeImage(image);
+                numberOfFailures++;
             } catch(Exception e) {
                 LOGGER.warn("Failed to handle image: '" + image.getCumulusId() + "'", e);
                 numberOfFailures++;
@@ -116,7 +122,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
     protected void setFinished(CumulusRecord record, Image image) {
         LOGGER.info("Setting image '" + image.getCumulusId() + "' to finished!");
         
-        List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
+        List<WordConfidence> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
         String keywords;
         if(words.isEmpty()) {
             keywords = "";
@@ -146,7 +152,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
      * @param words The list of words.
      * @return The words combined into a single string.
      */
-    protected String getKeywords(List<Word> words) {
+    protected String getKeywords(List<WordConfidence> words) {
         StringBuffer res = new StringBuffer();
         for(Word word : words) {
             res.append(word.getTextDa() + "\n");
@@ -174,7 +180,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
      * @return Whether or not any words are pending for the image.
      */
     protected boolean isFinished(Image image) {
-        List<Word> words = wordRepo.getImageWords(image.getId(), WordStatus.PENDING);
+        List<WordConfidence> words = wordRepo.getImageWords(image.getId(), WordStatus.PENDING);
         
         return words.isEmpty();
     }

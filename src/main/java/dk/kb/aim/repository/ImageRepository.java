@@ -193,4 +193,13 @@ public class ImageRepository {
                 rs.getString("cumulus_id"), rs.getString("category"), rs.getString("color"),rs.getString("ocr"), 
                 ImageStatus.valueOf(rs.getString("status"))));
     }
+    
+    /**
+     * Removes an image. Both from the images table and all related entries in the image_word table.
+     * @param image The image to remove.
+     */
+    public void removeImage(Image image) {
+        jdbcTemplate.execute("DELETE FROM image_word WHERE image_id=" + image.getId());
+        jdbcTemplate.execute("DELETE FROM images WHERE id=" + image.getId());
+    }
 }

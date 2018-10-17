@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
 
@@ -47,7 +48,7 @@ public class WordRepositoryTest {
         Assert.assertEquals(WordStatus.REJECTED,retrievedWord.getStatus());
     }
 
-//    @Test
+    @Test
     public void testRelationAndStuff() throws Exception{
         int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
         int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
@@ -55,7 +56,7 @@ public class WordRepositoryTest {
         imageRepository.addWordToImage(img_id,word1_id,88);
         imageRepository.addWordToImage(img_id,word2_id,51);
 
-        List<Word> words = wordRepository.getImageWords(img_id,WordStatus.PENDING);
+        List<WordConfidence> words = wordRepository.getImageWords(img_id,WordStatus.PENDING);
         Assert.assertEquals(2,words.size());
 
         Word retreived_word1 = wordRepository.getWord(word1_id);
@@ -73,7 +74,22 @@ public class WordRepositoryTest {
         Assert.assertFalse(wordRepository.isAcceptedFor("Ship","cat3"));
         Assert.assertFalse(wordRepository.isRejectedFor("Ship","cat3"));
         Assert.assertFalse(wordRepository.isAcceptedFor("Horse","cat2"));
-        Assert.assertFalse(wordRepository.isRejectedFor("Horse","cat2"));
+        
+        List<WordConfidence> confidences = wordRepository.getImageWords(img_id);
+        Assert.assertEquals(2, confidences.size());
+        WordConfidence cw = confidences.get(0);
+        
+        Assert.assertEquals(88, cw.getConfidence());
+    }
+    
+//    @Test
+    public void testStuff() throws Exception {
+        int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
+        int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
+        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED));
+        imageRepository.addWordToImage(img_id,word1_id,88);
+        imageRepository.addWordToImage(img_id,word2_id,51);
+        
     }
 
     @Test

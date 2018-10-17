@@ -29,7 +29,7 @@
                     <dt>status</dt><dd>${image_details.status}</dd>
                     <dt>Keywords</dt><dd>
                     <c:forEach items="${image_words}" var="word">
-                        <p><a href="${pageContext.request.contextPath}/words/${word.category}?status=${word.status}">${word.textDa} (${word.textEn})</a></p>
+                        <p><a href="${pageContext.request.contextPath}/words/${word.category}?status=${word.status}">${word.textDa} (${word.textEn}) [${word.confidence} %]</a></p>
                     </c:forEach>
                     &nbsp;</dd>
                 </dl>
