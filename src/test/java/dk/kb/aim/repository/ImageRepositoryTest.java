@@ -1,6 +1,7 @@
 package dk.kb.aim.repository;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dgj on 06-03-2018.
@@ -26,6 +28,13 @@ public class ImageRepositoryTest  {
     
     @Autowired
     WordRepository wordRepository;
+    
+    @Before
+    public void setup() {
+        for(Image image : imageRepository.listAllImages()) {
+            imageRepository.removeImage(image);
+        }
+    }
 
     @Test
     public void testCreateAndRetreiveImage() {
@@ -64,13 +73,14 @@ public class ImageRepositoryTest  {
     
     @Test
     public void testFindFinishedImages() throws Exception {
-        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW));
-        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", "category", "blue", "ocr", ImageStatus.NEW));
-        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", "category", "green", "ocr", ImageStatus.NEW));
+        String catagory = UUID.randomUUID().toString();
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", catagory, "red", "ocr", ImageStatus.NEW));
+        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", catagory, "blue", "ocr", ImageStatus.NEW));
+        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", catagory, "green", "ocr", ImageStatus.NEW));
         
-        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", "category", WordStatus.PENDING));
-        int wordId2 = wordRepository.createWord(new Word("Adjective", "Tillægsord", "category", WordStatus.REJECTED));
-        int wordId3 = wordRepository.createWord(new Word("Gnu", "Gnu", "category", WordStatus.ACCEPTED));
+        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", catagory, WordStatus.PENDING));
+        int wordId2 = wordRepository.createWord(new Word("Adjective", "Tillægsord", catagory, WordStatus.REJECTED));
+        int wordId3 = wordRepository.createWord(new Word("Gnu", "Gnu", catagory, WordStatus.ACCEPTED));
         
         imageRepository.addWordToImage(imageId1, wordId1, 70);
         imageRepository.addWordToImage(imageId2, wordId2, 80);
@@ -79,11 +89,11 @@ public class ImageRepositoryTest  {
 //        Assert.assertEquals(3, imageRepository.listAllImages().size());
 //        Assert.assertEquals(3, imageRepository.listImagesWithStatus(ImageStatus.NEW).size());
 //        Assert.assertEquals(0, imageRepository.listImagesWithStatus(ImageStatus.FINISHED).size());
-//        Assert.assertEquals(3, imageRepository.listImagesInCategory("category").size());
-//        Assert.assertEquals(0, imageRepository.listImagesInCategory("NOT THE CATEGORY").size());
-//        Assert.assertEquals(3, imageRepository.listImagesInCategoryWithStatus("category", ImageStatus.NEW).size());
-//        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("category", ImageStatus.UNFINISHED).size());
-//        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("NOT THE CATEGORY", ImageStatus.UNFINISHED).size());
+        Assert.assertEquals(3, imageRepository.listImagesInCategory(catagory).size());
+        Assert.assertEquals(0, imageRepository.listImagesInCategory("NOT THE CATEGORY").size());
+        Assert.assertEquals(3, imageRepository.listImagesInCategoryWithStatus(catagory, ImageStatus.NEW).size());
+        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus(catagory, ImageStatus.UNFINISHED).size());
+        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("NOT THE CATEGORY", ImageStatus.UNFINISHED).size());
     }
     
     @Test
@@ -105,6 +115,38 @@ public class ImageRepositoryTest  {
         Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.NEW).size());
         Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.FINISHED).size());
         Assert.assertEquals(0, imageRepository.wordImages(wordId1, ImageStatus.UNFINISHED).size());
+        
+    }
+    
+    @Test
+    public void testListImages() {
+        String catagory = UUID.randomUUID().toString();
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", catagory, "red", "ocr", ImageStatus.NEW));
+        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", catagory, "blue", "ocr", ImageStatus.NEW));
+        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", catagory, "green", "ocr", ImageStatus.NEW));
+
+        int allImages = imageRepository.listAllImages().size();
+        Assert.assertEquals(3, allImages);
+        List<Image> images;
+        images = imageRepository.listImages(1, 0);
+        Assert.assertEquals(images.size(), 1);
+        Assert.assertEquals(images.get(0).getId(), imageId3);
+        
+        images = imageRepository.listImages(1, 1);
+        Assert.assertEquals(images.size(), 1);
+        Assert.assertEquals(images.get(0).getId(), imageId2);
+
+        images = imageRepository.listImages(1, 2);
+        Assert.assertEquals(images.size(), 1);
+        Assert.assertEquals(images.get(0).getId(), imageId1);
+
+        images = imageRepository.listImages(2, 1);
+        Assert.assertEquals(images.size(), 2);
+        Assert.assertEquals(images.get(0).getId(), imageId2);
+        Assert.assertEquals(images.get(1).getId(), imageId1);
+
+//        Assert.assertEquals(imageRepository.listImages(1, 2).size(), 1);
+//        Assert.assertEquals(imageRepository.listImages(1, 2).size(), 1);
         
     }
 }

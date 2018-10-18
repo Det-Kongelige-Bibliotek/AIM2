@@ -60,6 +60,18 @@ public class ImageRepository {
     }
     
     /**
+     * Retrieves the given number of images at the given offset. 
+     * They are sorted reverse according the ID of the images.
+     * @param count The number of images to fetch.
+     * @param offset The offset for the which images to fetch.
+     * @return A list with the images.
+     */
+    public List<Image> listImages(int count, int offset) {
+        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images "
+                + " ORDER BY id DESC LIMIT " + count + " OFFSET " + offset);
+    }
+    
+    /**
      * Retrieves a list with the images of a given category.
      * @param category The category.
      * @return The images of the category.

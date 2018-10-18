@@ -55,6 +55,12 @@
             </c:forEach>
         </div>
     </div>
+    
+    <div class="container">
+        <c:if test="${hasMore eq true}">
+            <a class="btn btn-success" href="${pageContext.request.contextPath}/images?offset=${nextOffset}&limit=${limit}">More images</a>
+        </c:if>
+    </div>
 </div>
 
 </body>

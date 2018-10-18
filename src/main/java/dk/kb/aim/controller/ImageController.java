@@ -49,9 +49,14 @@ public class ImageController {
      * @return The name of the jsp page.
      */
     @RequestMapping("/images")
-    public String allImages(Model model) {
-        model.addAttribute("images", imageRepository.listAllImages());
+    public String allImages(@RequestParam(value="limit", required=false, defaultValue = "100") int limit,
+            @RequestParam(value="offset", required = false, defaultValue = "0") int offset, Model model) {
+        List<Image> images = imageRepository.listImages(limit, offset);
+        model.addAttribute("images", images);
         model.addAttribute("image_url", conf.getJpegUrl());
+        model.addAttribute("limit", limit);
+        model.addAttribute("nextOffset", offset + limit);
+        model.addAttribute("hasMore", images.size() >= limit);
         return "list-images";
     }
     
