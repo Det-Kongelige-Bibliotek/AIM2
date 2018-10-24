@@ -65,6 +65,15 @@ public class FrontBackStepTest {
         String p6 = fbw.getFrontPage(f6);
         Assert.assertNotNull(p6);
         Assert.assertEquals(p6, id6 + "09999999" + suffix);
+        
+        String id7 = "RU000701.tif";
+        String id8 = "RU000702.tif";
+        String id9 = "RU000702_1.tif";
+        String id10 = "RU000702_2.tif";
+        Assert.assertNull(fbw.getFrontPage(id7));
+        Assert.assertEquals(id7, fbw.getFrontPage(id8));
+        Assert.assertEquals(id7, fbw.getFrontPage(id9));
+        Assert.assertEquals(id7, fbw.getFrontPage(id10));
     }
     
     @Test

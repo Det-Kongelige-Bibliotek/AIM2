@@ -26,6 +26,12 @@ import dk.kb.cumulus.CumulusRecord;
 public class FindFinishedImagesStep extends WorkflowStep {
     /** The log.*/
     protected static final Logger LOGGER = LoggerFactory.getLogger(FindFinishedImagesStep.class);
+    
+    /** The name of this step.*/
+    protected static final String STEP_NAME = "Find Finished Images step";
+    
+    /** The empty string, for the case when no words are attached to an image.*/
+    protected static final String EMPTY_STRING = "";
 
     /** The configuration */
     protected final Configuration conf;
@@ -73,6 +79,11 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     CumulusRecord record = cumulusRetriever.findRecord(catalogName, image.getCumulusId());
                     setFinished(record, image);
                 }
+            } catch(MissingRecordException e) {
+                LOGGER.error("The image '" + image.getCumulusId() + "' is missing in Cumulus. Removing it from AIM!", 
+                        e);
+                imageRepo.removeImage(image);
+                numberOfFailures++;
             } catch(Exception e) {
                 LOGGER.warn("Failed to handle image: '" + image.getCumulusId() + "'", e);
                 numberOfFailures++;
@@ -92,7 +103,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
                     setUnfinished(record, image);
                 }
             } catch(MissingRecordException e) {
-                LOGGER.error("The image '" + image + "' is missing in Cumulus. Removing it from AIM!", e);
+                LOGGER.error("The image '" + image.getCumulusId() + "' is missing in Cumulus. Removing it from AIM!", 
+                        e);
                 imageRepo.removeImage(image);
                 numberOfFailures++;
             } catch(Exception e) {
@@ -125,7 +137,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
         List<WordConfidence> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
         String keywords;
         if(words.isEmpty()) {
-            keywords = "";
+            keywords = EMPTY_STRING;
             LOGGER.warn("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
         } else {
             keywords = getKeywords(words);
@@ -137,7 +149,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
         
         // SET RECORD TO NOT READY FOR AIM!
         if(conf.isTest()) {
-            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, "");
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, EMPTY_STRING);
         } else {
             record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                     CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
@@ -187,6 +199,6 @@ public class FindFinishedImagesStep extends WorkflowStep {
 
     @Override
     public String getName() {
-        return "Find Finished Images step";
+        return STEP_NAME;
     }
 }

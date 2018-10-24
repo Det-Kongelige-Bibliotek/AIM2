@@ -62,6 +62,8 @@ public class CumulusRetriever {
     /** The Front/Back state for 'done'.*/
     public static final String FIELD_VALUE_FRONT_BACK_STATUS_DONE = "Afsluttet";
     
+    /** The search string for a field with no value.*/
+    public static final String FIELD_HAS_NO_VALUE = "has no value";
     
     /** The Cumulus field name for Keywords.*/
     public static final String FIELD_NAME_KEYWORDS = "Keywords";
@@ -112,14 +114,16 @@ public class CumulusRetriever {
      */
     public CumulusRecordCollection getReadyForAIMRecords(String catalogName) {
         String queryString = String.format(
-                StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s\nand %s is %s\nor %s has no value"),
-                Constants.FieldNames.CATALOG_NAME,
-                catalogName,
+                StringUtils.replaceSpacesToTabs("%s is %s\nand %s is %s\nand %s is %s\nor %s %s"),
                 FIELD_NAME_READY_FOR_AIM,
                 FIELD_VALUE_AIM_READY_TRUE,
+                Constants.FieldNames.CATALOG_NAME,
+                catalogName,
                 FIELD_NAME_AIM_STATUS,
                 FIELD_VALUE_AIM_STATUS_IN_PROCESS,
-                FIELD_NAME_AIM_STATUS);
+                FIELD_NAME_AIM_STATUS,
+                FIELD_HAS_NO_VALUE
+                );
         EnumSet<FindFlag> findFlags = EnumSet.of(
                 FindFlag.FIND_MISSING_FIELDS_ARE_ERROR, 
                 FindFlag.FIND_MISSING_STRING_LIST_VALUES_ARE_ERROR);    

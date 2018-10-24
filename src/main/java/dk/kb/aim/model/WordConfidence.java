@@ -18,6 +18,7 @@ public class WordConfidence extends Word {
      * @param textDa The danish translated text.
      * @param category The category of the word.
      * @param status The status of the word.
+     * @param confidence The confidence that the word matches the image.
      */
     public WordConfidence(int id, String textEn, String textDa, String category, WordStatus status, int confidence) {
         super(id, textEn, textDa, category, status);

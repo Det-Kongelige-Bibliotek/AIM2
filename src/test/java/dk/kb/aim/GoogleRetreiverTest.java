@@ -36,7 +36,7 @@ public class GoogleRetreiverTest {
                          "image_store" + File.separator +
                          "hest.jpeg";
 
-        googleRetreiver.createImageAndRetreiveLabels(new File(imgPath),"test1234","Mammals");
+//        googleRetreiver.createImageAndRetreiveLabels(new File(imgPath),"test1234","Mammals");
     }
 
 }

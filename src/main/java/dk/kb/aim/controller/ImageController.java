@@ -44,7 +44,9 @@ public class ImageController {
     private Configuration conf;
     
     /**
-     * The view for all the images.
+     * The view for the images.
+     * @param limit The maximum number of images to show.
+     * @param offset The offset for the images to show.
      * @param model The model.
      * @return The name of the jsp page.
      */

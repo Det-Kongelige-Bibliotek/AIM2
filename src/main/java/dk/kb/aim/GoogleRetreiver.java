@@ -101,7 +101,7 @@ public class GoogleRetreiver {
                         dbWord.setId(word_id);
                     }
                     imageRepository.addWordToImage(dbImage.getId(),dbWord.getId(),
-                            Math.round(100*annotation.getConfidence()));
+                            Long.valueOf(Math.round(100.*annotation.getConfidence())).intValue());
                 }
             }
         }

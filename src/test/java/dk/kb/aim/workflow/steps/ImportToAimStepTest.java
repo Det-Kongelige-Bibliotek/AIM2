@@ -1,8 +1,13 @@
 package dk.kb.aim.workflow.steps;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,7 +24,6 @@ import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.GoogleRetreiver;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.utils.ImageConverter;
-import dk.kb.aim.workflow.steps.ImportToAimStep;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
@@ -82,16 +86,17 @@ public class ImportToAimStepTest {
         verify(record, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS));
-        //verifyNoMoreInteractions(record);
+        verify(record).isSubAsset();
+        verify(record).getFile();
+        verifyNoMoreInteractions(record);
         verify(records).iterator();
         verifyNoMoreInteractions(records);
         verify(retriever).getReadyForAIMRecords(eq(catalogName));
         verify(retriever).getCategoryPath(eq(catalogName), eq(categoryId));
         verifyNoMoreInteractions(retriever);
-//        verify(imageConverter).convertTiff(any(File.class));
-//        verifyNoMoreInteractions(imageConverter);
-//        verify(googleRetriever).createImageAndRetreiveLabels(any(File.class), eq(recordName), eq(expectedCategory));
-//        verifyNoMoreInteractions(googleRetriever);
+
+        verifyZeroInteractions(imageConverter);
+        verifyZeroInteractions(googleRetriever);
     }
     
     @Test
