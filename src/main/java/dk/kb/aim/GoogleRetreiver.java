@@ -3,6 +3,7 @@ package dk.kb.aim;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -164,8 +165,10 @@ public class GoogleRetreiver {
      * @throws IOException If it fails to read the image file.
      */
     protected com.google.cloud.vision.v1.Image readImage(File file) throws IOException {
-        ByteString imgBytes = ByteString.readFrom(new FileInputStream(file));
-        return com.google.cloud.vision.v1.Image.newBuilder().setContent(imgBytes).build();
+        try (InputStream in = new FileInputStream(file)) {
+            ByteString imgBytes = ByteString.readFrom(in);
+            return com.google.cloud.vision.v1.Image.newBuilder().setContent(imgBytes).build();
+        }
     }
     
     /**

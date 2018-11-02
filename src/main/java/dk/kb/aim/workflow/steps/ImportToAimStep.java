@@ -96,8 +96,12 @@ public class ImportToAimStep extends WorkflowStep {
                     LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() 
                             + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
                 }
-            } catch (Exception e) {
-                LOGGER.warn("Failure to import image.", e);
+            } catch (IOException e) {
+                LOGGER.warn("An I/O issue occured, when trying to import the image", e);
+                numberOfFailures++;
+            } catch (Throwable e) {
+                System.gc();
+                LOGGER.warn("Mayor failure, when trying to import the image.", e);
                 numberOfFailures++;
             }
         }
@@ -146,7 +150,7 @@ public class ImportToAimStep extends WorkflowStep {
         }
         
         File jpegFile = imageConverter.convertTiff(imageFile);
-        
+
         googleRetriever.createImageAndRetreiveLabels(jpegFile, cumulusId, category);
     }
     
@@ -163,6 +167,7 @@ public class ImportToAimStep extends WorkflowStep {
                 return path.get(aimPath + 1);
             }
         }
+        
         // TODO what should we do, if we cannot find the category?
         LOGGER.warn("No AIM category found. Returning '" + CATEGORY_UNKNOWN + "'");
         return CATEGORY_UNKNOWN;

@@ -104,7 +104,7 @@ public class AimWorkflow extends TimerTask {
             for(WorkflowStep step : steps) {
                 step.run();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOGGER.error("Faild to run all the workflow steps.", e);
             status = "Failure during last run: " + e.getMessage();
         }
