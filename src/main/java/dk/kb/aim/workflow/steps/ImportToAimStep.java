@@ -64,18 +64,17 @@ public class ImportToAimStep extends WorkflowStep {
     public void runStep() {
         int numberOfRecords = 0;
         int numberOfBackPages = 0;
-        int numberOfAlreadyImported = 0;
+        int numberOfReimported = 0;
         int numberOfSuccess = 0;
         int numberOfFailures = 0;
         
         for(CumulusRecord record : cumulusRetriever.getReadyForAIMRecords(catalogName)) {
             String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
             if(imageRepository.hasImageWithCumulusId(cumulusId)) {
-                numberOfAlreadyImported++;
-                LOGGER.info("Found record which has already been imported into AIM: '[" 
+                numberOfReimported++;
+                LOGGER.debug("Found record which has already been imported into AIM: '["
                         + record.getClass().getCanonicalName() + " -> " 
-                        + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
-                continue;
+                        + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'. Reimporting!");
             }
             
             LOGGER.info("Importing the Cumulus record '[" + record.getClass().getCanonicalName() + " -> " 
@@ -113,7 +112,7 @@ public class ImportToAimStep extends WorkflowStep {
         results += "Found total: " + numberOfRecords
                 + ", number successfully imported: " + numberOfSuccess
                 + ", number of backpages: " + numberOfBackPages
-                + ", number of already imported: " + numberOfAlreadyImported
+                + ", number of reimported: " + numberOfReimported
                 + ", number of failures: " + numberOfFailures;
         setResultOfRun(results);
     }
