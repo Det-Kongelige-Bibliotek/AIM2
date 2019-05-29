@@ -41,9 +41,11 @@ public class FindFinishedImagesStepTest {
         
         String cumulusId = UUID.randomUUID().toString();
         int id = new Random().nextInt();
+        String color = "color";
         
         when(image.getId()).thenReturn(id);
         when(image.getCumulusId()).thenReturn(cumulusId);
+        when(image.getColor()).thenReturn(color);
 
         when(imageRepo.listImagesWithStatus(ImageStatus.UNFINISHED)).thenReturn(Arrays.asList(image));
         when(imageRepo.listImagesWithStatus(ImageStatus.NEW)).thenReturn(new ArrayList<Image>());
@@ -57,7 +59,7 @@ public class FindFinishedImagesStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE));
         verify(record).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_AIM), eq(Boolean.FALSE));
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_KEYWORDS), anyString());
-        verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), anyString());
+        verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), eq(color));
         verifyNoMoreInteractions(record);
         
         verify(image, times(3)).getCumulusId();
@@ -100,9 +102,11 @@ public class FindFinishedImagesStepTest {
         
         String cumulusId = UUID.randomUUID().toString();
         int id = new Random().nextInt();
-        
+        String color = "color";
+
         when(image.getId()).thenReturn(id);
         when(image.getCumulusId()).thenReturn(cumulusId);
+        when(image.getColor()).thenReturn(color);
 
         when(imageRepo.listImagesWithStatus(ImageStatus.UNFINISHED)).thenReturn(new ArrayList<Image>());
         when(imageRepo.listImagesWithStatus(ImageStatus.NEW)).thenReturn(Arrays.asList(image));
@@ -116,7 +120,7 @@ public class FindFinishedImagesStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE));
         verify(record).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_AIM), eq(Boolean.FALSE));
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_KEYWORDS), anyString());
-        verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), anyString());
+        verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), eq(color));
         verifyNoMoreInteractions(record);
         
         verify(image, times(3)).getCumulusId();
