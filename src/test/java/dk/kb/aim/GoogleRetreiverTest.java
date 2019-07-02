@@ -1,28 +1,35 @@
 package dk.kb.aim;
 
+import com.google.cloud.vision.v1.AnnotateImageResponse;
+import com.google.cloud.vision.v1.EntityAnnotation;
+import com.google.cloud.vision.v1.Feature;
+import dk.kb.aim.model.Image;
+import dk.kb.aim.model.Word;
+import dk.kb.aim.repository.ImageRepository;
+import dk.kb.aim.repository.WordRepository;
+import dk.kb.aim.utils.ImageConverter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.EntityAnnotation;
-
-import dk.kb.aim.GoogleRetreiver;
-import dk.kb.aim.model.Image;
-import dk.kb.aim.model.Word;
-import dk.kb.aim.model.WordConfidence;
-import dk.kb.aim.repository.ImageRepository;
-import dk.kb.aim.repository.WordRepository;
-
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Created by dgj on 26-03-2018.
@@ -37,26 +44,75 @@ public class GoogleRetreiverTest {
     @Autowired
     ImageRepository imageRepository;
 
+    @Autowired
+    Configuration conf;
+
     @Test
-    public void testIt() throws Exception {
+    public void testInjectEnvironmentVariable() throws Exception {
+        Assert.assertNull(System.getenv("FOOBAR_ENV"));
+
+        TestUtils.injectEnvironmentVariable("FOOBAR_ENV", "Foo");
+
+        Assert.assertEquals(System.getenv("FOOBAR_ENV"), "Foo");
+    }
+
+    @Test
+    public void testTextExtraction() throws Exception {
+        Assert.assertNotNull(conf);
+        System.out.println("conf: " + conf);
+        System.out.println("workflow interval: " + conf.getWorkflowInterval());
+        System.out.println("Cumulus catalog: " + conf.getCumulusCatalog());
+        System.out.println("Cumulus conf: " + conf.getCumulusConf());
+        System.out.println("jpeg folder: " + conf.getJpegFolder());
+        System.out.println("jpeg url: " + conf.getJpegUrl());
+        System.out.println("jpeg size: " + conf.getJpegSizeLimit());
+        System.out.println("Test dir: " + conf.getTestDir());
+
 //      Requires the environment variable: GOOGLE_APPLICATION_CREDENTIALS
-        
-        
-//        for(Image image : imageRepository.listAllImages()) {
-//            imageRepository.removeImage(image);
-//        }
-//        
-//        Assert.assertTrue(imageRepository.listAllImages().isEmpty());
-//        
-//        GoogleRetreiver googleRetreiver = new GoogleRetreiver();
-//        googleRetreiver.wordRepository = wordRepository;
-//        googleRetreiver.imageRepository = imageRepository;
-//        String imgPath = "src" + File.separator +
-//                         "main" + File.separator +
-//                         "webapp" + File.separator +
-//                         "image_store" + File.separator +
-//                         "hest.jpeg";
-//
+
+        for(Image image : imageRepository.listAllImages()) {
+            imageRepository.removeImage(image);
+        }
+        Assert.assertTrue(imageRepository.listAllImages().isEmpty());
+
+        File googleFile = new File("AIMapis.json");
+        Assert.assertTrue(googleFile.isFile());
+        TestUtils.injectEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", googleFile.getAbsolutePath());
+
+        GoogleRetreiver googleRetreiver = new GoogleRetreiver();
+        googleRetreiver.wordRepository = wordRepository;
+        googleRetreiver.imageRepository = imageRepository;
+        String tiffPath = "src" + File.separator +
+                         "test" + File.separator +
+                         "resources" + File.separator +
+                         "DKP002-0094_0027.tif";
+//                         "KE051541.tif";
+
+        Assert.assertTrue(new File(tiffPath).isFile());
+        ImageConverter imageConverter = new ImageConverter();
+        Field f1 = imageConverter.getClass().getDeclaredField("conf");
+        f1.setAccessible(true);
+        f1.set(imageConverter, conf);
+
+        File jpegFile = imageConverter.convertTiff(new File(tiffPath));
+
+        com.google.cloud.vision.v1.Image image = googleRetreiver.readImage(jpegFile);
+        List<AnnotateImageResponse> responses = googleRetreiver.sendRequest(image, Feature.Type.TEXT_DETECTION);
+
+        for(AnnotateImageResponse response : responses) {
+            System.out.println("TEXT_DETECTION:");
+            System.out.println(response);
+            System.out.println("--------");
+        }
+        responses = googleRetreiver.sendRequest(image, Feature.Type.DOCUMENT_TEXT_DETECTION);
+
+        for(AnnotateImageResponse response : responses) {
+            System.out.println("DOCUMENT_TEXT_DETECTION:");
+            System.out.println(response);
+            System.out.println("--------");
+        }
+
+
 //        googleRetreiver.createImageAndRetreiveLabels(new File(imgPath),"test1234","Mammals");
 //        
 //        List<Image> images = imageRepository.listAllImages();
@@ -73,12 +129,12 @@ public class GoogleRetreiverTest {
     public void testCreateImageWordsForLabelAnnotations() throws Exception {
         GoogleRetreiver googleRetreiver = new GoogleRetreiver();
         
-        WordRepository wordRepository = Mockito.mock(WordRepository.class);
-        ImageRepository imageRepository = Mockito.mock(ImageRepository.class);
-        Image dbImage = Mockito.mock(Image.class);
-        AnnotateImageResponse response = Mockito.mock(AnnotateImageResponse.class);
-        Word dbWord = Mockito.mock(Word.class);
-        EntityAnnotation annotation = Mockito.mock(EntityAnnotation.class);
+        WordRepository wordRepository = mock(WordRepository.class);
+        ImageRepository imageRepository = mock(ImageRepository.class);
+        Image dbImage = mock(Image.class);
+        AnnotateImageResponse response = mock(AnnotateImageResponse.class);
+        Word dbWord = mock(Word.class);
+        EntityAnnotation annotation = mock(EntityAnnotation.class);
         
         googleRetreiver.wordRepository = wordRepository;
         googleRetreiver.imageRepository = imageRepository;
@@ -91,25 +147,25 @@ public class GoogleRetreiverTest {
         float confidence = 0.12345f;
         int expectedConfidence = 12;
         
-        Mockito.when(response.getLabelAnnotationsList()).thenReturn(Arrays.asList(annotation));
-        Mockito.when(response.hasError()).thenReturn(false);
+        when(response.getLabelAnnotationsList()).thenReturn(Arrays.asList(annotation));
+        when(response.hasError()).thenReturn(false);
         
-        Mockito.when(dbImage.getId()).thenReturn(imageId);
-        Mockito.when(dbImage.getCategory()).thenReturn(categoryName);
-        Mockito.when(dbWord.getId()).thenReturn(wordId);
+        when(dbImage.getId()).thenReturn(imageId);
+        when(dbImage.getCategory()).thenReturn(categoryName);
+        when(dbWord.getId()).thenReturn(wordId);
         
-        Mockito.when(annotation.getDescription()).thenReturn(annotationText);
-        Mockito.when(annotation.getConfidence()).thenReturn(confidence);
+        when(annotation.getDescription()).thenReturn(annotationText);
+        when(annotation.getConfidence()).thenReturn(confidence);
         
-        Mockito.when(wordRepository.getWordByText(Mockito.eq(annotationText), Mockito.eq(categoryName))).thenReturn(dbWord);
+        when(wordRepository.getWordByText(eq(annotationText), eq(categoryName))).thenReturn(dbWord);
         
         googleRetreiver.createImageWordsForLabelAnnotations(dbImage, Arrays.asList(response));
         
-        Mockito.verify(wordRepository).getWordByText(Mockito.eq(annotationText), Mockito.eq(categoryName));
-        Mockito.verifyNoMoreInteractions(wordRepository);
+        verify(wordRepository).getWordByText(eq(annotationText), eq(categoryName));
+        verifyNoMoreInteractions(wordRepository);
         
-        Mockito.verify(imageRepository).addWordToImage(Mockito.eq(imageId), Mockito.eq(wordId), Mockito.eq(expectedConfidence));
-        Mockito.verifyNoMoreInteractions(imageRepository);
+        verify(imageRepository).addWordToImage(eq(imageId), eq(wordId), eq(expectedConfidence));
+        verifyNoMoreInteractions(imageRepository);
     }
     
 }

@@ -5,6 +5,7 @@ tempDir/
 
 ### Local configuration ###
 aim.yml
+AIMapis.json
 
 ### STS ###
 .apt_generated

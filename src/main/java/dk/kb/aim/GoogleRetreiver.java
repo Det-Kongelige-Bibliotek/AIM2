@@ -54,7 +54,18 @@ public class GoogleRetreiver {
     /** The repository for the db word table.*/
     @Autowired
     protected WordRepository wordRepository;
-    
+
+    public void retrieveGoogleData(File imageFile, String cumulusId, String category, Feature.Type ... types)
+            throws IOException{
+        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW);
+        int image_id = imageRepository.createImage(dbImage);
+        dbImage.setId(image_id);
+
+        com.google.cloud.vision.v1.Image image = readImage(imageFile);
+        List<AnnotateImageResponse> responses = sendRequest(image, types);
+
+    }
+
     /**
      * Creates the entry in the database for the image and retrieve the metadata for the image. 
      * It will extracts the image-file as a Google Vision image, so it is ready for being processed by the 
@@ -67,7 +78,7 @@ public class GoogleRetreiver {
     public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) throws IOException {
         com.google.cloud.vision.v1.Image image = readImage(imageFile);
         String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
-        Image dbImage = new Image(-1,imageFile.getName(),cumulusId,category,color,"",ImageStatus.NEW);
+        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, color,"", ImageStatus.NEW);
         int image_id = imageRepository.createImage(dbImage);
         dbImage.setId(image_id);
         createImageWordsForLabelAnnotations(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
@@ -142,17 +153,19 @@ public class GoogleRetreiver {
     /**
      * Send the given request for the Google Vision service for the given image.
      * @param image The image to have annotated according to the given feature type.
-     * @param type The type of feature to have Google Vision annotated.
+     * @param types The types of feature to have Google Vision annotated.
      * @return The list of annotation responses for the image regarding to the given type.
      * @throws IOException If it fails in the communication with the Google Vision service. 
      */
-    protected List<AnnotateImageResponse> sendRequest(com.google.cloud.vision.v1.Image image, Feature.Type type) 
+    protected List<AnnotateImageResponse> sendRequest(com.google.cloud.vision.v1.Image image, Feature.Type ... types)
             throws IOException {
         List<AnnotateImageRequest> requests = new ArrayList<>();
-        Feature feat = Feature.newBuilder().setType(type).build();
-        AnnotateImageRequest request =
-                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image).build();
-        requests.add(request);
+        for(Feature.Type type : types) {
+            Feature feat = Feature.newBuilder().setType(type).build();
+            AnnotateImageRequest request =
+                    AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image).build();
+            requests.add(request);
+        }
 
         BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
         return response.getResponsesList();

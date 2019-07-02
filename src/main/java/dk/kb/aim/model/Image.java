@@ -24,6 +24,8 @@ public class Image {
     private ImageStatus status;
     /** The list of word relations for the image.*/
     private List<ImageWord> imageWords;
+    /** Whether or not this image is the front (and thus not the back) of an image.*/
+    private Boolean isFront;
     
     /**
      * Constructor.
