@@ -32,6 +32,7 @@
                         <p><a href="${pageContext.request.contextPath}/words/${word.category}?status=${word.status}">${word.textDa} (${word.textEn}) [${word.confidence} %]</a></p>
                     </c:forEach>
                     &nbsp;</dd>
+                    <dt>Text</dt><dd>${image_details.ocr}</dd>
                 </dl>
             </div>
             <div class="col-md-6">

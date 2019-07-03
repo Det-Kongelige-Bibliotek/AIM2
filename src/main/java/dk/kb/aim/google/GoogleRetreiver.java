@@ -1,4 +1,4 @@
-package dk.kb.aim;
+package dk.kb.aim.google;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,33 +55,40 @@ public class GoogleRetreiver {
     @Autowired
     protected WordRepository wordRepository;
 
-    public void retrieveGoogleData(File imageFile, String cumulusId, String category, Feature.Type ... types)
-            throws IOException{
-        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW);
-        int image_id = imageRepository.createImage(dbImage);
-        dbImage.setId(image_id);
-
-        com.google.cloud.vision.v1.Image image = readImage(imageFile);
-        List<AnnotateImageResponse> responses = sendRequest(image, types);
-
+    /**
+     * Retrieves the color of the image from GoogleVision, and adds it to the database image.
+     * @param dbImage The database image.
+     * @param googleImage The Google image.
+     * @throws IOException If it fails to retrieve the color data from Google Vision.
+     */
+    public void retrieveColor(Image dbImage, GoogleImage googleImage) throws IOException {
+        String color = getDominatingColors(sendRequest(googleImage, Feature.Type.IMAGE_PROPERTIES));
+        dbImage.setColor(color);
+        imageRepository.updateImage(dbImage);
     }
 
     /**
-     * Creates the entry in the database for the image and retrieve the metadata for the image. 
-     * It will extracts the image-file as a Google Vision image, so it is ready for being processed by the 
-     * Google Vision online service for retrieving the labels and the dominating color of the image.
-     * @param imageFile The image file.
-     * @param cumulusId The id of the related Cumulus record.
-     * @param category The AIM-sub category of the Cumulus record.
-     * @throws IOException If it fails in the connection to the Google Vision service, or it cannot extract the file.
+     * Retrieves the labels, create the words and link them to the image.
+     * @param dbImage The database image.
+     * @param googleImage The Google image.
+     * @throws IOException If it fails to retrieve the labels from Google Vision.
      */
-    public void createImageAndRetreiveLabels(File imageFile, String cumulusId, String category) throws IOException {
-        com.google.cloud.vision.v1.Image image = readImage(imageFile);
-        String color = getDominatingColors(sendRequest(image, Feature.Type.IMAGE_PROPERTIES));
-        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, color,"", ImageStatus.NEW);
-        int image_id = imageRepository.createImage(dbImage);
-        dbImage.setId(image_id);
-        createImageWordsForLabelAnnotations(dbImage,sendRequest(image, Feature.Type.LABEL_DETECTION));
+    public void retrieveLabels(Image dbImage, GoogleImage googleImage) throws IOException {
+        List<AnnotateImageResponse> responses = sendRequest(googleImage, Feature.Type.LABEL_DETECTION);
+        createImageWordsForLabelAnnotations(dbImage, responses);
+    }
+
+    /**
+     * Retrieves the OCR text for the image.
+     * @param dbImage The database image.
+     * @param googleImage The Google image.
+     * @throws IOException If it fails to retrieve the OCR text from Google Vision.
+     */
+    public void retrieveText(Image dbImage, GoogleImage googleImage) throws IOException {
+        // TODO: which text detection to use?
+        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION));
+        dbImage.setOcr(ocrText);
+        imageRepository.updateImage(dbImage);
     }
 
     /**
@@ -118,6 +125,24 @@ public class GoogleRetreiver {
             }
         }
     }
+
+    /**
+     * Handles the Google Vision responses for the OCR text detection.
+     * @param responses The annotated image response from Google Vision.
+     * @return The OCR text from the responses.
+     */
+    protected String getOcrText(List<AnnotateImageResponse> responses) {
+        StringBuffer result = new StringBuffer();
+        for (AnnotateImageResponse res : responses) {
+            if (res.hasError()) {
+                LOGGER.error("Error: %s\n", res.getError().getMessage());
+            } else {
+                result.append(res.getFullTextAnnotation().getText());
+                result.append("\n");
+            }
+        }
+        return result.toString();
+    }
     
     /**
      * Retrieves the dominating colors of the image and turn it into the String value for the field
@@ -153,37 +178,22 @@ public class GoogleRetreiver {
     /**
      * Send the given request for the Google Vision service for the given image.
      * @param image The image to have annotated according to the given feature type.
-     * @param types The types of feature to have Google Vision annotated.
+     * @param type The type of feature to have Google Vision annotated.
      * @return The list of annotation responses for the image regarding to the given type.
      * @throws IOException If it fails in the communication with the Google Vision service. 
      */
-    protected List<AnnotateImageResponse> sendRequest(com.google.cloud.vision.v1.Image image, Feature.Type ... types)
+    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type)
             throws IOException {
         List<AnnotateImageRequest> requests = new ArrayList<>();
-        for(Feature.Type type : types) {
-            Feature feat = Feature.newBuilder().setType(type).build();
-            AnnotateImageRequest request =
-                    AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image).build();
-            requests.add(request);
-        }
+        Feature feat = Feature.newBuilder().setType(type).build();
+        AnnotateImageRequest request =
+                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image.getImage()).build();
+        requests.add(request);
 
         BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
         return response.getResponsesList();
     }
-    
-    /**
-     * Reads a file as a Google Vision image object.
-     * @param file The file to read.
-     * @return The Google Vision image.
-     * @throws IOException If it fails to read the image file.
-     */
-    protected com.google.cloud.vision.v1.Image readImage(File file) throws IOException {
-        try (InputStream in = new FileInputStream(file)) {
-            ByteString imgBytes = ByteString.readFrom(in);
-            return com.google.cloud.vision.v1.Image.newBuilder().setContent(imgBytes).build();
-        }
-    }
-    
+
     /**
      * Translate the english text into danish text.
      * @param textEn The english text.

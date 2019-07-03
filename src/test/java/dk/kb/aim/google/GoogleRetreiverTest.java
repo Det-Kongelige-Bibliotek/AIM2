@@ -1,8 +1,11 @@
-package dk.kb.aim;
+package dk.kb.aim.google;
 
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
+import dk.kb.aim.Configuration;
+import dk.kb.aim.TestUtils;
+import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
@@ -13,9 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
@@ -85,8 +85,8 @@ public class GoogleRetreiverTest {
         String tiffPath = "src" + File.separator +
                          "test" + File.separator +
                          "resources" + File.separator +
-                         "DKP002-0094_0027.tif";
-//                         "KE051541.tif";
+//                         "DKP002-0094_0027.tif";
+                         "KE051541.tif";
 
         Assert.assertTrue(new File(tiffPath).isFile());
         ImageConverter imageConverter = new ImageConverter();
@@ -96,32 +96,22 @@ public class GoogleRetreiverTest {
 
         File jpegFile = imageConverter.convertTiff(new File(tiffPath));
 
-        com.google.cloud.vision.v1.Image image = googleRetreiver.readImage(jpegFile);
+        GoogleImage image = new GoogleImage(jpegFile);
         List<AnnotateImageResponse> responses = googleRetreiver.sendRequest(image, Feature.Type.TEXT_DETECTION);
 
         for(AnnotateImageResponse response : responses) {
             System.out.println("TEXT_DETECTION:");
-            System.out.println(response);
+            System.out.println(response.getFullTextAnnotation().getText());
             System.out.println("--------");
         }
         responses = googleRetreiver.sendRequest(image, Feature.Type.DOCUMENT_TEXT_DETECTION);
 
         for(AnnotateImageResponse response : responses) {
             System.out.println("DOCUMENT_TEXT_DETECTION:");
-            System.out.println(response);
+            System.out.println(response.getFullTextAnnotation().getText());
             System.out.println("--------");
         }
 
-
-//        googleRetreiver.createImageAndRetreiveLabels(new File(imgPath),"test1234","Mammals");
-//        
-//        List<Image> images = imageRepository.listAllImages();
-//        Assert.assertFalse(images.isEmpty());
-//        Assert.assertEquals(images.size(), 1);
-//        List<WordConfidence> words = wordRepository.getImageWords(images.get(0).getId());
-//        Assert.assertFalse(words.isEmpty());
-//        System.out.println("First confidence: " + words.get(0).getConfidence());
-//        Assert.assertTrue(words.get(0).getConfidence() > 0);
     }
     
 //    @Test

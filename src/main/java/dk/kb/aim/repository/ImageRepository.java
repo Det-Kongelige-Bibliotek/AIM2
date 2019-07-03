@@ -109,7 +109,7 @@ public class ImageRepository {
      * @return The ID of the new image entry.
      */
     public int createImage(Image img) {
-        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status) VALUES (?,?,?,?,?)";
+        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status,ocr) VALUES (?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -123,6 +123,7 @@ public class ImageRepository {
                         pst.setString(3, img.getColor());
                         pst.setString(4, img.getCategory());
                         pst.setString(5, img.getStatus().toString());
+                        pst.setString(6, img.getOcr());
                         return pst;
                     }
                 },
@@ -135,10 +136,10 @@ public class ImageRepository {
      * @param img The image to update the entry in the database.
      */
     public void updateImage(Image img)  {
-        Object[] params = {img.getPath(),img.getCumulusId(),img.getCategory(),img.getStatus(),img.getId()};
-        int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT};
+        Object[] params = {img.getPath(),img.getCumulusId(),img.getCategory(),img.getStatus(),img.getOcr(),img.getId()};
+        int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT};
         jdbcTemplate.update(
-                "UPDATE images SET (path,cumulus_id,category,status) = (?,?,?,?) WHERE id = ?",
+                "UPDATE images SET (path,cumulus_id,category,status,ocr) = (?,?,?,?,?) WHERE id = ?",
                 params, types);
     }
     
@@ -201,8 +202,12 @@ public class ImageRepository {
      * @return The list of images.
      */
     private List<Image> queryForImages(String sql) {
-        return jdbcTemplate.query(sql, (rs,rowNum) -> new Image(rs.getInt("id"), rs.getString("path"), 
-                rs.getString("cumulus_id"), rs.getString("category"), rs.getString("color"),rs.getString("ocr"), 
+        return jdbcTemplate.query(sql, (rs,rowNum) -> new Image(rs.getInt("id"),
+                rs.getString("path"),
+                rs.getString("cumulus_id"),
+                rs.getString("category"),
+                rs.getString("color"),
+                rs.getString("ocr"),
                 ImageStatus.valueOf(rs.getString("status"))));
     }
     

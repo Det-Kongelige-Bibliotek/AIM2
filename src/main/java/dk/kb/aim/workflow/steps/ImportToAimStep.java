@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import dk.kb.aim.google.GoogleImage;
+import dk.kb.aim.model.Image;
+import dk.kb.aim.repository.ImageStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
-import dk.kb.aim.GoogleRetreiver;
+import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.utils.ImageConverter;
 import dk.kb.cumulus.Constants;
@@ -150,9 +153,19 @@ public class ImportToAimStep extends WorkflowStep {
         
         File jpegFile = imageConverter.convertTiff(imageFile);
 
-        googleRetriever.createImageAndRetreiveLabels(jpegFile, cumulusId, category);
+        GoogleImage googleImage = new GoogleImage(jpegFile);
+        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW);
+        int image_id = imageRepository.createImage(dbImage);
+        dbImage.setId(image_id);
+
+        // TODO: test if color?
+        googleRetriever.retrieveColor(dbImage, googleImage);
+        // TODO: test if labels/emneord?
+        googleRetriever.retrieveLabels(dbImage, googleImage);
+        // TODO: test if text?
+        googleRetriever.retrieveText(dbImage, googleImage);
     }
-    
+
     /**
      * Retrieves the AIM subcategory for the given Cumulus record.
      * @param record The record.
