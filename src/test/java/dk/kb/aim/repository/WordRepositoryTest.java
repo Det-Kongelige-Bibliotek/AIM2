@@ -52,7 +52,7 @@ public class WordRepositoryTest {
     public void testRelationAndStuff() throws Exception{
         int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
         int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
-        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED));
+        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
         imageRepository.addWordToImage(img_id,word1_id,88);
         imageRepository.addWordToImage(img_id,word2_id,51);
 
@@ -86,7 +86,7 @@ public class WordRepositoryTest {
     public void testStuff() throws Exception {
         int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
         int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
-        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED));
+        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
         imageRepository.addWordToImage(img_id,word1_id,88);
         imageRepository.addWordToImage(img_id,word2_id,51);
         

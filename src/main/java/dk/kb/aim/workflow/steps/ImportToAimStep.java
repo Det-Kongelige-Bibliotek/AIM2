@@ -137,6 +137,7 @@ public class ImportToAimStep extends WorkflowStep {
     protected void importRecord(CumulusRecord record) throws IOException {
         String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
+        boolean isBackpage = record.isSubAsset();
         File imageFile;
         if(conf.isTest()) {
             imageFile = new File(conf.getTestDir(), cumulusId);
@@ -154,7 +155,8 @@ public class ImportToAimStep extends WorkflowStep {
         File jpegFile = imageConverter.convertTiff(imageFile);
 
         GoogleImage googleImage = new GoogleImage(jpegFile);
-        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW);
+        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW,
+                !isBackpage);
         int image_id = imageRepository.createImage(dbImage);
         dbImage.setId(image_id);
 

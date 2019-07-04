@@ -86,7 +86,7 @@ public class ImportToAimStepTest {
         verify(record, times(3)).getFieldValue(eq(Constants.FieldNames.RECORD_NAME));
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS));
-        verify(record).isSubAsset();
+        verify(record, times(2)).isSubAsset();
         verify(record).getFile();
         verifyNoMoreInteractions(record);
         verify(records).iterator();

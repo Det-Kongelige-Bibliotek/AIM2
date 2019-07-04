@@ -37,7 +37,8 @@ public class Image {
      * @param ocr The OCR text of the image.
      * @param status The status of the image.
      */
-    public Image(int id, String path, String cumulusId, String category, String color, String ocr, ImageStatus status) {
+    public Image(int id, String path, String cumulusId, String category, String color, String ocr, ImageStatus status,
+                 boolean isFront) {
         this.id = id;
         this.path = path;
         this.cumulusId = cumulusId;
@@ -45,6 +46,7 @@ public class Image {
         this.color = color;
         this.ocr = ocr;
         this.status = status;
+        this.isFront = isFront;
     }
     
     /**
@@ -158,13 +160,28 @@ public class Image {
     public List<ImageWord> getImageWords() {
         return imageWords;
     }
-    
+
     /**
      * Set a new list of word relations for the image.
      * @param imageWords The new list of word relations for the image.
      */
     public void setImageWords(List<ImageWord> imageWords) {
         this.imageWords = imageWords;
+    }
+
+    /**
+     * @return Whether or not the current image is a front image (or false, then it is a back-page of a photo/postcard).
+     */
+    public boolean getIsFront() {
+        return isFront;
+    }
+
+    /**
+     * Set whether or not the image is a front image.
+     * @param isFront Whether or not the image is a front image.
+     */
+    public void setIsFront(boolean isFront) {
+        this.isFront = isFront;
     }
 
     @Override

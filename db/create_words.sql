@@ -15,6 +15,7 @@ CREATE TABLE images (
   color text,
   ocr text,
   status text,
+  isFront boolean default 'true',
   PRIMARY KEY (id)
 );
 
