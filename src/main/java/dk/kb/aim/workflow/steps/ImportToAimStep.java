@@ -155,7 +155,7 @@ public class ImportToAimStep extends WorkflowStep {
         File jpegFile = imageConverter.convertTiff(imageFile);
 
         GoogleImage googleImage = new GoogleImage(jpegFile);
-        Image dbImage = new Image(-1, imageFile.getName(), cumulusId, category, "","", ImageStatus.NEW,
+        Image dbImage = new Image(-1, jpegFile.getName(), cumulusId, category, "","", ImageStatus.NEW,
                 !isBackpage);
         int image_id = imageRepository.createImage(dbImage);
         dbImage.setId(image_id);
