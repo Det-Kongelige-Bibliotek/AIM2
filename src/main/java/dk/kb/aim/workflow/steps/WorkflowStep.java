@@ -87,7 +87,7 @@ public abstract class WorkflowStep {
      * and it will keep track of the time the step has taken. 
      * The actual methods for the step will be implemented in the step themselves.
      */
-    public void run() {
+    public synchronized void run() {
         currentRunStart = System.currentTimeMillis();
         timeForLastRun = -1;
         try {
