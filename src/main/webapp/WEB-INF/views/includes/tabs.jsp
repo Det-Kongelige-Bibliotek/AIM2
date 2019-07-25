@@ -32,6 +32,7 @@
 
         <jsp:include page="wordsTable.jsp">
             <jsp:param name="status" value="${status}"/>
+            <jsp:param name="category" value="${param.category}"/>
         </jsp:include>
 
 
