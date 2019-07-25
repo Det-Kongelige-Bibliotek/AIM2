@@ -26,7 +26,7 @@ public class ImageRepository {
     private JdbcTemplate jdbcTemplate;
 
     /** The select query for images, to ensure that all the columns are in the query.*/
-    protected final static String SELECT_QUERY = "SELECT id,path,cumulus_id,category,color,ocr,status,isFront "
+    protected static final String SELECT_QUERY = "SELECT id,path,cumulus_id,category,color,ocr,status,isFront "
             + "FROM images";
     
     /**
@@ -140,7 +140,7 @@ public class ImageRepository {
         Object[] params = {img.getPath(),img.getCumulusId(),img.getCategory(),img.getStatus(),img.getOcr(),
                 img.getIsFront(), img.getId()};
         int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BINARY,
-                Types.BIGINT};
+                       Types.BIGINT};
         jdbcTemplate.update(
                 "UPDATE images SET (path,cumulus_id,category,status,ocr,isFront) = (?,?,?,?,?,?) WHERE id = ?",
                 params, types);

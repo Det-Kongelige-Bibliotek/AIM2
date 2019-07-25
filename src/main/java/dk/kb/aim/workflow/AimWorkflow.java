@@ -75,7 +75,7 @@ public class AimWorkflow extends TimerTask {
     }
     
     @Override
-    public void run() {
+    public synchronized void run() {
         if(state == WorkflowState.WAITING && nextRun.getTime() < System.currentTimeMillis()) {
             try {
                 state = WorkflowState.RUNNING;

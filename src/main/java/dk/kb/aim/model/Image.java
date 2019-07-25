@@ -36,6 +36,7 @@ public class Image {
      * @param color The color of the image.
      * @param ocr The OCR text of the image.
      * @param status The status of the image.
+     * @param isFront Whether or not it is a front-page image.
      */
     public Image(int id, String path, String cumulusId, String category, String color, String ocr, ImageStatus status,
                  boolean isFront) {

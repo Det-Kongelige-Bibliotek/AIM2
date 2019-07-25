@@ -69,7 +69,15 @@ public class CumulusRetriever {
     public static final String FIELD_NAME_KEYWORDS = "Keywords";
     /** The Cumulus field name for Color Codes.*/
     public static final String FIELD_NAME_COLOR_CODES = "Color Codes";
-    
+    /** The Cumulus field name for Forside Tekst.*/
+    public static final String FIELD_NAME_FORSIDE_TEKST = "Forsidetekst";
+    /** The Cumulus field name for Bagside Tekst.*/
+    public static final String FIELD_NAME_BAGSIDE_TEKST = "Bagsidetekst";
+    /** The Cumulus field name for Håndskrift.*/
+    public static final String FIELD_NAME_HAANDSKRIFT = "Håndskrift";
+    /** The Cumulus field name for Kunstform.*/
+    public static final String FIELD_NAME_KUNSTFORM = "Kunstform";
+
     
     /** The Cumulus server.*/
     protected CumulusServer server;

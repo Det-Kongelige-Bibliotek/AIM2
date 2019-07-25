@@ -2,6 +2,7 @@ package dk.kb.aim.workflow.steps;
 
 import java.util.List;
 
+import dk.kb.aim.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,17 +136,27 @@ public class FindFinishedImagesStep extends WorkflowStep {
         LOGGER.info("Setting image '" + image.getCumulusId() + "' to finished!");
         
         List<WordConfidence> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
-        String keywords;
         if(words.isEmpty()) {
-            keywords = EMPTY_STRING;
-            LOGGER.warn("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
+            LOGGER.info("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
         } else {
-            keywords = getKeywords(words);
-            LOGGER.info("Found keywords: \n" + keywords);
+            String keywords = getKeywords(words);
+            LOGGER.debug("Found keywords for '" + image.getCumulusId() + "': \n" + keywords);
+            record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
         }
-        
-        record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
-        record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
+
+        // add color
+        if(StringUtils.hasValue(image.getColor())) {
+            record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
+        }
+
+        // add ocr text
+        if(StringUtils.hasValue(image.getOcr())) {
+            if(image.getIsFront()) {
+                record.setStringValueInField(CumulusRetriever.FIELD_NAME_FORSIDE_TEKST, image.getOcr());
+            } else {
+                record.setStringValueInField(CumulusRetriever.FIELD_NAME_BAGSIDE_TEKST, image.getOcr());
+            }
+        }
         
         // SET RECORD TO NOT READY FOR AIM!
         if(conf.isTest()) {
