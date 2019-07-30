@@ -28,9 +28,9 @@ public class ImportToAimStep extends WorkflowStep {
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
     
-    /** The name of the root category for AIM.*/
+    /** The name of the root category for AIM. Only find those beneath this category.*/
     protected static final String CATEGORY_NAME_AIM = "AIM";
-    
+
     /** The configuration */
     protected final Configuration conf;
     /** The Cumulus retriever.*/

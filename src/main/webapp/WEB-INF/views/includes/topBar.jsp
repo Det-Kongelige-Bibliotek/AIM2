@@ -22,6 +22,9 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item <c:if test="${page=='text'}">active</c:if>">
+                    <a class="nav-link" href="${pageContext.request.contextPath}/text">Text</a>
+                </li>
                 <li class="nav-item <c:if test="${page=='words'}">active</c:if>">
                     <a class="nav-link" href="${pageContext.request.contextPath}/words">Words</a>
                 </li>

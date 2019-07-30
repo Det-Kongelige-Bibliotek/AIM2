@@ -13,6 +13,7 @@ import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.ImageContext;
 
+import dk.kb.aim.Constants;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
@@ -37,8 +38,6 @@ public class GoogleRetreiver {
     /** The logger.*/
     protected static final Logger LOGGER = LoggerFactory.getLogger(GoogleRetreiver.class);
     
-    /** The Category for the AIM category.*/
-    public static final String AIM_CATEGORY = "AIM";
     /** The language hint value for danish.
      *  TODO: make configurable? */
     public static final String LANGUAGE_HINT_DANISH = "da";
@@ -111,7 +110,7 @@ public class GoogleRetreiver {
                     LOGGER.debug("Handling annotation: " + text_en);
                     Word dbWord = wordRepository.getWordByText(text_en, dbImage.getCategory());
                     if (dbWord == null) {
-                        dbWord = wordRepository.getWordByText(text_en, AIM_CATEGORY);
+                        dbWord = wordRepository.getWordByText(text_en, Constants.AIM_CATEGORY);
                     }
                     if (dbWord == null) {
                         // The word does not exist in database - create new
