@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The Google Retriever, which encapsulates both the image annotation client and the text translation client.
+ *
  * Created by dgj on 26-03-2018.
  */
 @Component
@@ -37,7 +39,11 @@ public class GoogleRetreiver {
     
     /** The Category for the AIM category.*/
     public static final String AIM_CATEGORY = "AIM";
-    
+    /** The language hint value for danish.
+     *  TODO: make configurable? */
+    public static final String LANGUAGE_HINT_DANISH = "da";
+
+
     /** The client for the google image annotation service.*/
     protected ImageAnnotatorClient annotationClient;
     /** The client for the google translation service.*/
@@ -75,14 +81,14 @@ public class GoogleRetreiver {
 
     /**
      * Retrieves the OCR text for the image.
+     * Adds the parameter to the image annotation request to ensure that it primarily looks for danish characters.
      * @param dbImage The database image.
      * @param googleImage The Google image.
      * @throws IOException If it fails to retrieve the OCR text from Google Vision.
      */
     public void retrieveText(Image dbImage, GoogleImage googleImage) throws IOException {
-        // TODO: make configurable
-        String languageHint = "da";
-        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, languageHint));
+        ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(LANGUAGE_HINT_DANISH).build();
+        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, imageContext));
         dbImage.setOcr(ocrText);
         imageRepository.updateImage(dbImage);
     }
@@ -180,36 +186,28 @@ public class GoogleRetreiver {
      */
     protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type)
             throws IOException {
-        List<AnnotateImageRequest> requests = new ArrayList<>();
-        Feature feat = Feature.newBuilder().setType(type).build();
-        AnnotateImageRequest request =
-                AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image.getImage()).build();
-        requests.add(request);
-
-        BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
-        return response.getResponsesList();
+        return sendRequest(image, type, null);
     }
 
     /**
      * Send the given request for the Google Vision service for the given image.
      * @param image The image to have annotated according to the given feature type.
      * @param type The type of feature to have Google Vision annotated.
-     * @param languageHint A languageHint for the feature to have Google Vision annotated.
+     * @param context The imageContext for the feature to have Google Vision annotated.
      * @return The list of annotation responses for the image regarding to the given type.
      * @throws IOException If it fails in the communication with the Google Vision service. 
      */
-    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type, String languageHint)
+    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type, ImageContext context)
             throws IOException {
-        // TODO: Reconsider method overloading
         List<AnnotateImageRequest> requests = new ArrayList<>();
         Feature feat = Feature.newBuilder().setType(type).build();
-        ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(languageHint).build();
-        AnnotateImageRequest request =
-                AnnotateImageRequest.newBuilder()
+        AnnotateImageRequest.Builder builder = AnnotateImageRequest.newBuilder()
                 .addFeatures(feat)
-                .setImage(image.getImage())
-                .setImageContext(imageContext)
-                .build();
+                .setImage(image.getImage());
+        if(context != null) {
+            builder = builder.setImageContext(context);
+        }
+        AnnotateImageRequest request = builder.build();
         requests.add(request);
 
         BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
