@@ -11,6 +11,8 @@ import com.google.cloud.vision.v1.DominantColorsAnnotation;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
+import com.google.cloud.vision.v1.ImageContext;
+
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.ImageRepository;
@@ -78,8 +80,9 @@ public class GoogleRetreiver {
      * @throws IOException If it fails to retrieve the OCR text from Google Vision.
      */
     public void retrieveText(Image dbImage, GoogleImage googleImage) throws IOException {
-        // TODO: which text detection to use?
-        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION));
+        // TODO: make configurable
+        String languageHint = "da";
+        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, languageHint));
         dbImage.setOcr(ocrText);
         imageRepository.updateImage(dbImage);
     }
@@ -181,6 +184,32 @@ public class GoogleRetreiver {
         Feature feat = Feature.newBuilder().setType(type).build();
         AnnotateImageRequest request =
                 AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(image.getImage()).build();
+        requests.add(request);
+
+        BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
+        return response.getResponsesList();
+    }
+
+    /**
+     * Send the given request for the Google Vision service for the given image.
+     * @param image The image to have annotated according to the given feature type.
+     * @param type The type of feature to have Google Vision annotated.
+     * @param languageHint A languageHint for the feature to have Google Vision annotated.
+     * @return The list of annotation responses for the image regarding to the given type.
+     * @throws IOException If it fails in the communication with the Google Vision service. 
+     */
+    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type, String languageHint)
+            throws IOException {
+        // TODO: Reconsider method overloading
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+        Feature feat = Feature.newBuilder().setType(type).build();
+        ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(languageHint).build();
+        AnnotateImageRequest request =
+                AnnotateImageRequest.newBuilder()
+                .addFeatures(feat)
+                .setImage(image.getImage())
+                .setImageContext(imageContext)
+                .build();
         requests.add(request);
 
         BatchAnnotateImagesResponse response = getAnnotationClient().batchAnnotateImages(requests);
