@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import dk.kb.aim.model.WordConfidence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,6 +27,9 @@ public class ImageRepository {
     /** The database connector.*/
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    /** The DB repository for the words.*/
+    @Autowired
+    private WordRepository wordRepository;
 
     /** The select query for images, to ensure that all the columns are in the query.*/
     protected static final String SELECT_QUERY = "SELECT id,path,cumulus_id,category,color,ocr,status,isFront "
@@ -71,6 +77,22 @@ public class ImageRepository {
      */
     public List<Image> listImages(int count, int offset) {
         return queryForImages(SELECT_QUERY + " ORDER BY id DESC LIMIT " + count + " OFFSET " + offset);
+    }
+
+    /**
+     * Retrieves the mapping between images and their words.
+     * @param count The number of images to retrieve.
+     * @param offset The offset for the images to retrieve.
+     * @return The mapping between the images and their words.
+     */
+    public Map<Image, List<WordConfidence>> mapImageWords(int count, int offset) {
+        List<Image> images = listImages(count, offset);
+        Map<Image, List<WordConfidence>> res = new HashMap<>();
+        for(Image image : images) {
+            res.put(image, wordRepository.getImageWords(image.getId()));
+        }
+
+        return res;
     }
     
     /**
@@ -179,7 +201,7 @@ public class ImageRepository {
      * @return The list of maximum 10 images associated with a given word.
      */
     public List<Image> wordImages(int wordId, ImageStatus status) {
-        return wordImages(wordId,status,10);
+        return wordImages(wordId,status,10, 0);
     }
     
     /**
@@ -187,14 +209,16 @@ public class ImageRepository {
      * @param wordId the id of the word.
      * @param status restrict to images with status (if null no all images are returned).
      * @param limit the max number of images returned.
+     * @param offset The offset for the images.
      * @return The list of images associated with a given word.
      */
-    public List<Image> wordImages(int wordId, ImageStatus status, int limit) {
+    public List<Image> wordImages(int wordId, ImageStatus status, int limit, int offset) {
         String sql = SELECT_QUERY + " WHERE id in " +
                 "(SELECT image_id FROM image_word WHERE word_id = " + wordId + ")";
-        if (status != null)
-                sql += " AND status = '" + status.toString() + "'";
-        sql += " ORDER BY id DESC LIMIT " + limit;
+        if (status != null) {
+            sql += " AND status = '" + status.toString() + "'";
+        }
+        sql += " ORDER BY id DESC LIMIT " + limit + " OFFSET " + offset;
         return queryForImages(sql);
     }
     

@@ -51,10 +51,10 @@ public class ImageController {
      * @return The name of the jsp page.
      */
     @RequestMapping("/images")
-    public String allImages(@RequestParam(value="limit", required=false, defaultValue = "100") int limit,
+    public String allImages(@RequestParam(value="limit", required=false, defaultValue = "60") int limit,
             @RequestParam(value="offset", required = false, defaultValue = "0") int offset, Model model) {
-        List<Image> images = imageRepository.listImages(limit, offset);
-        model.addAttribute("images", images);
+        Map<Image, List<WordConfidence>> images = imageRepository.mapImageWords(limit, offset);
+        model.addAttribute("imageWords", images);
         model.addAttribute("image_url", conf.getJpegUrl());
         model.addAttribute("limit", limit);
         model.addAttribute("nextOffset", offset + limit);
@@ -80,15 +80,17 @@ public class ImageController {
      * The view for the images of a specific word.
      * @param wordId The id of the word to show.
      * @param limit The number of images to show.
+     * @param offset The offset for the images to show.
      * @param status The state for the images to show.
      * @param model The model.
      * @return name of the jsp page.
      */
     @RequestMapping(value="/word_images/{wordId}")
     public String wordImages(@PathVariable String wordId,
-                             @RequestParam(value="limit", required=false, defaultValue="10") int limit,
+                             @RequestParam(value="limit", required=false, defaultValue="12") int limit,
+                             @RequestParam(value="offset", required=false, defaultValue="0") int offset,
                              @RequestParam(value="status", required = false) ImageStatus status, Model model) {
-        List<Image> images = imageRepository.wordImages(Integer.parseInt(wordId), status, limit);
+        List<Image> images = imageRepository.wordImages(Integer.parseInt(wordId), status, limit, offset);
 
         /* fetch the words for each image
            This is not the most efficient way of doing it, but it will have to do for now
@@ -102,6 +104,9 @@ public class ImageController {
         model.addAttribute("word", wordRepository.getWord(Integer.parseInt(wordId)));
         model.addAttribute("image_url", conf.getJpegUrl());
         model.addAttribute("image_words", imageWords);
+        model.addAttribute("limit", limit);
+        model.addAttribute("offset", offset);
+        model.addAttribute("hasMore", images.size() >= limit);
         return "list-images";
     }
 }

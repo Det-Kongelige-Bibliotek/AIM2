@@ -62,7 +62,7 @@
             </form>
             <td>
                 <c:url value = "/word_images/${word.id}" var = "imgUrl">
-                    <c:param name = "limit" value = "10"/>
+                    <c:param name = "limit" value = "12"/>
                 </c:url>
                 <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>
             </td>

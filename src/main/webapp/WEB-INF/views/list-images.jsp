@@ -31,7 +31,9 @@
             </div>
         </c:if>
         <div class="row">
-            <c:forEach items="${images}" var="image">
+            <c:forEach items="${imageWords}" var="imageWord">
+                <c:set var="image" value="${imageWord.getKey()}"/>
+                <c:set var="words" value="${imageWord.getValue()}"/>
                 <div class="col-md-4">
                     <a href="${pageContext.request.contextPath}/images/${image.id}">
                         <div class="card mb-4 box-shadow">
@@ -44,8 +46,8 @@
                                 <p class="card-text">${image.cumulusId}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
-                                    <c:forEach items="${image_words.get(image.id)}" var="word">
-                                        <dd>${word.textDa} (${word.textEn})</dd>
+                                    <c:forEach items="${words}" var="word">
+                                        <dd>${word.textDa} (${word.textEn}) [${word.confidence} %]</dd>
                                     </c:forEach>
                                 </dl>
                             </div>
