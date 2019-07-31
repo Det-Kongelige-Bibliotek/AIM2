@@ -80,19 +80,27 @@ public class ImageRepository {
     }
 
     /**
-     * Retrieves the mapping between images and their words.
+     * Retrieves the requested images and the mapping to their words.
      * @param count The number of images to retrieve.
      * @param offset The offset for the images to retrieve.
      * @return The mapping between the images and their words.
      */
     public Map<Image, List<WordConfidence>> mapImageWords(int count, int offset) {
         List<Image> images = listImages(count, offset);
-        Map<Image, List<WordConfidence>> res = new HashMap<>();
-        for(Image image : images) {
-            res.put(image, wordRepository.getImageWords(image.getId()));
-        }
+        return retrieveWordConfidenceForImages(images);
+    }
 
-        return res;
+    /**
+     * Retrieves the requested images for the given word and delivers them along the mapping to their words.
+     * @param wordId The id of the word whose images should be extracted.
+     * @param status The status of the images to retrieve.
+     * @param count The number of images to retrieve.
+     * @param offset The offset for the images to retrieve.
+     * @return The mapping between the images and their words.
+     */
+    public Map<Image, List<WordConfidence>> mapImageWords(int wordId, ImageStatus status, int count, int offset) {
+        List<Image> images = wordImages(wordId, status, count, offset);
+        return retrieveWordConfidenceForImages(images);
     }
     
     /**
@@ -237,7 +245,22 @@ public class ImageRepository {
                 ImageStatus.valueOf(rs.getString("status")),
                 rs.getBoolean("isFront")));
     }
-    
+
+    /**
+     * Method for extracting the word confidences for images.
+     * Turns the list of images into a map between the images and the list of their words with confidence.
+     * @param images The list of images.
+     * @return The map between the images and their words with confidence.
+     */
+    protected Map<Image, List<WordConfidence>> retrieveWordConfidenceForImages(List<Image> images) {
+        Map<Image, List<WordConfidence>> res = new HashMap<>();
+        for(Image image : images) {
+            res.put(image, wordRepository.getImageWords(image.getId()));
+        }
+
+        return res;
+    }
+
     /**
      * Removes an image. Both from the images table and all related entries in the image_word table.
      * @param image The image to remove.

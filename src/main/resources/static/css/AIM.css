@@ -6494,4 +6494,14 @@ a.text-dark:focus, a.text-dark:hover {
       content: " ";
       display: table; }
 
+.word-status-ACCEPTED {
+  color: #0A0;
+}
+.word-status-PENDING {
+  color: #990;
+}
+.word-status-REJECTED {
+  color: #F00;
+}
+
 /*# sourceMappingURL=AIM.css.map */

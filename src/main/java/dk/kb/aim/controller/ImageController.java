@@ -90,22 +90,14 @@ public class ImageController {
                              @RequestParam(value="limit", required=false, defaultValue="12") int limit,
                              @RequestParam(value="offset", required=false, defaultValue="0") int offset,
                              @RequestParam(value="status", required = false) ImageStatus status, Model model) {
-        List<Image> images = imageRepository.wordImages(Integer.parseInt(wordId), status, limit, offset);
+        Map<Image, List<WordConfidence>> images = imageRepository.mapImageWords(Integer.parseInt(wordId), status, limit, offset);
+        LOGGER.info("WordImages. Found " + images.size() + " images for word '" + wordId + "'");
 
-        /* fetch the words for each image
-           This is not the most efficient way of doing it, but it will have to do for now
-         */
-        Map<Integer, List<WordConfidence>> imageWords = new HashMap<Integer, List<WordConfidence>>();
-        for (Image img : images) {
-            imageWords.put(img.getId(),wordRepository.getImageWords(img.getId()));
-        }
-        LOGGER.info("image word size " + imageWords.size() + " " + imageWords.get(1));
-        model.addAttribute("images", images);
-        model.addAttribute("word", wordRepository.getWord(Integer.parseInt(wordId)));
+        model.addAttribute("wordId", wordId);
+        model.addAttribute("imageWords", images);
         model.addAttribute("image_url", conf.getJpegUrl());
-        model.addAttribute("image_words", imageWords);
         model.addAttribute("limit", limit);
-        model.addAttribute("offset", offset);
+        model.addAttribute("nextOffset", offset + limit);
         model.addAttribute("hasMore", images.size() >= limit);
         return "list-images";
     }

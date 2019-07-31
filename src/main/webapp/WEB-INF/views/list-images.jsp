@@ -47,7 +47,7 @@
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
                                     <c:forEach items="${words}" var="word">
-                                        <dd>${word.textDa} (${word.textEn}) [${word.confidence} %]</dd>
+                                        <dd class="word-status-${word.status}">${word.textDa} (${word.textEn}) [${word.confidence} %]</dd>
                                     </c:forEach>
                                 </dl>
                             </div>
@@ -60,7 +60,16 @@
     
     <div class="container">
         <c:if test="${hasMore eq true}">
-            <a class="btn btn-success" href="${pageContext.request.contextPath}/images?offset=${nextOffset}&limit=${limit}">More images</a>
+            <c:set var="urlPath" value="/images/" />
+            <c:if test="${wordId != null}">
+              <c:set var="urlPath" value="/word_images/${wordId}" />
+            </c:if>
+
+            <c:url var="imgUrl" value="${urlPath}">
+                <c:param name="offset" value="${nextOffset}" />
+                <c:param name="limit" value="${limit}" />
+            </c:url>
+            <a class="btn btn-info" href="${imgUrl}" role="button">More images</a>
         </c:if>
     </div>
 </div>
