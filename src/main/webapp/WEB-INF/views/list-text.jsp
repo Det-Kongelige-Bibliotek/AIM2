@@ -25,7 +25,8 @@
 
 
 <div class="container">
-    <ul class="nav nav-tabs" id="categories">
+    <ul class="nav nav-tabs" id="downloadCsv">
+        <br/>
         <c:forEach items="${categories}" var="category">
             <li class="nav-item">
                 <a class="${category} nav-link" href="${pageContext.request.contextPath}/text/${category}">${category}</a>
@@ -33,6 +34,13 @@
         </c:forEach>
     </ul>
     <c:if test="${images != null}">
+        <div class="container btn">
+            <c:url var="downloadUrl" value="/text/download">
+                <c:param name="category" value="${currentCategory}" />
+            </c:url>
+            <a class="btn btn-info" href="${downloadUrl}" role="button">Download as CSV</a>
+        </div>
+
         <table class="table table-striped"
                xmlns:spring="http://www.springframework.org/tags"
                xmlns:jsp="http://java.sun.com/JSP/Page"
@@ -44,6 +52,7 @@
             <tr>
                 <th>Image</th>
                 <th>Image name</th>
+                <th>Forside</th>
                 <th>Text</th>
             </tr>
             </thead>
@@ -52,6 +61,7 @@
                 <tr>
                     <td><a href="${pageContext.request.contextPath}/images/${image.id}">${image.id}</a></td>
                     <td>${image.cumulusId}</td>
+                    <td>${image.isFront}</td>
                     <td>${image.ocr}</td>
                 </tr>
             </c:forEach>
