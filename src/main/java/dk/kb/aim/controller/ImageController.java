@@ -1,9 +1,11 @@
 package dk.kb.aim.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import dk.kb.aim.Configuration;
+import dk.kb.aim.model.Image;
+import dk.kb.aim.model.WordConfidence;
+import dk.kb.aim.repository.ImageRepository;
+import dk.kb.aim.repository.ImageStatus;
+import dk.kb.aim.repository.WordRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import dk.kb.aim.Configuration;
-import dk.kb.aim.model.Image;
-import dk.kb.aim.model.WordConfidence;
-import dk.kb.aim.repository.ImageRepository;
-import dk.kb.aim.repository.ImageStatus;
-import dk.kb.aim.repository.WordRepository;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -42,7 +40,7 @@ public class ImageController {
     /** The configuration.*/
     @Autowired
     private Configuration conf;
-    
+
     /**
      * The view for the images.
      * @param limit The maximum number of images to show.
@@ -90,7 +88,8 @@ public class ImageController {
                              @RequestParam(value="limit", required=false, defaultValue="12") int limit,
                              @RequestParam(value="offset", required=false, defaultValue="0") int offset,
                              @RequestParam(value="status", required = false) ImageStatus status, Model model) {
-        Map<Image, List<WordConfidence>> images = imageRepository.mapImageWords(Integer.parseInt(wordId), status, limit, offset);
+        Map<Image, List<WordConfidence>> images = imageRepository.mapImageWords(Integer.parseInt(wordId), status,
+                limit, offset);
         LOGGER.info("WordImages. Found " + images.size() + " images for word '" + wordId + "'");
 
         model.addAttribute("wordId", wordId);

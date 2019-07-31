@@ -1,17 +1,14 @@
 package dk.kb.aim.controller;
 
-import dk.kb.aim.Configuration;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
-import dk.kb.aim.repository.WordStatus;
 import dk.kb.aim.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -40,9 +35,6 @@ public class TextController {
     /** The DB repository for the images.*/
     @Autowired
     private ImageRepository imageRepository;
-    /** The configuration.*/
-    @Autowired
-    private Configuration conf;
 
     /**
      * The default view for the text.
@@ -91,7 +83,7 @@ public class TextController {
                 content.append("\n");
             }
 
-            Resource resource = new ByteArrayResource(content.toString().getBytes());
+            Resource resource = new ByteArrayResource(content.toString().getBytes(StandardCharsets.UTF_8));
 
             return ResponseEntity.ok()
                     .contentType(MediaType.TEXT_XML)
