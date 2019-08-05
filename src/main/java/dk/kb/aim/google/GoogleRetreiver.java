@@ -106,7 +106,7 @@ public class GoogleRetreiver {
                 LOGGER.error("Error: %s\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                    String text_en = annotation.getDescription().trim();
+                    String text_en = annotation.getDescription().trim().toLowerCase();
                     LOGGER.debug("Handling annotation: " + text_en);
                     Word dbWord = wordRepository.getWordByText(text_en, dbImage.getCategory());
                     if (dbWord == null) {
@@ -114,7 +114,7 @@ public class GoogleRetreiver {
                     }
                     if (dbWord == null) {
                         // The word does not exist in database - create new
-                        String text_da = translateText(text_en);
+                        String text_da = translateText(text_en).toLowerCase();
                         dbWord = new Word(text_en, text_da, dbImage.getCategory(), WordStatus.PENDING);
 
                         int word_id = wordRepository.createWord(dbWord);

@@ -55,7 +55,7 @@ public class WordController {
             status = WordStatus.REJECTED;
         }
         String category = parts[1];
-        Word word       = new Word(id, text_en, text_da, category, status);
+        Word word       = new Word(id, text_en.toLowerCase(), text_da.toLowerCase(), category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
         LOGGER.info("Updating word: " + word);
         return "redirect:" + back_to;
