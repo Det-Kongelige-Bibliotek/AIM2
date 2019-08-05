@@ -24,6 +24,7 @@
             <th colspan="2">Reject</th>
         </c:if>
         <th>Images</th>
+        <th onclick="sortTable(3, table_${param.category}_${param.status})">Count</th>
     </tr>
     </thead>
     <tbody>
@@ -58,6 +59,7 @@
                             AIM
                         </button>
                     </td>
+                    <td>${word.count}</td>
                 </c:if>
             </form>
             <td>

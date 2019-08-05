@@ -73,9 +73,9 @@ public class WordController {
         model.addAttribute("controller_status", status);
         model.addAttribute("categories", wordRepository.getCategories());
         if(status.toString().isEmpty()) {
-            model.addAttribute("words", wordRepository.allWords());
+            model.addAttribute("words", wordRepository.allWordCounts());
         } else {
-            model.addAttribute("words", wordRepository.allWordsWithStatus(status));
+            model.addAttribute("words", wordRepository.allWordCountsWithStatus(status));
         }
 
         return "list-words";
@@ -95,9 +95,9 @@ public class WordController {
         model.addAttribute("categories", wordRepository.getCategories());
 
         if(status.toString().isEmpty()) {
-            model.addAttribute("words", wordRepository.allWordsInCategory(category));
+            model.addAttribute("words", wordRepository.allWordCountsInCategory(category));
         } else {
-            model.addAttribute("words", wordRepository.allWordsInCategoryWithStatus(category, status));
+            model.addAttribute("words", wordRepository.allWordCountsInCategoryWithStatus(category, status));
         }
 
         return "list-words";

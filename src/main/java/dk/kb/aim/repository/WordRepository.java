@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import dk.kb.aim.model.WordCount;
+import dk.kb.aim.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -96,8 +98,9 @@ public class WordRepository {
      * Retrieves all the words.
      * @return The list with all the words.
      */
-    public List<Word> allWords() {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words");
+    public List<WordCount> allWordCounts() {
+        return getWordCounts(null);
+//        return queryForWords("SELECT id,text_en,text_da,category,status from words");
     }
     
     /**
@@ -105,9 +108,10 @@ public class WordRepository {
      * @param status The status.
      * @return The list with all the words with the given status.
      */
-    public List<Word> allWordsWithStatus(WordStatus status) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE status = '" + status + "'");
+    public List<WordCount> allWordCountsWithStatus(WordStatus status) {
+        return getWordCounts("WHERE status = '" + status + "'");
+//        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
+//                "WHERE status = '" + status + "'");
     }
     
     /**
@@ -115,9 +119,10 @@ public class WordRepository {
      * @param category The category for the words.
      * @return The list of words for a given category.
      */
-    public List<Word> allWordsInCategory(String category) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE category = '" + category + "'");
+    public List<WordCount> allWordCountsInCategory(String category) {
+        return getWordCounts("WHERE category = '" + category + "'");
+//        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
+//                "WHERE category = '" + category + "'");
     }
     
     /**
@@ -126,10 +131,11 @@ public class WordRepository {
      * @param status The status.
      * @return The list of words with the given status and in the given category.
      */
-    public List<Word> allWordsInCategoryWithStatus(String category, WordStatus status) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE category = '" + category + "' " +
-                "AND status = '" + status + "'");
+    public List<WordCount> allWordCountsInCategoryWithStatus(String category, WordStatus status) {
+        return getWordCounts("WHERE category = '" + category + "' AND status = '" + status + "'");
+//        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
+//                "WHERE category = '" + category + "' " +
+//                "AND status = '" + status + "'");
     }
     
     /**
@@ -203,7 +209,21 @@ public class WordRepository {
      * @return The list of words retrieved by the SQL query.
      */
     protected List<Word> queryForWords(String sql) {
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"), 
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                 rs.getString("text_da"), rs.getString("category"), WordStatus.valueOf(rs.getString("status"))));
+    }
+
+    protected List<WordCount> getWordCounts(String where) {
+        String sql = "SELECT words.id, words.text_en, words.text_da, words.category, words.status, "
+                + "COUNT(words.id) AS count "
+                + "FROM words INNER JOIN image_word ON words.id = image_word.word_id ";
+        if(StringUtils.hasValue(where)) {
+            sql += where;
+        }
+        sql += " GROUP BY words.id";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new WordCount(rs.getInt("id"), rs.getString("text_en"),
+                rs.getString("text_da"), rs.getString("category"),
+                WordStatus.valueOf(rs.getString("status")), rs.getInt("count")));
+
     }
 }

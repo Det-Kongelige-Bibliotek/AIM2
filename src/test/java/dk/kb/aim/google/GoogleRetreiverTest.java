@@ -8,6 +8,7 @@ import dk.kb.aim.TestUtils;
 import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordCount;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.utils.ImageConverter;
@@ -123,7 +124,7 @@ public class GoogleRetreiverTest {
         ImageRepository imageRepository = mock(ImageRepository.class);
         Image dbImage = mock(Image.class);
         AnnotateImageResponse response = mock(AnnotateImageResponse.class);
-        Word dbWord = mock(Word.class);
+        WordCount dbWord = mock(WordCount.class);
         EntityAnnotation annotation = mock(EntityAnnotation.class);
         
         googleRetreiver.wordRepository = wordRepository;

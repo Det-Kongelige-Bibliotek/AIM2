@@ -1,5 +1,6 @@
 package dk.kb.aim.repository;
 
+import dk.kb.aim.model.WordCount;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,14 +83,20 @@ public class WordRepositoryTest {
         Assert.assertEquals(88, cw.getConfidence());
     }
     
-//    @Test
-    public void testStuff() throws Exception {
-        int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
-        int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
-        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
-        imageRepository.addWordToImage(img_id,word1_id,88);
-        imageRepository.addWordToImage(img_id,word2_id,51);
-        
+    @Test
+    public void testWordCount() throws Exception {
+        for(Image image : imageRepository.listAllImages()) {
+            imageRepository.removeImage(image);
+        }
+        int word_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
+        int img_id1 = imageRepository.createImage(new Image(-1,"/tmp/test1.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
+        int img_id2 = imageRepository.createImage(new Image(-1,"/tmp/test2.jpg","5678","cat3","red","ocr", ImageStatus.UNFINISHED, true));
+        imageRepository.addWordToImage(img_id1,word_id,88);
+        imageRepository.addWordToImage(img_id2,word_id,67);
+
+        List<WordCount> wordCounts = wordRepository.getWordCounts(null);
+        Assert.assertEquals(wordCounts.size(), 1);
+        Assert.assertEquals(wordCounts.get(0).getCount(), 2);
     }
 
     @Test
