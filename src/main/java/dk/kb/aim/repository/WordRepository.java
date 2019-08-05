@@ -213,6 +213,11 @@ public class WordRepository {
                 rs.getString("text_da"), rs.getString("category"), WordStatus.valueOf(rs.getString("status"))));
     }
 
+    /**
+     * Retrieves the word counts for all words with the given restriction.
+     * @param where The restriction for which words to extract.
+     * @return The word counts.
+     */
     protected List<WordCount> getWordCounts(String where) {
         String sql = "SELECT words.id, words.text_en, words.text_da, words.category, words.status, "
                 + "COUNT(words.id) AS count "
