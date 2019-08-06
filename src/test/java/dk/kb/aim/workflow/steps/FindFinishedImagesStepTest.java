@@ -64,6 +64,7 @@ public class FindFinishedImagesStepTest {
         //verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_KEYWORDS), anyString());
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), eq(color));
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_FORSIDE_TEKST), eq(ocr));
+        verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO));
         verifyNoMoreInteractions(record);
         
         verify(image, times(3)).getCumulusId();
@@ -126,6 +127,7 @@ public class FindFinishedImagesStepTest {
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE));
         verify(record).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_AIM), eq(Boolean.FALSE));
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_COLOR_CODES), eq(color));
+        verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO));
         verifyNoMoreInteractions(record);
         
         verify(image, times(3)).getCumulusId();
@@ -390,7 +392,7 @@ public class FindFinishedImagesStepTest {
         String ocr = UUID.randomUUID().toString();
         
         String word1da = UUID.randomUUID().toString();
-        String word1en = UUID.randomUUID().toString();
+        String word1en = FindFinishedImagesStep.LABEL_HANDWRITING;
         
         when(image.getId()).thenReturn(id);
         when(image.getColor()).thenReturn(color);
@@ -416,6 +418,7 @@ public class FindFinishedImagesStepTest {
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE));
         verify(record).setBooleanValueInField(eq(CumulusRetriever.FIELD_NAME_READY_FOR_AIM), eq(Boolean.FALSE));
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_BAGSIDE_TEKST), eq(ocr));
+        verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_YES));
         verifyNoMoreInteractions(record);
         
         verify(wordRepo).getImageWords(eq(id), eq(WordStatus.ACCEPTED));
@@ -462,6 +465,7 @@ public class FindFinishedImagesStepTest {
         verifyNoMoreInteractions(image);
         
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), eq(FindFinishedImagesStep.EMPTY_STRING));
+        verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO));
         verifyNoMoreInteractions(record);
         
         verify(wordRepo).getImageWords(eq(id), eq(WordStatus.ACCEPTED));

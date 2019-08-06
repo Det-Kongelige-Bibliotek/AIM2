@@ -1,11 +1,5 @@
 package dk.kb.aim.workflow.steps;
 
-import java.util.List;
-
-import dk.kb.aim.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.exception.MissingRecordException;
@@ -16,7 +10,12 @@ import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
+import dk.kb.aim.utils.StringUtils;
 import dk.kb.cumulus.CumulusRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * The workflow step for finding the images which not longer has any pending words,
@@ -30,6 +29,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
     
     /** The name of this step.*/
     protected static final String STEP_NAME = "Find Finished Images step";
+    /** The label for handwriting.*/
+    protected static final String LABEL_HANDWRITING = "Handwriting";
     
     /** The empty string, for the case when no words are attached to an image.*/
     protected static final String EMPTY_STRING = "";
@@ -144,6 +145,15 @@ public class FindFinishedImagesStep extends WorkflowStep {
             record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
         }
 
+        // Add whether the image has the handwriting label.
+        if(hasHandwritten(words)) {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_HAANDSKRIFT,
+                    CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_YES);
+        } else {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_HAANDSKRIFT,
+                    CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO);
+        }
+
         // add color
         if(StringUtils.hasValue(image.getColor())) {
             record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
@@ -168,6 +178,20 @@ public class FindFinishedImagesStep extends WorkflowStep {
         }
         image.setStatus(ImageStatus.FINISHED);
         imageRepo.updateImage(image);
+    }
+
+    /**
+     * Determines whether any of the words contain the handwritten
+     * @param words The words which might contain the handwriting label.
+     * @return Whether or not any of the words contain the handwriting label.
+     */
+    protected boolean hasHandwritten(List<WordConfidence> words) {
+        for(WordConfidence word : words) {
+            if(word.getTextEn().equalsIgnoreCase(LABEL_HANDWRITING)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

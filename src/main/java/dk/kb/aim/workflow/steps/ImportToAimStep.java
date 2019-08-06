@@ -133,6 +133,8 @@ public class ImportToAimStep extends WorkflowStep {
     /**
      * Imports a given Cumulus record.
      * @param record The Cumulus record to import.
+     * @throws IOException If it fails to import the record, locating the file or extracting the metadata
+     * through the Google Vision API.
      */
     protected void importRecord(CumulusRecord record) throws IOException {
         String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);

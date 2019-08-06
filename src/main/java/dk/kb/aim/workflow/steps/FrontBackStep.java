@@ -1,13 +1,12 @@
 package dk.kb.aim.workflow.steps;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The workflow for the FrontBack relations to be generated.

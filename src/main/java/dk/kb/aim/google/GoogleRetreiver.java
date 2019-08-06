@@ -12,7 +12,6 @@ import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.ImageContext;
-
 import dk.kb.aim.Constants;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
@@ -41,6 +40,13 @@ public class GoogleRetreiver {
     /** The language hint value for danish.
      *  TODO: make configurable? */
     public static final String LANGUAGE_HINT_DANISH = "da";
+
+    /** The maximum number of results for the label.
+     *  TODO: make configurable? */
+    public static final Integer MAX_RESULTS_FOR_LABELS = 32;
+    /** The lower limit for the confidence of a word belonging to an image. If lower, then we do not make connection.
+     *  TOOD: make configurable? */
+    public static final Integer CONFIDENCE_LIMIT = 30;
 
 
     /** The client for the google image annotation service.*/
@@ -74,7 +80,8 @@ public class GoogleRetreiver {
      * @throws IOException If it fails to retrieve the labels from Google Vision.
      */
     public void retrieveLabels(Image dbImage, GoogleImage googleImage) throws IOException {
-        List<AnnotateImageResponse> responses = sendRequest(googleImage, Feature.Type.LABEL_DETECTION);
+        List<AnnotateImageResponse> responses = sendRequest(googleImage, Feature.Type.LABEL_DETECTION,
+                null, MAX_RESULTS_FOR_LABELS);
         createImageWordsForLabelAnnotations(dbImage, responses);
     }
 
@@ -87,7 +94,7 @@ public class GoogleRetreiver {
      */
     public void retrieveText(Image dbImage, GoogleImage googleImage) throws IOException {
         ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(LANGUAGE_HINT_DANISH).build();
-        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, imageContext));
+        String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, imageContext, null));
         dbImage.setOcr(ocrText);
         imageRepository.updateImage(dbImage);
     }
@@ -106,21 +113,27 @@ public class GoogleRetreiver {
                 LOGGER.error("Error: %s\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                    String text_en = annotation.getDescription().trim().toLowerCase();
-                    LOGGER.debug("Handling annotation: " + text_en);
-                    Word dbWord = wordRepository.getWordByText(text_en, dbImage.getCategory());
+                    String textEn = annotation.getDescription().trim().toLowerCase();
+                    int confidence = Math.round(100.0f*annotation.getScore());
+                    if(confidence < CONFIDENCE_LIMIT) {
+                        LOGGER.debug("Ignoring the label '" + textEn + "', since confidence '" + confidence + "' < '"
+                                + CONFIDENCE_LIMIT + "'");
+                        continue;
+                    }
+
+                    LOGGER.debug("Handling annotation: " + textEn);
+                    Word dbWord = wordRepository.getWordByText(textEn, dbImage.getCategory());
                     if (dbWord == null) {
-                        dbWord = wordRepository.getWordByText(text_en, Constants.AIM_CATEGORY);
+                        dbWord = wordRepository.getWordByText(textEn, Constants.AIM_CATEGORY);
                     }
                     if (dbWord == null) {
                         // The word does not exist in database - create new
-                        String text_da = translateText(text_en).toLowerCase();
-                        dbWord = new Word(text_en, text_da, dbImage.getCategory(), WordStatus.PENDING);
+                        String textDa = translateText(textEn).toLowerCase();
+                        dbWord = new Word(textEn, textDa, dbImage.getCategory(), WordStatus.PENDING);
 
                         int word_id = wordRepository.createWord(dbWord);
                         dbWord.setId(word_id);
                     }
-                    int confidence = Math.round(100.0f*annotation.getScore());
                     imageRepository.addWordToImage(dbImage.getId(),dbWord.getId(), confidence);
                 }
             }
@@ -185,7 +198,7 @@ public class GoogleRetreiver {
      */
     protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type)
             throws IOException {
-        return sendRequest(image, type, null);
+        return sendRequest(image, type, null, null);
     }
 
     /**
@@ -193,15 +206,19 @@ public class GoogleRetreiver {
      * @param image The image to have annotated according to the given feature type.
      * @param type The type of feature to have Google Vision annotated.
      * @param context The imageContext for the feature to have Google Vision annotated.
+     * @param maxResults The maximum number of results (optional, set to null to ignore).
      * @return The list of annotation responses for the image regarding to the given type.
      * @throws IOException If it fails in the communication with the Google Vision service. 
      */
-    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type, ImageContext context)
-            throws IOException {
+    protected List<AnnotateImageResponse> sendRequest(GoogleImage image, Feature.Type type, ImageContext context,
+                                                      Integer maxResults) throws IOException {
         List<AnnotateImageRequest> requests = new ArrayList<>();
-        Feature feat = Feature.newBuilder().setType(type).build();
+        Feature.Builder fBuilder = Feature.newBuilder().setType(type);
+        if(maxResults != null) {
+            fBuilder = fBuilder.setMaxResults(maxResults.intValue());
+        }
         AnnotateImageRequest.Builder builder = AnnotateImageRequest.newBuilder()
-                .addFeatures(feat)
+                .addFeatures(fBuilder.build())
                 .setImage(image.getImage());
         if(context != null) {
             builder = builder.setImageContext(context);

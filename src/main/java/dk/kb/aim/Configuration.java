@@ -36,7 +36,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   jpeg_folder: $ The folder where the jpeg compressed are placed
  *   jpeg_size_limit: $ The maximum size of the jpeg file, otherwise compress further.
  *   jpeg_url: $ The URL to the image-server where the jpegs can be found.
- *   test: $ ONLY FOR TESTS -> will use local images and it will revert the state after finish 
+ *   test: $ ONLY FOR TESTS - will use local images and it will revert the state after finish
  *       instead of finishing. It must be the path to the test-files.
  */
 @Component

@@ -1,10 +1,7 @@
 package dk.kb.aim.repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
+import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 import dk.kb.aim.model.WordCount;
 import dk.kb.aim.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +11,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import dk.kb.aim.model.Word;
-import dk.kb.aim.model.WordConfidence;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by dgj on 22-02-2018.
