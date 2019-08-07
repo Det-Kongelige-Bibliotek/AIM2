@@ -38,7 +38,6 @@ public class ImageConverter {
     public File convertTiff(File tiffFile) throws IOException {
         BufferedImage originalImage = ImageIO.read(tiffFile);
 
-        System.err.println("conf: " + conf);
         File res = new File(conf.getJpegFolder(), getJpgName(tiffFile.getName()));
         ImageIO.write(originalImage, JPG_NAME, res);
         BufferedImage jpgImage = ImageIO.read(res);

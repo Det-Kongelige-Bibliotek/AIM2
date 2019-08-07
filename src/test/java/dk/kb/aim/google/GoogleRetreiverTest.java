@@ -8,18 +8,25 @@ import dk.kb.aim.TestUtils;
 import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
 import dk.kb.aim.model.WordCount;
 import dk.kb.aim.repository.ImageRepository;
+import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.utils.ImageConverter;
+import org.assertj.core.util.Lists;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +55,21 @@ public class GoogleRetreiverTest {
     @Autowired
     Configuration conf;
 
-    @Test
+    @Before
+    public void setup() throws Exception {
+        Assert.assertNotNull(conf);
+        for(Image image : imageRepository.listAllImages()) {
+            imageRepository.removeImage(image);
+        }
+        Assert.assertTrue(imageRepository.listAllImages().isEmpty());
+
+        // Requires the environment variable: GOOGLE_APPLICATION_CREDENTIALS
+        File googleFile = new File("AIMapis.json");
+        Assert.assertTrue(googleFile.isFile());
+        TestUtils.injectEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", googleFile.getAbsolutePath());
+    }
+
+//    @Test
     public void testInjectEnvironmentVariable() throws Exception {
         Assert.assertNull(System.getenv("FOOBAR_ENV"));
 
@@ -58,46 +79,83 @@ public class GoogleRetreiverTest {
     }
 
     @Test
+    public void testRetrieveColor() throws Exception {
+        GoogleRetreiver googleRetreiver = new GoogleRetreiver();
+        googleRetreiver.wordRepository = wordRepository;
+        googleRetreiver.imageRepository = imageRepository;
+        String tiffPath = "src" + File.separator +
+                "test" + File.separator +
+                "resources" + File.separator +
+                "KE051541.tif";
+
+        GoogleImage gImage = convertImage(new File(tiffPath));
+
+        Image dbImage = mock(Image.class);
+
+        googleRetreiver.retrieveColor(dbImage, gImage);
+
+        verify(dbImage).setColor(Mockito.anyString());
+        verify(dbImage).getPath();
+        verify(dbImage).getCumulusId();
+        verify(dbImage).getCategory();
+        verify(dbImage).getStatus();
+        verify(dbImage).getOcr();
+        verify(dbImage).getIsFront();
+        verify(dbImage).getId();
+        verifyNoMoreInteractions(dbImage);
+    }
+
+    @Test
+    public void testRetrieveLabels() throws Exception {
+        GoogleRetreiver googleRetreiver = new GoogleRetreiver();
+        googleRetreiver.wordRepository = wordRepository;
+        googleRetreiver.imageRepository = imageRepository;
+        String tiffPath = "src" + File.separator +
+                "test" + File.separator +
+                "resources" + File.separator +
+                "KE051541.tif";
+
+        String cumulusId = UUID.randomUUID().toString();
+
+        GoogleImage gImage = convertImage(new File(tiffPath));
+
+        Image dbImage = new Image(-1,"/tmp/test.jpg", cumulusId,"category","red","ocr", ImageStatus.NEW, true);
+        int id = imageRepository.createImage(dbImage);
+        dbImage.setId(id);
+
+        Assert.assertEquals(wordRepository.getImageWords(id), Lists.emptyList());
+
+        googleRetreiver.retrieveLabels(dbImage, gImage);
+
+        List<WordConfidence> words = wordRepository.getImageWords(id);
+        Assert.assertFalse(words.isEmpty());
+        Assert.assertEquals(4, words.size());
+    }
+
+    @Test
+    public void testTranslateText() throws IOException {
+        GoogleRetreiver googleRetreiver = new GoogleRetreiver();
+        googleRetreiver.wordRepository = wordRepository;
+        googleRetreiver.imageRepository = imageRepository;
+
+        String textToTranslate = "This is a test";
+        String translatedText = googleRetreiver.translateText(textToTranslate);
+
+        Assert.assertEquals("Dette er en test", translatedText);
+    }
+
+    @Test
     public void testTextExtraction() throws Exception {
-        Assert.assertNotNull(conf);
-        System.out.println("conf: " + conf);
-        System.out.println("workflow interval: " + conf.getWorkflowInterval());
-        System.out.println("Cumulus catalog: " + conf.getCumulusCatalog());
-        System.out.println("Cumulus conf: " + conf.getCumulusConf());
-        System.out.println("jpeg folder: " + conf.getJpegFolder());
-        System.out.println("jpeg url: " + conf.getJpegUrl());
-        System.out.println("jpeg size: " + conf.getJpegSizeLimit());
-        System.out.println("Test dir: " + conf.getTestDir());
-
-//      Requires the environment variable: GOOGLE_APPLICATION_CREDENTIALS
-
-        for(Image image : imageRepository.listAllImages()) {
-            imageRepository.removeImage(image);
-        }
-        Assert.assertTrue(imageRepository.listAllImages().isEmpty());
-
-        File googleFile = new File("AIMapis.json");
-        Assert.assertTrue(googleFile.isFile());
-        TestUtils.injectEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", googleFile.getAbsolutePath());
-
         GoogleRetreiver googleRetreiver = new GoogleRetreiver();
         googleRetreiver.wordRepository = wordRepository;
         googleRetreiver.imageRepository = imageRepository;
         String tiffPath = "src" + File.separator +
                          "test" + File.separator +
                          "resources" + File.separator +
-//                         "DKP002-0094_0027.tif";
                          "KE051541.tif";
 
-        Assert.assertTrue(new File(tiffPath).isFile());
-        ImageConverter imageConverter = new ImageConverter();
-        Field f1 = imageConverter.getClass().getDeclaredField("conf");
-        f1.setAccessible(true);
-        f1.set(imageConverter, conf);
+        GoogleImage image = convertImage(new File(tiffPath));
 
-        File jpegFile = imageConverter.convertTiff(new File(tiffPath));
-
-        GoogleImage image = new GoogleImage(jpegFile);
         List<AnnotateImageResponse> responses = googleRetreiver.sendRequest(image, Feature.Type.TEXT_DETECTION);
 
         for(AnnotateImageResponse response : responses) {
@@ -112,7 +170,6 @@ public class GoogleRetreiverTest {
             System.out.println(response.getFullTextAnnotation().getText());
             System.out.println("--------");
         }
-
     }
     
 //    @Test
@@ -158,5 +215,17 @@ public class GoogleRetreiverTest {
         verify(imageRepository).addWordToImage(eq(imageId), eq(wordId), eq(expectedConfidence));
         verifyNoMoreInteractions(imageRepository);
     }
-    
+
+
+    protected GoogleImage convertImage(File imageFile) throws Exception {
+        Assert.assertTrue(imageFile.isFile());
+        ImageConverter imageConverter = new ImageConverter();
+        Field f1 = imageConverter.getClass().getDeclaredField("conf");
+        f1.setAccessible(true);
+        f1.set(imageConverter, conf);
+
+        File jpegFile = imageConverter.convertTiff(imageFile);
+
+        return new GoogleImage(jpegFile);
+    }
 }

@@ -23,8 +23,13 @@
         <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
             <th colspan="2">Reject</th>
         </c:if>
+        <c:if test="${status=='PENDING'}">
+            <th onclick="sortTable(5, table_${param.category}_${param.status})">Count</th>
+        </c:if>
+        <c:if test="${status!='PENDING'}">
+            <th onclick="sortTable(4, table_${param.category}_${param.status})">Count</th>
+        </c:if>
         <th>Images</th>
-        <th onclick="sortTable(3, table_${param.category}_${param.status})">Count</th>
     </tr>
     </thead>
     <tbody>
@@ -59,9 +64,9 @@
                             AIM
                         </button>
                     </td>
-                    <td>${word.count}</td>
                 </c:if>
             </form>
+            <td>${word.count}</td>
             <td>
                 <c:url value="/word_images/${word.id}" var="imgUrl">
                     <c:param name="offset" value="0" />
