@@ -5,7 +5,7 @@
        xmlns="http://www.w3.org/1999/xhtml"
        id="table_${param.category}_${param.status}">
     <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <c:set var="status" value="${controller_status}"/>
+    <c:set var="status" value="${controllerStatus}"/>
     <%
         java.util.List<dk.kb.aim.repository.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.repository.WordStatus.values());
         pageContext.setAttribute("statuses", ws);

@@ -4,52 +4,19 @@
     pageContext.setAttribute("statuses", ws);
 %>
 <c:set var="status" value="${controllerStatus}"/>
-<c:out value="${currentCategory}"/> HEJ
 <ul class="nav nav-tabs" id="categories">
     <c:forEach items="${categories}" var="category">
-        <c:choose>
-            <c:when test="${currentCategory==category}">
-        <li class="nav-item active">
-            </c:when>
-            <c:otherwise>
         <li class="nav-item">
-            </c:otherwise>
-        </c:choose>
-            <a class="${category} nav-link" href="${pageContext.request.contextPath}/words/${category}">${category}</a>
+            <a class="${category} nav-link${currentCategory==category ? ' active' : ''}" href="${pageContext.request.contextPath}/words/${category}">${category}</a>
         </li>
     </c:forEach>
 </ul>
 <div class="tab-content">
     <c:forEach items="${categories}" var="category">
-        <div class="tab-pane fade container" id="${category}">
+        <div class="tab-pane fade container${currentCategory==category ? ' show active' : ''}" id="${category}">
             <jsp:include page="tabs.jsp">
                 <jsp:param name="category" value="${category}"/>
             </jsp:include>
         </div>
     </c:forEach>
 </div>
-
-<script type="text/javascript">
-    // Rewrite bootstrap default behaviour to be able to manipulate url
-    $('.nav-tabs a').click(function (e) {
-        $(this).tab('show');
-    });
-
-    // Activate the correct tabs after loading the page
-    $(document).ready(function () {
-        var categories = "${categories}".replace('[', '').replace(']', '').split(", ");// converting java array to javascript array
-        for (var i = 0; i < categories.length; i++) {
-            if (window.location.href.indexOf(categories[i]) > -1) {
-                document.getElementById(categories[i]).className += (' show active');
-                document.getElementsByClassName(categories[i])[0].className += (' active');
-            }
-            var statuses = "${statuses}".replace('[', '').replace(']', '').split(", ");// converting java array to javascript array
-            for (var j = 0; j < statuses.length; j++) {
-                if ('${status}' == statuses[j]) {
-                    document.getElementById(statuses[j] + "_" + categories[i]).className += (' show active');
-                    document.getElementsByClassName(statuses[j])[i].className += (' active');
-                }
-            }
-        }
-    });
-</script>
