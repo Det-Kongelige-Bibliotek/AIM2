@@ -43,9 +43,12 @@
                        value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:${word.category}"
-                                class="btn btn-success">Approve
-                        </button>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ACCEPTED:${word.category}" id="accept_${word.id}">
+                            <label class="form-check-label" for="${word.category}_accept_${word.id}">
+                                Approve
+                            </label>
+                        </div>
                     </td>
                     <td>
                         <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve

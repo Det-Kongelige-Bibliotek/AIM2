@@ -4,10 +4,17 @@
     pageContext.setAttribute("statuses", ws);
 %>
 <c:set var="status" value="${controllerStatus}"/>
-
+<c:out value="${currentCategory}"/> HEJ
 <ul class="nav nav-tabs" id="categories">
     <c:forEach items="${categories}" var="category">
+        <c:choose>
+            <c:when test="${currentCategory==category}">
+        <li class="nav-item active">
+            </c:when>
+            <c:otherwise>
         <li class="nav-item">
+            </c:otherwise>
+        </c:choose>
             <a class="${category} nav-link" href="${pageContext.request.contextPath}/words/${category}">${category}</a>
         </li>
     </c:forEach>
