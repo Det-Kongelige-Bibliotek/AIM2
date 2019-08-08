@@ -45,7 +45,7 @@
                     <td>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="ACCEPTED:${word.category}" id="accept_${word.id}">
-                            <label class="form-check-label" for="${word.category}_accept_${word.id}">
+                            <label class="form-check-label" for="accept_${word.id}">
                                 Approve
                             </label>
                         </div>

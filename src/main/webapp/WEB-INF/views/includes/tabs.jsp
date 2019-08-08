@@ -22,9 +22,7 @@
             </a>
         </li>
     </ul>
-
     <div class="tab-content">
-
         <div class="tab-pane fade container${status=='PENDING' ? ' show active' : ''}" id="PENDING_${category}">
         </div>
         <div class="tab-pane fade container${status=='ACCEPTED' ? ' show active' : ''}" id="ACCEPTED_${category}">
@@ -32,12 +30,9 @@
         <div class="tab-pane fade container${status=='REJECTED' ? ' show active' : ''}" id="REJECTED_${category}">
         </div>
 
-
         <jsp:include page="wordsTable.jsp">
             <jsp:param name="status" value="${status}"/>
-            <jsp:param name="category" value="${param.category}"/>
+            <jsp:param name="category" value="${category}"/>
         </jsp:include>
-
-
     </div>
 </div>
