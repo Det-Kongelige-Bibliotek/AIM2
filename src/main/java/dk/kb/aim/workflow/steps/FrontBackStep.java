@@ -136,13 +136,15 @@ public class FrontBackStep extends WorkflowStep {
         }
         
         // Deal with the multiple backs syntax.
-        String prefix;
-        if(nameWithoutSuffix.matches(".*[0-9]_[0-9].*")) {
-            prefix = nameWithoutSuffix.substring(0, nameWithoutSuffix.lastIndexOf("_"));
-        } else {
-            prefix = nameWithoutSuffix;
-        }
-        
+//        String prefix;
+//        if(nameWithoutSuffix.matches(".*[0-9]_[0-9].*")) {
+//            prefix = nameWithoutSuffix.substring(0, nameWithoutSuffix.lastIndexOf("_"));
+//        } else {
+//            prefix = nameWithoutSuffix;
+//        }
+
+        String prefix = nameWithoutSuffix;
+
         String digits = getTrailingDigits(prefix);
 
         if(digits.matches("[0-9]{1,}")) {
