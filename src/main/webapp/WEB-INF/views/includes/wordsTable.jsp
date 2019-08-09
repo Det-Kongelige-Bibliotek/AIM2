@@ -1,11 +1,16 @@
-<form action="${pageContext.request.contextPath}/update/words" id="word_form_id_${word.id}" method="post">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<form onsubmit="return onSubmit(this)" method="post">
+<input type="hidden" name="category" value="${param.category}"/>
+<input type="hidden" name="back_to" value="/words/${param.category}?status=${controllerStatus}"/>
+
 <table class="table table-striped"
        xmlns:spring="http://www.springframework.org/tags"
        xmlns:jsp="http://java.sun.com/JSP/Page"
        xmlns:c="http://java.sun.com/jsp/jstl/core"
        xmlns="http://www.w3.org/1999/xhtml"
        id="table_${param.category}_${param.status}">
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
     <c:set var="status" value="${controllerStatus}"/>
     <%
         java.util.List<dk.kb.aim.repository.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.repository.WordStatus.values());
@@ -36,17 +41,15 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <td>${word.id}<input type="hidden" name="words[${word.id}[id][]" value="${word.id}"/></td>
-            <td>${word.textEn}<input type="hidden" name="words[${word.id}][text_en][]" value="${word.textEn}"/></td>
-            <td><input type="text" name="words[${word.id}][text_da][]" value="${word.textDa}"/></td>
-            <input type="hidden" name="words[${word.id}][back_to][]"
-                   value="/words/${word.category}?status=${word.status}"/>
+            <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
+            <td>${word.textEn}</td>
+            <td><input type="text" name="text_da" value="${word.textDa}"/></td>
             <c:if test="${status=='REJECTED'||status=='PENDING'}">
                 <td>
                     <div class="form-check">
                         <input class="form-check-input"
-                               type="checkbox"
-                               name="words[${word.id}][]"
+                               type="radio"
+                               name="action"
                                value="ACCEPTED:${word.category}"
                                id="accept_${word.id}">
                         <label class="form-check-label" for="accept_${word.id}">
@@ -55,21 +58,42 @@
                     </div>
                 </td>
                 <td>
-                    <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve
-                        for AIM
-                    </button>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="action"
+                               value="ACCEPTED:AIM"
+                               id="accept_aim_${word.id}">
+                        <label class="form-check-label" for="accept_aim_${word.id}">
+                            Approve for AIM
+                        </label>
+                    </div>
                 </td>
             </c:if>
             <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
                 <td>
-                    <button type="submit" name="op_category" value="REJECTED:${word.category}"
-                            class="btn btn-danger">Reject
-                    </button>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="action"
+                               value="REJECTED:${word.category}"
+                               id="reject_${word.id}">
+                        <label class="form-check-label" for="reject_${word.id}">
+                            Reject
+                        </label>
+                    </div>
                 </td>
                 <td>
-                    <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for
-                        AIM
-                    </button>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="action"
+                               value="REJECT:AIM"
+                               id="reject_aim_${word.id}">
+                        <label class="form-check-label" for="reject_aim_${word.id}">
+                            Reject for AIM
+                        </label>
+                    </div>
                 </td>
             </c:if>
             <td>${word.count}</td>
@@ -90,72 +114,77 @@
 <script type="text/javascript">
     var categories = "${categories}".replace('[', '').replace(']', '').split(", ");
     var statuses = "${statuses}".replace('[', '').replace(']', '').split(", ");
-</script>
 
-<script>
-/* Taken from example from w3schools.*/
-function sortTable(n, table_id) {
-  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById(table_id);
-  table = table_id;
-  switching = true;
-  // Set the sorting direction to ascending:
-  dir = "asc";
-  /* Make a loop that will continue until
-  no switching has been done: */
-  while (switching) {
-    // Start by saying: no switching is done:
-    switching = false;
-    rows = table.rows;
-    /* Loop through all table rows (except the
-    first, which contains table headers): */
-    for (i = 1; i < (rows.length - 1); i++) {
-      // Start by saying there should be no switching:
-      shouldSwitch = false;
-      /* Get the two elements you want to compare,
-      one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-
-      /* Get the value in number form or lowercase if nan.*/
-      x_value = x.innerHTML.valueOf();
-      y_value = y.innerHTML.valueOf();
-      if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
-        x_value = Number(x_value.replace(/<.*/i, ""));
-        y_value = Number(y_value.replace(/<.*/i, ""));
-      }
-
-      /* Check if the two rows should switch place,
-      based on the direction, asc or desc: */
-      if (dir == "asc") {
-        if (x_value > y_value) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x_value < y_value) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      }
+    function onSubmit( form ){
+        var url = "${pageContext.request.contextPath}/update/words";
+        var data = JSON.stringify( $(form).serializeArray() );
+        console.log( data );
+        return false; //don't submit
     }
-    if (shouldSwitch) {
-      /* If a switch has been marked, make the switch
-      and mark that a switch has been done: */
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+
+    /* Taken from example from w3schools.*/
+    function sortTable(n, table_id) {
+      var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+      table = document.getElementById(table_id);
+      table = table_id;
       switching = true;
-      // Each time a switch is done, increase this count by 1:
-      switchcount ++;
-    } else {
-      /* If no switching has been done AND the direction is "asc",
-      set the direction to "desc" and run the while loop again. */
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
+      // Set the sorting direction to ascending:
+      dir = "asc";
+      /* Make a loop that will continue until
+      no switching has been done: */
+      while (switching) {
+        // Start by saying: no switching is done:
+        switching = false;
+        rows = table.rows;
+        /* Loop through all table rows (except the
+        first, which contains table headers): */
+        for (i = 1; i < (rows.length - 1); i++) {
+          // Start by saying there should be no switching:
+          shouldSwitch = false;
+          /* Get the two elements you want to compare,
+          one from current row and one from the next: */
+          x = rows[i].getElementsByTagName("TD")[n];
+          y = rows[i + 1].getElementsByTagName("TD")[n];
+
+          /* Get the value in number form or lowercase if nan.*/
+          x_value = x.innerHTML.valueOf();
+          y_value = y.innerHTML.valueOf();
+          if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
+            x_value = Number(x_value.replace(/<.*/i, ""));
+            y_value = Number(y_value.replace(/<.*/i, ""));
+          }
+
+          /* Check if the two rows should switch place,
+          based on the direction, asc or desc: */
+          if (dir == "asc") {
+            if (x_value > y_value) {
+              // If so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
+          } else if (dir == "desc") {
+            if (x_value < y_value) {
+              // If so, mark as a switch and break the loop:
+              shouldSwitch = true;
+              break;
+            }
+          }
+        }
+        if (shouldSwitch) {
+          /* If a switch has been marked, make the switch
+          and mark that a switch has been done: */
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          // Each time a switch is done, increase this count by 1:
+          switchcount ++;
+        } else {
+          /* If no switching has been done AND the direction is "asc",
+          set the direction to "desc" and run the while loop again. */
+          if (switchcount == 0 && dir == "asc") {
+            dir = "desc";
+            switching = true;
+          }
+        }
       }
     }
-  }
-}
 </script>
