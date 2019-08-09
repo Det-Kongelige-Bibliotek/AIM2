@@ -1,3 +1,4 @@
+<form action="${pageContext.request.contextPath}/update/words" id="word_form_id_${word.id}" method="post">
 <table class="table table-striped"
        xmlns:spring="http://www.springframework.org/tags"
        xmlns:jsp="http://java.sun.com/JSP/Page"
@@ -35,40 +36,42 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
-                <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
-                <td>${word.textEn}<input type="hidden" name="text_en" value="${word.textEn}"/></td>
-                <td><input type="text" name="text_da" value="${word.textDa}"/></td>
-                <input type="hidden" name="back_to"
-                       value="/words/${word.category}?status=${word.status}"/>
-                <c:if test="${status=='REJECTED'||status=='PENDING'}">
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="ACCEPTED:${word.category}" id="accept_${word.id}">
-                            <label class="form-check-label" for="accept_${word.id}">
-                                Approve
-                            </label>
-                        </div>
-                    </td>
-                    <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve
-                            for AIM
-                        </button>
-                    </td>
-                </c:if>
-                <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
-                    <td>
-                        <button type="submit" name="op_category" value="REJECTED:${word.category}"
-                                class="btn btn-danger">Reject
-                        </button>
-                    </td>
-                    <td>
-                        <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for
-                            AIM
-                        </button>
-                    </td>
-                </c:if>
-            </form>
+            <td>${word.id}<input type="hidden" name="words[${word.id}[id][]" value="${word.id}"/></td>
+            <td>${word.textEn}<input type="hidden" name="words[${word.id}][text_en][]" value="${word.textEn}"/></td>
+            <td><input type="text" name="words[${word.id}][text_da][]" value="${word.textDa}"/></td>
+            <input type="hidden" name="words[${word.id}][back_to][]"
+                   value="/words/${word.category}?status=${word.status}"/>
+            <c:if test="${status=='REJECTED'||status=='PENDING'}">
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="words[${word.id}][]"
+                               value="ACCEPTED:${word.category}"
+                               id="accept_${word.id}">
+                        <label class="form-check-label" for="accept_${word.id}">
+                            Approve
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve
+                        for AIM
+                    </button>
+                </td>
+            </c:if>
+            <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
+                <td>
+                    <button type="submit" name="op_category" value="REJECTED:${word.category}"
+                            class="btn btn-danger">Reject
+                    </button>
+                </td>
+                <td>
+                    <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for
+                        AIM
+                    </button>
+                </td>
+            </c:if>
             <td>${word.count}</td>
             <td>
                 <c:url value="/word_images/${word.id}" var="imgUrl">
@@ -81,6 +84,9 @@
     </c:forEach>
     </tbody>
 </table>
+<button type="submit" class="btn btn-primary">Opdater</button>
+</form>
+
 <script type="text/javascript">
     var categories = "${categories}".replace('[', '').replace(']', '').split(", ");
     var statuses = "${statuses}".replace('[', '').replace(']', '').split(", ");

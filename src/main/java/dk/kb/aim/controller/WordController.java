@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.model.Word;
@@ -58,6 +59,13 @@ public class WordController {
         Word word       = new Word(id, text_en.toLowerCase(), text_da.toLowerCase(), category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
         LOGGER.info("Updating word: " + word);
+        return "redirect:" + back_to;
+    }
+    @RequestMapping(value="/update/words", params={"words"}, method=RequestMethod.POST)
+    public String updateWords(@RequestParam("words[]") java.util.List<String> words,
+           @RequestParam("back_to") String back_to,
+           Model model) {
+        LOGGER.info("Updating words: " + words);
         return "redirect:" + back_to;
     }
 
