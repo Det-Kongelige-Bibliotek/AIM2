@@ -113,31 +113,41 @@ public class GoogleRetreiver {
                 LOGGER.error("Error: %s\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                    String textEn = annotation.getDescription().trim().toLowerCase();
-                    int confidence = Math.round(100.0f*annotation.getScore());
-                    if(confidence < CONFIDENCE_LIMIT) {
-                        LOGGER.debug("Ignoring the label '" + textEn + "', since confidence '" + confidence + "' < '"
-                                + CONFIDENCE_LIMIT + "'");
-                        continue;
-                    }
-
-                    LOGGER.debug("Handling annotation: " + textEn);
-                    Word dbWord = wordRepository.getWordByText(textEn, dbImage.getCategory());
-                    if (dbWord == null) {
-                        dbWord = wordRepository.getWordByText(textEn, Constants.AIM_CATEGORY);
-                    }
-                    if (dbWord == null) {
-                        // The word does not exist in database - create new
-                        String textDa = translateText(textEn).toLowerCase();
-                        dbWord = new Word(textEn, textDa, dbImage.getCategory(), WordStatus.PENDING);
-
-                        int word_id = wordRepository.createWord(dbWord);
-                        dbWord.setId(word_id);
-                    }
-                    imageRepository.addWordToImage(dbImage.getId(),dbWord.getId(), confidence);
+                    handleWordAnnotation(dbImage, annotation);
                 }
             }
         }
+    }
+
+    /**
+     * Handle a single word annotation.
+     * @param dbImage The DB image where the annotated words comes from.
+     * @param annotation The annotation to handle.
+     * @throws IOException If it fails to translate.
+     */
+    protected synchronized void handleWordAnnotation(Image dbImage, EntityAnnotation annotation) throws IOException {
+        String textEn = annotation.getDescription().trim().toLowerCase();
+        int confidence = Math.round(100.0f*annotation.getScore());
+        if(confidence < CONFIDENCE_LIMIT) {
+            LOGGER.debug("Ignoring the label '" + textEn + "', since confidence '" + confidence + "' < '"
+                    + CONFIDENCE_LIMIT + "' (limit)");
+            return;
+        }
+
+        LOGGER.debug("Handling annotation: " + textEn);
+        Word dbWord = wordRepository.getWordByText(textEn, dbImage.getCategory());
+        if (dbWord == null) {
+            dbWord = wordRepository.getWordByText(textEn, Constants.AIM_CATEGORY);
+        }
+        if (dbWord == null) {
+            // The word does not exist in database - create new
+            String textDa = translateText(textEn).toLowerCase();
+            dbWord = new Word(textEn, textDa, dbImage.getCategory(), WordStatus.PENDING);
+
+            int word_id = wordRepository.createWord(dbWord);
+            dbWord.setId(word_id);
+        }
+        imageRepository.addWordToImage(dbImage.getId(),dbWord.getId(), confidence);
     }
 
     /**
