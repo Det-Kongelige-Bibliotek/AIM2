@@ -24,10 +24,10 @@
             <th colspan="2">Reject</th>
         </c:if>
         <c:if test="${status=='PENDING'}">
-            <th onclick="sortTable(5, table_${param.category}_${param.status})">Count</th>
+            <th onclick="sortTable(7, table_${param.category}_${param.status})">Count</th>
         </c:if>
         <c:if test="${status!='PENDING'}">
-            <th onclick="sortTable(4, table_${param.category}_${param.status})">Count</th>
+            <th onclick="sortTable(5, table_${param.category}_${param.status})">Count</th>
         </c:if>
         <th>Images</th>
     </tr>
@@ -91,6 +91,19 @@
         switching = true;
         // Set the sorting direction to ascending:
         ascending = true;
+
+        // TODO: take out values before sorting
+        rows = table.rows;
+        var values = [];
+        for (i = 1; i < rows.length; i++) {
+            x = rows[i].getElementsByTagName("TD")[n];
+            x_value = x.innerHTML.valueOf();
+            if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
+                x_value = Number(x_value.replace(/<.*/i, ""));
+            }
+            values[i] = x_value;
+        }
+
         /* Make a loop that will continue until
         no switching has been done: */
         while (switching) {
@@ -104,16 +117,8 @@
                 shouldSwitch = false;
                 /* Get the two elements you want to compare,
                 one from current row and one from the next: */
-                x = rows[i].getElementsByTagName("TD")[n];
-                y = rows[i + 1].getElementsByTagName("TD")[n];
-
-                /* Get the value in number form or lowercase if nan.*/
-                x_value = x.innerHTML.valueOf();
-                y_value = y.innerHTML.valueOf();
-                if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
-                    x_value = Number(x_value.replace(/<.*/i, ""));
-                    y_value = Number(y_value.replace(/<.*/i, ""));
-                }
+                x_value = values[i];
+                y_value = values[i+1];
 
                 /* Check if the two rows should switch place,
                 based on the direction, asc or desc: */
@@ -132,11 +137,14 @@
                 }
             }
             if (shouldSwitch) {
-                /* If a switch has been marked, make the switch
-                and mark that a switch has been done: */
+                // Perform switch
                 rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                tempV = values[i];
+                values[i] = values[i+1];
+                values[i+1] = tempV;
+
+                // Mark switching and increate switching count.
                 switching = true;
-                // Each time a switch is done, increase this count by 1:
                 switchcount ++;
             } else {
                 /* If no switching has been done AND the direction is "asc",
