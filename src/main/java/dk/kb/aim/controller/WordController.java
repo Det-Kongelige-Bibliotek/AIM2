@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordUpdate;
+import dk.kb.aim.model.WordsCreationDto;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
 
@@ -64,13 +66,16 @@ public class WordController {
         return "redirect:" + back_to;
     }
     @RequestMapping(value="/update/words", params={"words"}, method=RequestMethod.POST)
-    public String updateWords(
-                                @RequestParam("words") java.lang.Object words,
-                                @RequestParam("category") String category,
-                                @RequestParam("back_to") String back_to,
-                                Model model) {
-        LOGGER.info("Updating words: " + words);
-        return "redirect:" + back_to;
+    public String updateWords(Model model) {
+        /*WordsCreationDto wordsForm = new WordsCreationDto();
+
+        for (int i = 1; i <= 3; i++) {
+            wordsForm.addWord(new WordCount());
+        }
+
+        model.addAttribute("form", wordsForm);*/
+        return "/words";
+        //LOGGER.info("Updating words: " + words);
     }
 
     /**
@@ -80,17 +85,24 @@ public class WordController {
      * @return The name of the jsp page.
      */
     @RequestMapping(value="/words")
-    public String statusWords( @RequestParam(value="status", defaultValue=DEFAULT_WORD_STATE) WordStatus status,
-            Model model) {
+    public String statusWords(
+                                @RequestParam(value="status",
+                                defaultValue=DEFAULT_WORD_STATE) WordStatus status,
+                                Model model) {
         model.addAttribute("controllerStatus", status);
         model.addAttribute("categories", wordRepository.getCategories());
         model.addAttribute("currentCategory", wordRepository.getCategories().get(0));
 
+        WordsCreationDto words = new WordsCreationDto();
         if(status.toString().isEmpty()) {
-            model.addAttribute("words", wordRepository.allWordCounts());
+            wordRepository.allWordCounts().iterator().forEachRemaining(words::addWord);
+//            model.addAttribute("form", wordRepository.allWordCounts());
         } else {
-            model.addAttribute("words", wordRepository.allWordCountsWithStatus(status));
+            wordRepository.allWordCountsWithStatus(status).iterator().forEachRemaining(words::addWord);
+            //model.addAttribute("form", new WordsCreationDto(words));
+//            model.addAttribute("form", wordRepository.allWordCountsWithStatus(status));
         }
+        model.addAttribute("form", words);
 
         return "list-words";
     }

@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<form method="POST" action="/aim/update/words">
+<form action="#" th:action="@{/update/words}" th:object="${form}" method="post">
+<fieldset>
 <input type="hidden" name="category" value="${param.category}"/>
 <input type="hidden" name="back_to" value="/words/${param.category}?status=${controllerStatus}"/>
 
@@ -39,11 +40,10 @@
     </tr>
     </thead>
     <tbody>
-    <c:forEach items="${words}" var="word">
-        <tr>
-            <td>${word.id}<td>${word.id}<!--<input type="hidden" name="id_${word.id}" value="${word.id}"/>--></td></td>
-            <td>${word.textEn}</td>
-            <td><input type="text" name="text_da_${word.id}" value="${word.textDa}"/></td>
+        <tr th:each="word, itemStat : ${form.words}">
+            <td>${word.getId()}<td><!--<input type="hidden" name="id_${word.id}" value="${word.id}"/>--></td></td>
+            <td>${word.getTextEn()}</td>
+            <td><input th:name="|words[${itemStat.index}].text_da|" th:value="${word.getTextDa()}"/></td>
             <c:if test="${status=='REJECTED'||status=='PENDING'}">
                 <td>
                     <div class="form-check">
@@ -105,10 +105,10 @@
                 <a class="btn btn-info" href="${imgUrl}" role="button">See images</a>
             </td>
         </tr>
-    </c:forEach>
     </tbody>
 </table>
 <button type="submit" class="btn btn-primary">Opdater</button>
+</fieldset>
 </form>
 
 <script type="text/javascript">

@@ -22,7 +22,7 @@ public class WordCount extends Word {
         super(id, textEn, textDa, category, status);
         this.count = count;
     }
-    
+
     /**
      * @return The count of images for the word.
      */
@@ -32,7 +32,7 @@ public class WordCount extends Word {
 
     @Override
     public String toString() {
-        return "WordConfidence{" +
+        return "WordCount{" +
                 "id=" + id +
                 ", text_en='" + textEn + '\'' +
                 ", text_da='" + textDa + '\'' +
