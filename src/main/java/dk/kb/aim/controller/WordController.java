@@ -14,6 +14,8 @@ import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
 
+import java.util.List;
+
 /**
  * Created by dgj on 22-02-2018.
  */
@@ -62,9 +64,11 @@ public class WordController {
         return "redirect:" + back_to;
     }
     @RequestMapping(value="/update/words", params={"words"}, method=RequestMethod.POST)
-    public String updateWords(@RequestParam("words[]") java.util.List<String> words,
-           @RequestParam("back_to") String back_to,
-           Model model) {
+    public String updateWords(
+                                @RequestParam("words") java.lang.Object words,
+                                @RequestParam("category") String category,
+                                @RequestParam("back_to") String back_to,
+                                Model model) {
         LOGGER.info("Updating words: " + words);
         return "redirect:" + back_to;
     }

@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<form onsubmit="return onSubmit(this)" method="post">
+<form method="POST" action="/aim/update/words">
 <input type="hidden" name="category" value="${param.category}"/>
 <input type="hidden" name="back_to" value="/words/${param.category}?status=${controllerStatus}"/>
 
-<table class="table table-striped"
+<table id="wordsTable" class="table table-striped"
        xmlns:spring="http://www.springframework.org/tags"
        xmlns:jsp="http://java.sun.com/JSP/Page"
        xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -41,15 +41,15 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
+            <td>${word.id}<td>${word.id}<!--<input type="hidden" name="id_${word.id}" value="${word.id}"/>--></td></td>
             <td>${word.textEn}</td>
-            <td><input type="text" name="text_da" value="${word.textDa}"/></td>
+            <td><input type="text" name="text_da_${word.id}" value="${word.textDa}"/></td>
             <c:if test="${status=='REJECTED'||status=='PENDING'}">
                 <td>
                     <div class="form-check">
                         <input class="form-check-input"
                                type="radio"
-                               name="action"
+                               name="action_${word.id}"
                                value="ACCEPTED:${word.category}"
                                id="accept_${word.id}">
                         <label class="form-check-label" for="accept_${word.id}">
@@ -61,7 +61,7 @@
                     <div class="form-check">
                         <input class="form-check-input"
                                type="radio"
-                               name="action"
+                               name="action_${word.id}"
                                value="ACCEPTED:AIM"
                                id="accept_aim_${word.id}">
                         <label class="form-check-label" for="accept_aim_${word.id}">
@@ -75,7 +75,7 @@
                     <div class="form-check">
                         <input class="form-check-input"
                                type="radio"
-                               name="action"
+                               name="action_${word.id}"
                                value="REJECTED:${word.category}"
                                id="reject_${word.id}">
                         <label class="form-check-label" for="reject_${word.id}">
@@ -87,7 +87,7 @@
                     <div class="form-check">
                         <input class="form-check-input"
                                type="radio"
-                               name="action"
+                               name="action_${word.id}"
                                value="REJECT:AIM"
                                id="reject_aim_${word.id}">
                         <label class="form-check-label" for="reject_aim_${word.id}">
@@ -115,12 +115,35 @@
     var categories = "${categories}".replace('[', '').replace(']', '').split(", ");
     var statuses = "${statuses}".replace('[', '').replace(']', '').split(", ");
 
-    function onSubmit( form ){
-        var url = "${pageContext.request.contextPath}/update/words";
-        var data = JSON.stringify( $(form).serializeArray() );
-        console.log( data );
-        return false; //don't submit
-    }
+    /*$.fn.serializeObject = function() {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };*/
+
+    $(function () {
+        //$('form').submit(function () {
+            //var url = "${pageContext.request.contextPath}/update/words";
+            /*var result = [];
+            var inputs = document.querySelectorAll("input");
+            inputs.forEach(function(input) {
+                console.log(input)
+            })*/
+            //console.log(obj);
+            //$.post(url, JSON.stringify(obj);
+            //return false;
+        //});
+    });
 
     /* Taken from example from w3schools.*/
     function sortTable(n, table_id) {
