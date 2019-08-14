@@ -31,33 +31,49 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
-                <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
+            <form name="word_form" action="${pageContext.request.contextPath}/update/word" id="word_form_id_${word.id}">
+                <td>
+                    <div class="spinner-border" role="status" style="display:none">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    ${word.id}
+                    <input type="hidden" name="id" value="${word.id}"/>
+                    <input type="hidden" name="op_category" value=""/>
+                </td>
                 <td>${word.textEn}<input type="hidden" name="text_en" value="${word.textEn}"/></td>
                 <td><input type="text" name="text_da" value="${word.textDa}"/></td>
-                <input type="hidden" name="back_to"
-                       value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:${word.category}"
-                                class="btn btn-success">Approve
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="ACCEPTED:${word.category}"
+                                class="btn btn-success">
+                                Approve
                         </button>
                     </td>
                     <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve
-                            for AIM
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="ACCEPTED:AIM" class="btn btn-success">
+                                Approve for AIM
                         </button>
                     </td>
                 </c:if>
                 <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
                     <td>
-                        <button type="submit" name="op_category" value="REJECTED:${word.category}"
-                                class="btn btn-danger">Reject
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="REJECTED:${word.category}"
+                                class="btn btn-danger">
+                                Reject
                         </button>
                     </td>
                     <td>
-                        <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for
-                            AIM
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="REJECTED:AIM"
+                                class="btn btn-danger">
+                                Reject for AIM
                         </button>
                     </td>
                     <td>${word.count}</td>
@@ -80,6 +96,38 @@
 </script>
 
 <script>
+
+var frm = $('form[name=word_form]');
+var clickedButton = null;
+
+frm.submit(function (e) {
+    e.preventDefault();
+    var self = $(this)
+
+    self.find('div.spinner-border').show();
+
+    $.ajax({
+        type: frm.attr('method'),
+        url: frm.attr('action'),
+        data: $(this).serialize(),
+        success: function (data) {
+            var here = self;
+            self.closest('tr').fadeOut('fast',
+                function(here) {
+                    $(here).remove();
+                }
+            );
+            console.log('Submission was successful.');
+            //console.log(data)
+        },
+        error: function (data) {
+            spinner.find('span.spinner-border').hide();
+            console.log('An error occurred.');
+            //console.log(data);
+        },
+    });
+});
+
 /* Taken from example from w3schools.*/
 function sortTable(n, table_id) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;

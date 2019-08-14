@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.model.Word;
@@ -34,16 +35,15 @@ public class WordController {
      * @param text_en The english text.
      * @param text_da The danish translation.
      * @param op_category The category.
-     * @param back_to Where the request comes from.
      * @param model The request model.
-     * @return Redirects back.
+     * @return Success string.
      */
-    @RequestMapping(value="/words/update",params={"id", "text_en", "text_da", "op_category", "back_to"})
+    @RequestMapping(value="/update/word",params={"id", "text_en", "text_da", "op_category"})
+    @ResponseBody
     public String updateWord(@RequestParam("id") int id,
             @RequestParam("text_en")  String text_en,
             @RequestParam("text_da")  String text_da,
             @RequestParam("op_category") String op_category,
-            @RequestParam("back_to")  String back_to,
             Model model) {
         String[] parts  = op_category.split(":");
         WordStatus status;
@@ -58,7 +58,7 @@ public class WordController {
         Word word       = new Word(id, text_en.toLowerCase(), text_da.toLowerCase(), category, status);
         model.addAttribute("words",wordRepository.updateWord(word));
         LOGGER.info("Updating word: " + word);
-        return "redirect:" + back_to;
+        return "success";
     }
 
     /**
@@ -101,7 +101,7 @@ public class WordController {
         } else {
             model.addAttribute("words", wordRepository.allWordCountsInCategoryWithStatus(category, status));
         }
-
+        LOGGER.info("Category: " + category);
         return "list-words";
     }
 }
