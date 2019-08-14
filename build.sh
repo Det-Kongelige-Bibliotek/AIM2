@@ -23,7 +23,7 @@ function aimback() {
   sudo rm "${WEBAPPS}/aim.war"
   (
     cd "${DIR}"
-    mvn install -DskipTests=true
+    mvn clean install -DskipTests=true
     sudo cp "target/aim-${VERSION}.war" "${WEBAPPS}/aim.war"
     sudo systemctl restart tomcat9
   )

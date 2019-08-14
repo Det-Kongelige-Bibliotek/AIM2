@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -50,10 +50,6 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
@@ -77,7 +73,7 @@
 			<groupId>com.canto</groupId>
 			<artifactId>cumulus</artifactId>
 			<version>10</version>
- 			<scope>system</scope>
+ 			<scope>system</scope> 
 			<systemPath>/usr/local/Cumulus_Java_SDK/CumulusJC.jar</systemPath>
 			<!-- systemPath>C:/Program Files/Canto/Cumulus Java SDK/CumulusJC.jar</systemPath -->
 		</dependency>

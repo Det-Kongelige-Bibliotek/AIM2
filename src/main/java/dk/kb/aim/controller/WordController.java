@@ -7,16 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import dk.kb.aim.model.Word;
-import dk.kb.aim.model.WordUpdate;
-import dk.kb.aim.model.WordsCreationDto;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
-
-import java.util.List;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -65,18 +60,6 @@ public class WordController {
         LOGGER.info("Updating word: " + word);
         return "redirect:" + back_to;
     }
-    @RequestMapping(value="/update/words", params={"words"}, method=RequestMethod.POST)
-    public String updateWords(Model model) {
-        /*WordsCreationDto wordsForm = new WordsCreationDto();
-
-        for (int i = 1; i <= 3; i++) {
-            wordsForm.addWord(new WordCount());
-        }
-
-        model.addAttribute("form", wordsForm);*/
-        return "/words";
-        //LOGGER.info("Updating words: " + words);
-    }
 
     /**
      * The view for the words with a specific status.
@@ -85,24 +68,16 @@ public class WordController {
      * @return The name of the jsp page.
      */
     @RequestMapping(value="/words")
-    public String statusWords(
-                                @RequestParam(value="status",
-                                defaultValue=DEFAULT_WORD_STATE) WordStatus status,
-                                Model model) {
+    public String statusWords( @RequestParam(value="status", defaultValue=DEFAULT_WORD_STATE) WordStatus status,
+            Model model) {
         model.addAttribute("controllerStatus", status);
         model.addAttribute("categories", wordRepository.getCategories());
         model.addAttribute("currentCategory", wordRepository.getCategories().get(0));
-
-        WordsCreationDto words = new WordsCreationDto();
         if(status.toString().isEmpty()) {
-            wordRepository.allWordCounts().iterator().forEachRemaining(words::addWord);
-//            model.addAttribute("form", wordRepository.allWordCounts());
+            model.addAttribute("words", wordRepository.allWordCounts());
         } else {
-            wordRepository.allWordCountsWithStatus(status).iterator().forEachRemaining(words::addWord);
-            //model.addAttribute("form", new WordsCreationDto(words));
-//            model.addAttribute("form", wordRepository.allWordCountsWithStatus(status));
+            model.addAttribute("words", wordRepository.allWordCountsWithStatus(status));
         }
-        model.addAttribute("form", words);
 
         return "list-words";
     }
