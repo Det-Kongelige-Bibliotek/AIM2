@@ -15,6 +15,7 @@ import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dgj on 08-03-2018.
@@ -31,29 +32,32 @@ public class WordRepositoryTest {
 
     @Test
     public void createAndRetreiveWord() {
-        int id = wordRepository.createWord(new Word("Hors","hæst","cat1", WordStatus.PENDING));
+        String suffix = "-" + UUID.randomUUID().toString();
+        String textEn = "Hors" + suffix;
+        int id = wordRepository.createWord(new Word(textEn,"hæst","cat1", WordStatus.PENDING));
         Word retrievedWord = wordRepository.getWord(id);
-        Assert.assertEquals("Hors",retrievedWord.getTextEn());
+        Assert.assertEquals(textEn,retrievedWord.getTextEn());
         Assert.assertEquals("hæst",retrievedWord.getTextDa());
         Assert.assertEquals("cat1",retrievedWord.getCategory());
         Assert.assertEquals(WordStatus.PENDING,retrievedWord.getStatus());
-        retrievedWord.setTextEn("Horse");
+        retrievedWord.setTextEn("Horse" + suffix);
         retrievedWord.setTextDa("Hest");
         retrievedWord.setStatus(WordStatus.REJECTED);
         retrievedWord.setCategory("cat2");
         wordRepository.updateWord(retrievedWord);
         retrievedWord = wordRepository.getWord(id);
-        Assert.assertEquals("Horse",retrievedWord.getTextEn());
+        Assert.assertEquals("Horse" + suffix,retrievedWord.getTextEn());
         Assert.assertEquals("Hest",retrievedWord.getTextDa());
         Assert.assertEquals("cat2",retrievedWord.getCategory());
         Assert.assertEquals(WordStatus.REJECTED,retrievedWord.getStatus());
     }
 
     @Test
-    public void testRelationAndStuff() throws Exception{
-        int word1_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
-        int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr","cat3",WordStatus.PENDING));
-        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
+    public void testRelationAndStuff() throws Exception {
+        String category = UUID.randomUUID().toString();
+        int word1_id = wordRepository.createWord(new Word("Horse","Hest",category,WordStatus.PENDING));
+        int word2_id = wordRepository.createWord(new Word("dog like mammal","hund som pattedyr",category,WordStatus.PENDING));
+        int img_id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234",category,"red","ocr", ImageStatus.UNFINISHED, true));
         imageRepository.addWordToImage(img_id,word1_id,88);
         imageRepository.addWordToImage(img_id,word2_id,51);
 
@@ -69,11 +73,11 @@ public class WordRepositoryTest {
         wordRepository.updateWord(retreived_word1);
         wordRepository.updateWord(retreived_word2);
 
-        Assert.assertTrue(wordRepository.isAcceptedFor("Horse","cat3"));
-        Assert.assertTrue(wordRepository.isRejectedFor("dog like mammal","cat3"));
+        Assert.assertTrue(wordRepository.isAcceptedFor("Horse",category));
+        Assert.assertTrue(wordRepository.isRejectedFor("dog like mammal",category));
 
-        Assert.assertFalse(wordRepository.isAcceptedFor("Ship","cat3"));
-        Assert.assertFalse(wordRepository.isRejectedFor("Ship","cat3"));
+        Assert.assertFalse(wordRepository.isAcceptedFor("Ship",category));
+        Assert.assertFalse(wordRepository.isRejectedFor("Ship",category));
         Assert.assertFalse(wordRepository.isAcceptedFor("Horse","cat2"));
         
         List<WordConfidence> confidences = wordRepository.getImageWords(img_id);
@@ -85,12 +89,13 @@ public class WordRepositoryTest {
     
     @Test
     public void testWordCount() throws Exception {
+        String category = UUID.randomUUID().toString();
         for(Image image : imageRepository.listAllImages()) {
             imageRepository.removeImage(image);
         }
-        int word_id = wordRepository.createWord(new Word("Horse","Hest","cat3",WordStatus.PENDING));
-        int img_id1 = imageRepository.createImage(new Image(-1,"/tmp/test1.jpg","1234","cat3","red","ocr", ImageStatus.UNFINISHED, true));
-        int img_id2 = imageRepository.createImage(new Image(-1,"/tmp/test2.jpg","5678","cat3","red","ocr", ImageStatus.UNFINISHED, true));
+        int word_id = wordRepository.createWord(new Word("Horse","Hest",category,WordStatus.PENDING));
+        int img_id1 = imageRepository.createImage(new Image(-1,"/tmp/test1.jpg","1234",category,"red","ocr", ImageStatus.UNFINISHED, true));
+        int img_id2 = imageRepository.createImage(new Image(-1,"/tmp/test2.jpg","5678",category,"burgundy","ocr", ImageStatus.UNFINISHED, true));
         imageRepository.addWordToImage(img_id1,word_id,88);
         imageRepository.addWordToImage(img_id2,word_id,67);
 
@@ -104,5 +109,43 @@ public class WordRepositoryTest {
         List<String> categories = wordRepository.getCategories();
         for(String cat : categories)
             System.out.println(cat);
+    }
+
+    @Test(expected = org.springframework.dao.DuplicateKeyException.class)
+    public void testUniqueWordsCreationFailure() {
+        // Test that two words with the same english text and same category cannot exist simultaneous.
+        String text = UUID.randomUUID().toString();
+        String category = UUID.randomUUID().toString();
+
+        wordRepository.createWord(new Word(text, "", category, WordStatus.PENDING));
+        wordRepository.createWord(new Word(text, "", category, WordStatus.PENDING));
+    }
+
+    @Test
+    public void testUniqueWordsUpdate() {
+        // Test that a word cannot be update to become the same as another word.
+        String category = UUID.randomUUID().toString();
+
+        Word w1 = new Word(UUID.randomUUID().toString(), "", category, WordStatus.PENDING);
+        Word w2 = new Word(UUID.randomUUID().toString(), "", category, WordStatus.PENDING);
+
+        int word1 = wordRepository.createWord(w1);
+        int word2 = wordRepository.createWord(w2);
+
+        w1.setId(word1);
+        w2.setId(word2);
+
+        System.err.println(w1);
+        System.err.println(w2);
+
+        w2.setCategory(w1.getCategory());
+        w2.setTextEn(w1.getTextEn());
+        w2.setStatus(WordStatus.ACCEPTED);
+
+        Assert.assertTrue(wordRepository.hasDuplicateWord(w2));
+
+        wordRepository.updateWord(w2);
+
+        Assert.assertEquals(w2.getId(), w1.getId());
     }
 }

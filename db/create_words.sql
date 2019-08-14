@@ -1,10 +1,11 @@
 CREATE TABLE words (
   id SERIAL NOT NULL,
-  text_en text,
+  text_en text NOT NULL,
   text_da text,
-  category text,
+  category text NOT NULL,
   status text,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  CONSTRAINT duplicate_words UNIQUE (text_en, category)
 );
 
 CREATE TABLE images (
