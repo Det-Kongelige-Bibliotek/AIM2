@@ -1,11 +1,12 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <table class="table table-striped"
        xmlns:spring="http://www.springframework.org/tags"
        xmlns:jsp="http://java.sun.com/JSP/Page"
        xmlns:c="http://java.sun.com/jsp/jstl/core"
        xmlns="http://www.w3.org/1999/xhtml"
        id="table_${param.category}_${param.status}">
-    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-    <c:set var="status" value="${controller_status}"/>
+    <c:set var="status" value="${controllerStatus}"/>
     <%
         java.util.List<dk.kb.aim.repository.WordStatus> ws = java.util.Arrays.asList(dk.kb.aim.repository.WordStatus.values());
         pageContext.setAttribute("statuses", ws);
@@ -35,33 +36,49 @@
     <tbody>
     <c:forEach items="${words}" var="word">
         <tr>
-            <form action="${pageContext.request.contextPath}/words/update" id="word_form_id_${word.id}">
-                <td>${word.id}<input type="hidden" name="id" value="${word.id}"/></td>
+            <form name="word_form" action="${pageContext.request.contextPath}/update/word" id="word_form_id_${word.id}">
+                <td>
+                    <div class="spinner-border" role="status" style="display:none">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    ${word.id}
+                    <input type="hidden" name="id" value="${word.id}"/>
+                    <input type="hidden" name="op_category" value=""/>
+                </td>
                 <td>${word.textEn}<input type="hidden" name="text_en" value="${word.textEn}"/></td>
                 <td><input type="text" name="text_da" value="${word.textDa}"/></td>
-                <input type="hidden" name="back_to"
-                       value="/words/${word.category}?status=${word.status}"/>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:${word.category}"
-                                class="btn btn-success">Approve
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="ACCEPTED:${word.category}"
+                                class="btn btn-success">
+                                Approve
                         </button>
                     </td>
                     <td>
-                        <button type="submit" name="op_category" value="ACCEPTED:AIM" class="btn btn-success">Approve
-                            for AIM
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="ACCEPTED:AIM" class="btn btn-success">
+                                Approve for AIM
                         </button>
                     </td>
                 </c:if>
                 <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
                     <td>
-                        <button type="submit" name="op_category" value="REJECTED:${word.category}"
-                                class="btn btn-danger">Reject
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="REJECTED:${word.category}"
+                                class="btn btn-danger">
+                                Reject
                         </button>
                     </td>
                     <td>
-                        <button type="submit" name="op_category" value="REJECTED:AIM" class="btn btn-danger">Reject for
-                            AIM
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="REJECTED:AIM"
+                                class="btn btn-danger">
+                                Reject for AIM
                         </button>
                     </td>
                 </c:if>
@@ -84,76 +101,108 @@
 </script>
 
 <script>
-    /* Taken from example from w3schools.*/
-    function sortTable(n, table_id) {
-        var table, rows, switching, i, x, y, shouldSwitch, ascending, switchcount = 0;
-        table = table_id;
-        switching = true;
-        // Set the sorting direction to ascending:
-        ascending = true;
 
-        // TODO: take out values before sorting
-        rows = table.rows;
-        var values = [];
-        for (i = 1; i < rows.length; i++) {
-            x = rows[i].getElementsByTagName("TD")[n];
-            x_value = x.innerHTML.valueOf();
-            if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
-                x_value = Number(x_value.replace(/<.*/i, ""));
-            }
-            values[i] = x_value;
+var frm = $('form[name=word_form]');
+var clickedButton = null;
+
+frm.submit(function (e) {
+    e.preventDefault();
+    var self = $(this)
+
+    self.find('div.spinner-border').show();
+
+    $.ajax({
+        type: frm.attr('method'),
+        url: frm.attr('action'),
+        data: $(this).serialize(),
+        success: function (data) {
+            var here = self;
+            self.closest('tr').fadeOut('fast',
+                function(here) {
+                    $(here).remove();
+                }
+            );
+            console.log('Submission was successful.');
+            //console.log(data)
+        },
+        error: function (data) {
+            spinner.find('span.spinner-border').hide();
+            console.log('An error occurred.');
+            //console.log(data);
+        },
+    });
+});
+
+/* Taken from example from w3schools.*/
+function sortTable(n, table_id) {
+    var table, rows, switching, i, x, y, shouldSwitch, ascending, switchcount = 0;
+    table = table_id;
+    switching = true;
+    // Set the sorting direction to ascending:
+    ascending = true;
+
+    // TODO: take out values before sorting
+    rows = table.rows;
+    var values = [];
+    for (i = 1; i < rows.length; i++) {
+        x = rows[i].getElementsByTagName("TD")[n];
+        x_value = x.innerHTML.valueOf();
+        if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
+            x_value = Number(x_value.replace(/<.*/i, ""));
         }
+        values[i] = x_value;
+    }
 
-        /* Make a loop that will continue until
-        no switching has been done: */
-        while (switching) {
-            // Start by saying: no switching is done:
-            switching = false;
-            rows = table.rows;
-            /* Loop through all table rows (except the
-            first, which contains table headers): */
-            for (i = 1; i < (rows.length - 1); i++) {
-                // Start by saying there should be no switching:
-                shouldSwitch = false;
-                /* Get the two elements you want to compare,
-                one from current row and one from the next: */
-                x_value = values[i];
-                y_value = values[i+1];
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+        // Start by saying: no switching is done:
+        switching = false;
+        rows = table.rows;
+        /* Loop through all table rows (except the
+        first, which contains table headers): */
+        for (i = 1; i < (rows.length - 1); i++) {
+            // Start by saying there should be no switching:
+            shouldSwitch = false;
+            /* Get the two elements you want to compare,
+            one from current row and one from the next: */
+            x_value = values[i];
+            y_value = values[i+1];
 
-                /* Check if the two rows should switch place,
-                based on the direction, asc or desc: */
-                if (ascending) {
-                    if (x_value > y_value) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
-                } else {
-                    if (x_value < y_value) {
-                        // If so, mark as a switch and break the loop:
-                        shouldSwitch = true;
-                        break;
-                    }
+            /* Check if the two rows should switch place,
+            based on the direction, asc or desc: */
+            if (ascending) {
+                if (x_value > y_value) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                }
+            } else {
+                if (x_value < y_value) {
+                    // If so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
                 }
             }
-            if (shouldSwitch) {
-                // Perform switch
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                tempV = values[i];
-                values[i] = values[i+1];
-                values[i+1] = tempV;
+        }
+        if (shouldSwitch) {
+            // Perform switch
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            tempV = values[i];
+            values[i] = values[i+1];
+            values[i+1] = tempV;
 
-                // Mark switching and increate switching count.
+            // Mark switching and increate switching count.
+            switching = true;
+            switchcount ++;
+        } else {
+            /* If no switching has been done AND the direction is "asc",
+            set the direction to "desc" and run the while loop again. */
+            if (switchcount == 0 && ascending) {
+                ascending = false;
                 switching = true;
-                switchcount ++;
-            } else {
-                /* If no switching has been done AND the direction is "asc",
-                set the direction to "desc" and run the while loop again. */
-                if (switchcount == 0 && ascending) {
-                    ascending = false;
-                    switching = true;
-                }
             }
         }
     }
+}
 </script>
