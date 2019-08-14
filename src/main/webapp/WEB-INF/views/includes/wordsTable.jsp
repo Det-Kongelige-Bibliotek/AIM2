@@ -18,6 +18,9 @@
         <th onclick="sortTable(0, table_${param.category}_${param.status})">id</th>
         <th onclick="sortTable(1, table_${param.category}_${param.status})">English</th>
         <th onclick="sortTable(2, table_${param.category}_${param.status})">Danish</th>
+        <c:if test="${status=='ACCEPTED'||status=='REJECTED'}">
+            <th colspan="2">Pending</th>
+        </c:if>
         <c:if test="${status=='REJECTED'||status=='PENDING'}">
             <th colspan="2">Approve</th>
         </c:if>
@@ -38,15 +41,32 @@
         <tr>
             <form name="word_form" action="${pageContext.request.contextPath}/update/word" id="word_form_id_${word.id}">
                 <td>
-                    <div class="spinner-border" role="status" style="display:none">
+                    <span class="spinner-border" role="status" style="display:none">
                         <span class="sr-only">Loading...</span>
-                    </div>
+                    </span>
                     ${word.id}
                     <input type="hidden" name="id" value="${word.id}"/>
                     <input type="hidden" name="op_category" value=""/>
                 </td>
                 <td>${word.textEn}<input type="hidden" name="text_en" value="${word.textEn}"/></td>
                 <td><input type="text" name="text_da" value="${word.textDa}"/></td>
+                <c:if test="${status=='ACCEPTED'||status=='REJECTED'}">
+                    <td>
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="PENDING:${word.category}"
+                                class="btn btn-warning">
+                                Pending
+                        </button>
+                    </td>
+                    <td>
+                        <button type="submit"
+                                onclick="this.form.op_category.value=this.value"
+                                value="PENDING:AIM" class="btn btn-warning">
+                                Pending for AIM
+                        </button>
+                    </td>
+                </c:if>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
                     <td>
                         <button type="submit"
@@ -107,9 +127,10 @@ var clickedButton = null;
 
 frm.submit(function (e) {
     e.preventDefault();
-    var self = $(this)
+    var self = $(this);
 
-    self.find('div.spinner-border').show();
+    console.log($(this).closest('span'));
+    $(this).closest('span').show();
 
     $.ajax({
         type: frm.attr('method'),
