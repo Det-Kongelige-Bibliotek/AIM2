@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <table class="table table-striped"
        xmlns:spring="http://www.springframework.org/tags"
@@ -60,11 +61,13 @@
                         </button>
                     </td>
                     <td>
+                        <c:if test="${fn:toLowerCase(currentCategory)!='aim'}">
                         <button type="submit"
                                 onclick="this.form.op_category.value=this.value"
                                 value="PENDING:AIM" class="btn btn-warning">
                                 Pending for AIM
                         </button>
+                        </c:if>
                     </td>
                 </c:if>
                 <c:if test="${status=='REJECTED'||status=='PENDING'}">
@@ -77,11 +80,13 @@
                         </button>
                     </td>
                     <td>
+                        <c:if test="${fn:toLowerCase(currentCategory)!='aim'}">
                         <button type="submit"
                                 onclick="this.form.op_category.value=this.value"
                                 value="ACCEPTED:AIM" class="btn btn-success">
                                 Approve for AIM
                         </button>
+                        </c:if>
                     </td>
                 </c:if>
                 <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
@@ -94,12 +99,14 @@
                         </button>
                     </td>
                     <td>
+                        <c:if test="${fn:toLowerCase(currentCategory)!='aim'}">
                         <button type="submit"
                                 onclick="this.form.op_category.value=this.value"
                                 value="REJECTED:AIM"
                                 class="btn btn-danger">
                                 Reject for AIM
                         </button>
+                        </c:if>
                     </td>
                 </c:if>
             </form>
