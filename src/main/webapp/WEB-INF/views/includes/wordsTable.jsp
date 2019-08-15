@@ -16,9 +16,30 @@
 
     <thead>
     <tr>
-        <th onclick="sortTable(0, table_${param.category}_${param.status})">id</th>
-        <th onclick="sortTable(1, table_${param.category}_${param.status})">English</th>
-        <th onclick="sortTable(2, table_${param.category}_${param.status})">Danish</th>
+        <th>
+            <c:url value="/words/${category}" var="idSortUrl">
+                <c:param name="status" value="${status}" />
+                <c:param name="orderBy" value="id" />
+                <c:param name="ascending" value="${!ascending || orderBy != 'id'}" />
+            </c:url>
+            <a class="btn btn-info" href="${idSortUrl}" role="button">Id</a>
+        </th>
+        <th>
+            <c:url value="/words/${category}" var="textEnSortUrl">
+                <c:param name="status" value="${status}" />
+                <c:param name="orderBy" value="text_en" />
+                <c:param name="ascending" value="${!ascending || orderBy != 'text_en'}" />
+            </c:url>
+            <a class="btn btn-info" href="${textEnSortUrl}" role="button">English</a>
+        </th>
+        <th>
+            <c:url value="/words/${category}" var="textDaSortUrl">
+                <c:param name="status" value="${status}" />
+                <c:param name="orderBy" value="text_da" />
+                <c:param name="ascending" value="${!ascending || orderBy != 'text_da'}" />
+            </c:url>
+            <a class="btn btn-info" href="${textDaSortUrl}" role="button">Danish</a>
+        </th>
         <c:if test="${status=='ACCEPTED'||status=='REJECTED'}">
             <th colspan="2">Pending</th>
         </c:if>
@@ -28,12 +49,14 @@
         <c:if test="${status=='ACCEPTED'||status=='PENDING'}">
             <th colspan="2">Reject</th>
         </c:if>
-        <c:if test="${status=='PENDING'}">
-            <th onclick="sortTable(7, table_${param.category}_${param.status})">Count</th>
-        </c:if>
-        <c:if test="${status!='PENDING'}">
-            <th onclick="sortTable(5, table_${param.category}_${param.status})">Count</th>
-        </c:if>
+        <th>
+            <c:url value="/words/${category}" var="countSortUrl">
+                <c:param name="status" value="${status}" />
+                <c:param name="orderBy" value="count" />
+                <c:param name="ascending" value="${!ascending || orderBy != 'count'}" />
+            </c:url>
+            <a class="btn btn-info" href="${countSortUrl}" role="button">Count</a>
+        </th>
         <th>Images</th>
     </tr>
     </thead>
@@ -160,77 +183,4 @@ frm.submit(function (e) {
         },
     });
 });
-
-/* Taken from example from w3schools.*/
-function sortTable(n, table_id) {
-    var table, rows, switching, i, x, y, shouldSwitch, ascending, switchcount = 0;
-    table = table_id;
-    switching = true;
-    // Set the sorting direction to ascending:
-    ascending = true;
-
-    // TODO: take out values before sorting
-    rows = table.rows;
-    var values = [];
-    for (i = 1; i < rows.length; i++) {
-        x = rows[i].getElementsByTagName("TD")[n];
-        x_value = x.innerHTML.valueOf();
-        if(x_value.replace(/<.*/i, "") && !isNaN(x_value.replace(/<.*/i, ""))) {
-            x_value = Number(x_value.replace(/<.*/i, ""));
-        }
-        values[i] = x_value;
-    }
-
-    /* Make a loop that will continue until
-    no switching has been done: */
-    while (switching) {
-        // Start by saying: no switching is done:
-        switching = false;
-        rows = table.rows;
-        /* Loop through all table rows (except the
-        first, which contains table headers): */
-        for (i = 1; i < (rows.length - 1); i++) {
-            // Start by saying there should be no switching:
-            shouldSwitch = false;
-            /* Get the two elements you want to compare,
-            one from current row and one from the next: */
-            x_value = values[i];
-            y_value = values[i+1];
-
-            /* Check if the two rows should switch place,
-            based on the direction, asc or desc: */
-            if (ascending) {
-                if (x_value > y_value) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                }
-            } else {
-                if (x_value < y_value) {
-                    // If so, mark as a switch and break the loop:
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
-        if (shouldSwitch) {
-            // Perform switch
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            tempV = values[i];
-            values[i] = values[i+1];
-            values[i+1] = tempV;
-
-            // Mark switching and increate switching count.
-            switching = true;
-            switchcount ++;
-        } else {
-            /* If no switching has been done AND the direction is "asc",
-            set the direction to "desc" and run the while loop again. */
-            if (switchcount == 0 && ascending) {
-                ascending = false;
-                switching = true;
-            }
-        }
-    }
-}
 </script>

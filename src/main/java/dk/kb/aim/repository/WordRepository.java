@@ -6,14 +6,11 @@ import dk.kb.aim.model.WordCount;
 import dk.kb.aim.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -129,38 +126,48 @@ public class WordRepository {
 
     /**
      * Retrieves all the words.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list with all the words.
      */
-    public List<WordCount> allWordCounts() {
-        return getWordCounts(null);
+    public List<WordCount> allWordCounts(String orderBy, boolean ascending) {
+        return getWordCounts(null, orderBy, ascending);
     }
     
     /**
      * Retrieves all the words with a given status.
      * @param status The status.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list with all the words with the given status.
      */
-    public List<WordCount> allWordCountsWithStatus(WordStatus status) {
-        return getWordCounts("WHERE status = '" + status + "'");
+    public List<WordCount> allWordCountsWithStatus(WordStatus status, String orderBy, boolean ascending) {
+        return getWordCounts("WHERE status = '" + status + "'", orderBy, ascending);
     }
     
     /**
      * Retrieves all the words in a given category.
      * @param category The category for the words.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list of words for a given category.
      */
-    public List<WordCount> allWordCountsInCategory(String category) {
-        return getWordCounts("WHERE category = '" + category + "'");
+    public List<WordCount> allWordCountsInCategory(String category, String orderBy, boolean ascending) {
+        return getWordCounts("WHERE category = '" + category + "'", orderBy, ascending);
     }
     
     /**
      * Retrieves the list of words with a given category and status.
      * @param category The category.
      * @param status The status.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list of words with the given status and in the given category.
      */
-    public List<WordCount> allWordCountsInCategoryWithStatus(String category, WordStatus status) {
-        return getWordCounts("WHERE category = '" + category + "' AND status = '" + status + "'");
+    public List<WordCount> allWordCountsInCategoryWithStatus(String category, WordStatus status, String orderBy,
+                                                             boolean ascending) {
+        return getWordCounts("WHERE category = '" + category + "' AND status = '" + status + "'",
+            orderBy, ascending);
     }
     
     /**
@@ -241,16 +248,18 @@ public class WordRepository {
     /**
      * Retrieves the word counts for all words with the given restriction.
      * @param where The restriction for which words to extract.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The word counts.
      */
-    protected List<WordCount> getWordCounts(String where) {
+    protected List<WordCount> getWordCounts(String where, String orderBy, boolean ascending) {
         String sql = "SELECT words.id, words.text_en, words.text_da, words.category, words.status, "
                 + "COUNT(words.id) AS count "
                 + "FROM words INNER JOIN image_word ON words.id = image_word.word_id ";
         if(StringUtils.hasValue(where)) {
             sql += where;
         }
-        sql += " GROUP BY words.id";
+        sql += " GROUP BY words.id ORDER BY words." + orderBy + " " + (ascending ? "ASC" : "DESC");
         return jdbcTemplate.query(sql, (rs, rowNum) -> new WordCount(rs.getInt("id"), rs.getString("text_en"),
                 rs.getString("text_da"), rs.getString("category"),
                 WordStatus.valueOf(rs.getString("status")), rs.getInt("count")));

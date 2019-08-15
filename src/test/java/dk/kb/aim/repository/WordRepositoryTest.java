@@ -99,7 +99,7 @@ public class WordRepositoryTest {
         imageRepository.addWordToImage(img_id1,word_id,88);
         imageRepository.addWordToImage(img_id2,word_id,67);
 
-        List<WordCount> wordCounts = wordRepository.getWordCounts(null);
+        List<WordCount> wordCounts = wordRepository.getWordCounts(null, "id", true);
         Assert.assertEquals(wordCounts.size(), 1);
         Assert.assertEquals(wordCounts.get(0).getCount(), 2);
     }

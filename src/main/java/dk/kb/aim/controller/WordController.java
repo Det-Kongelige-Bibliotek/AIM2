@@ -1,5 +1,8 @@
 package dk.kb.aim.controller;
 
+import dk.kb.aim.model.Word;
+import dk.kb.aim.repository.WordRepository;
+import dk.kb.aim.repository.WordStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import dk.kb.aim.model.Word;
-import dk.kb.aim.repository.WordRepository;
-import dk.kb.aim.repository.WordStatus;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -41,10 +40,10 @@ public class WordController {
     @RequestMapping(value="/update/word",params={"id", "text_en", "text_da", "op_category"})
     @ResponseBody
     public String updateWord(@RequestParam("id") int id,
-            @RequestParam("text_en")  String text_en,
-            @RequestParam("text_da")  String text_da,
-            @RequestParam("op_category") String op_category,
-            Model model) {
+                             @RequestParam("text_en")  String text_en,
+                             @RequestParam("text_da")  String text_da,
+                             @RequestParam("op_category") String op_category,
+                             Model model) {
         String[] parts  = op_category.split(":");
         WordStatus status;
         if(parts[0].equals("PENDING")) {
@@ -64,19 +63,26 @@ public class WordController {
     /**
      * The view for the words with a specific status.
      * @param status The status for the words to show.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @param model The request model.
      * @return The name of the jsp page.
      */
     @RequestMapping(value="/words")
-    public String statusWords( @RequestParam(value="status", defaultValue=DEFAULT_WORD_STATE) WordStatus status,
-            Model model) {
+    public String statusWords(@RequestParam(value="status", defaultValue=DEFAULT_WORD_STATE) WordStatus status,
+                              @RequestParam(value="orderBy", defaultValue="id") String orderBy,
+                              @RequestParam(value="ascending", defaultValue="true") Boolean ascending,
+                              Model model) {
         model.addAttribute("controllerStatus", status);
         model.addAttribute("categories", wordRepository.getCategories());
         model.addAttribute("currentCategory", wordRepository.getCategories().get(0));
+        model.addAttribute("orderBy", orderBy);
+        model.addAttribute("ascending", ascending);
+
         if(status.toString().isEmpty()) {
-            model.addAttribute("words", wordRepository.allWordCounts());
+            model.addAttribute("words", wordRepository.allWordCounts(orderBy, ascending));
         } else {
-            model.addAttribute("words", wordRepository.allWordCountsWithStatus(status));
+            model.addAttribute("words", wordRepository.allWordCountsWithStatus(status, orderBy, ascending));
         }
 
         return "list-words";
@@ -86,20 +92,28 @@ public class WordController {
      * The view for the words of a specific category with a specific status.
      * @param category The given category for the words to show.
      * @param status The given status for the words to show.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @param model The request model.
      * @return The name of the jsp page.
      */
     @RequestMapping(value="/words/{category}")
     public String allWords(@PathVariable String category,
-            @RequestParam(value="status", defaultValue="PENDING") WordStatus status, Model model) {
+                           @RequestParam(value="status", defaultValue="PENDING") WordStatus status,
+                           @RequestParam(value="orderBy", defaultValue="id") String orderBy,
+                           @RequestParam(value="ascending", defaultValue="true") Boolean ascending,
+                           Model model) {
         model.addAttribute("controllerStatus", status);
         model.addAttribute("categories", wordRepository.getCategories());
         model.addAttribute("currentCategory", category);
+        model.addAttribute("orderBy", orderBy);
+        model.addAttribute("ascending", ascending);
 
         if(status.toString().isEmpty()) {
-            model.addAttribute("words", wordRepository.allWordCountsInCategory(category));
+            model.addAttribute("words", wordRepository.allWordCountsInCategory(category, orderBy, ascending));
         } else {
-            model.addAttribute("words", wordRepository.allWordCountsInCategoryWithStatus(category, status));
+            model.addAttribute("words", wordRepository.allWordCountsInCategoryWithStatus(category, status,
+                orderBy, ascending));
         }
         LOGGER.info("Category: " + category);
         return "list-words";
