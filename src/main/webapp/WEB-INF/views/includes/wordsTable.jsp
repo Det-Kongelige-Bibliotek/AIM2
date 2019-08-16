@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<table class="table table-striped"
+<table class="table table-striped table-sm word-table"
        xmlns:spring="http://www.springframework.org/tags"
        xmlns:jsp="http://java.sun.com/JSP/Page"
        xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -22,7 +22,11 @@
                 <c:param name="orderBy" value="id" />
                 <c:param name="ascending" value="${!ascending || orderBy != 'id'}" />
             </c:url>
-            <a class="btn btn-info" href="${idSortUrl}" role="button">Id</a>
+            <a href="${idSortUrl}">Id
+                <span style="float:center">
+                    <i class="fa ${orderBy!='id' ? 'fa-sort' : ascending ? 'fa-sort-desc' : 'fa-sort-asc'}"> </i>
+                </span>
+            </a>
         </th>
         <th>
             <c:url value="/words/${category}" var="textEnSortUrl">
@@ -30,7 +34,11 @@
                 <c:param name="orderBy" value="text_en" />
                 <c:param name="ascending" value="${!ascending || orderBy != 'text_en'}" />
             </c:url>
-            <a class="btn btn-info" href="${textEnSortUrl}" role="button">English</a>
+            <a href="${textEnSortUrl}">English
+                <span style="float:center">
+                    <i class="fa ${orderBy!='text_en' ? 'fa-sort' : ascending ? 'fa-sort-desc' : 'fa-sort-asc'}"> </i>
+                </span>
+            </a>
         </th>
         <th>
             <c:url value="/words/${category}" var="textDaSortUrl">
@@ -38,7 +46,11 @@
                 <c:param name="orderBy" value="text_da" />
                 <c:param name="ascending" value="${!ascending || orderBy != 'text_da'}" />
             </c:url>
-            <a class="btn btn-info" href="${textDaSortUrl}" role="button">Danish</a>
+            <a href="${textDaSortUrl}">Danish
+                <span style="float:center">
+                    <i class="fa ${orderBy!='text_da' ? 'fa-sort' : ascending ? 'fa-sort-desc' : 'fa-sort-asc'}"> </i>
+                </span>
+            </a>
         </th>
         <c:if test="${status=='ACCEPTED'||status=='REJECTED'}">
             <th colspan="2">Pending</th>
@@ -55,7 +67,11 @@
                 <c:param name="orderBy" value="count" />
                 <c:param name="ascending" value="${!ascending || orderBy != 'count'}" />
             </c:url>
-            <a class="btn btn-info" href="${countSortUrl}" role="button">Count</a>
+            <a href="${countSortUrl}">Count
+                <span style="float:center">
+                    <i class="fa ${orderBy!='count' ? 'fa-sort' : ascending ? 'fa-sort-desc' : 'fa-sort-asc'}"> </i>
+                </span>
+            </a>
         </th>
         <th>Images</th>
     </tr>
