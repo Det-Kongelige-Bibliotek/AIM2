@@ -1,5 +1,6 @@
 package dk.kb.aim.controller;
 
+import dk.kb.aim.Constants;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -75,7 +78,12 @@ public class WordController {
                               Model model) {
         model.addAttribute("controllerStatus", status);
         model.addAttribute("categories", wordRepository.getCategories());
-        model.addAttribute("currentCategory", wordRepository.getCategories().get(0));
+        List<String> categories = wordRepository.getCategories();
+        if(categories.isEmpty()) {
+            model.addAttribute("currentCategory", Constants.AIM_CATEGORY);
+        } else {
+            model.addAttribute("currentCategory", categories.get(0));
+        }
         model.addAttribute("orderBy", orderBy);
         model.addAttribute("ascending", ascending);
 
