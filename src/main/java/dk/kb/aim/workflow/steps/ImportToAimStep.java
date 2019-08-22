@@ -85,19 +85,11 @@ public class ImportToAimStep extends WorkflowStep {
             
             numberOfRecords++;
             try {
-                // handle the case, when it is a sub-asset, and thus a back-side.
-                if(record.isSubAsset()) {
-                    setDone(record);
-                    numberOfBackPages++;
-                    LOGGER.info("Found back-page which will not be imported into AIM: '[" 
-                            + record.getClass().getCanonicalName() + " -> " 
-                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
-                } else {
-                    importRecord(record);
-                    numberOfSuccess++;
-                    LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() 
-                            + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
-                }
+                // Run on both front and backpages.
+                importRecord(record);
+                numberOfSuccess++;
+                LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName()
+                    + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
             } catch (IOException e) {
                 LOGGER.warn("An I/O issue occured, when trying to import the image", e);
                 numberOfFailures++;
