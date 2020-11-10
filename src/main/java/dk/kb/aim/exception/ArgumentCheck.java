@@ -84,12 +84,12 @@ public class ArgumentCheck extends RuntimeException {
         checkNotNull(val, name);
 
         if (val.length == 0) {
-            throw new ArgumentCheck("The value of the variable '" + name + "' must not be string.");
+            throw new ArgumentCheck("The value of the variable '" + name + "' must not be an empty array.");
         }
     }
 
     /**
-     * Check if an int argument is less than or equals to 0.
+     * Check if an int argument is less than 0.
      *
      * @param num argument to check
      * @param name the name and type of the value being checked.
@@ -130,7 +130,7 @@ public class ArgumentCheck extends RuntimeException {
     }
 
     /**
-     * Check if a long argument is less than 0.
+     * Check if a long argument is less than or equal to 0.
      *
      * @param num argument to check
      * @param name the name and type of the value being checked.

@@ -87,7 +87,7 @@ public class GoogleRetreiver {
 
     /**
      * Retrieves the OCR text for the image.
-     * Adds the parameter to the image annotation request to ensure that it primarily looks for danish characters.
+     * Adds the parameter to the image annotation request to ensure that it primarily looks for Danish words.
      * @param dbImage The database image.
      * @param googleImage The Google image.
      * @throws IOException If it fails to retrieve the OCR text from Google Vision.

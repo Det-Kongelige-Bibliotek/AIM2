@@ -30,7 +30,7 @@ public class FindFinishedImagesStep extends WorkflowStep {
     /** The name of this step.*/
     protected static final String STEP_NAME = "Find Finished Images step";
     /** The label for handwriting.*/
-    protected static final String LABEL_HANDWRITING = "Handwriting";
+    protected static final String LABEL_HANDWRITING = "handwriting";
     
     /** The empty string, for the case when no words are attached to an image.*/
     protected static final String EMPTY_STRING = "";

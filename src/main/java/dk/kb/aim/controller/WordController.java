@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 /**
+ * The controller for the words view
  * Created by dgj on 22-02-2018.
  */
 @Controller

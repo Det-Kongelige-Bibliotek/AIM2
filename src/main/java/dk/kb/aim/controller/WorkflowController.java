@@ -9,6 +9,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import dk.kb.aim.workflow.AimWorkflow;
 
 /**
+ * The controller for the Workflow view
  * Created by jolf on 19-03-2018.
  */
 @Controller

@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
+ * The controller for the text views
  * Created by jolf on 30-07-2019.
  */
 @Controller

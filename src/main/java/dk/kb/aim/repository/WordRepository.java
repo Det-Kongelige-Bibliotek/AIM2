@@ -95,7 +95,7 @@ public class WordRepository {
     }
 
     /**
-     * Check whether a word has a duplicate - needed before update.
+     * Check whether a word has a duplicate within a category - needed before update.
      * @param word The word to test whether it has a duplicate.
      * @return Whether a duplicate exists.
      */
@@ -118,7 +118,7 @@ public class WordRepository {
      */
     protected void mergeWords(Word from, Word to) {
         String updateSql = "UPDATE image_word SET word_id = ? WHERE word_id = ?";
-        jdbcTemplate.update(updateSql, new Object[] {from.getId(), to.getId()});
+        jdbcTemplate.update(updateSql, new Object[] {to.getId(), from.getId()});
 
         String deleteSql = "DELETE FROM words WHERE id = ?";
         jdbcTemplate.update(deleteSql, from.getId());
