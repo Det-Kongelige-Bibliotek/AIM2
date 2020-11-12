@@ -110,6 +110,7 @@ public class GoogleRetreiverTest {
         GoogleRetreiver googleRetreiver = new GoogleRetreiver();
         googleRetreiver.wordRepository = wordRepository;
         googleRetreiver.imageRepository = imageRepository;
+        googleRetreiver.conf = conf;
         String tiffPath = "src" + File.separator +
                 "test" + File.separator +
                 "resources" + File.separator +
@@ -129,7 +130,7 @@ public class GoogleRetreiverTest {
 
         List<WordConfidence> words = wordRepository.getImageWords(id);
         Assert.assertFalse(words.isEmpty());
-        Assert.assertEquals(4, words.size());
+        Assert.assertEquals(3, words.size());
     }
 
     @Test

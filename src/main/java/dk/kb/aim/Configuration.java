@@ -38,6 +38,9 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   jpeg_url: $ The URL to the image-server where the jpegs can be found.
  *   test: $ ONLY FOR TESTS - will use local images and it will revert the state after finish
  *       instead of finishing. It must be the path to the test-files.
+ *   confidence_limit: $ The lower limit for the confidence of a word belonging to an image. If lower no connection is made
+ *   max_results_for_labels: $ The maximum number of labels to retrieve from a Google image
+ *   language_hint: $ primarily use the specified language when searching for OCR words in an image
  */
 @Component
 public class Configuration {
@@ -65,7 +68,13 @@ public class Configuration {
     protected static final String CONF_JPEG_URL = "jpeg_url";
     /** The configuration for whether */
     protected static final String CONF_TEST = "test";
-    
+    /** The level of confidence of a word whether to ignore it or not */
+    public static final String CONF_CONFIDENCE_LIMIT = "confidence_limit";
+    /** The maximum number of labels to retrieve from a Google image */
+    public static final String CONF_MAX_RESULT_FOR_LABELS = "max_results_for_labels";
+    /** The primary language which is used in the OCR'ed text of an image */
+    public static final String CONF_LANGUAGE_HINT = "language_hint";
+
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
 
@@ -83,6 +92,12 @@ public class Configuration {
     protected final Boolean test;
     /** The directory with the test files. Will only have a value in test-mode.*/
     protected File testDir = null;
+    /** The Confidence Limit */
+    protected final Integer confidenceLimit;
+    /** The maximum number of results for the label */
+    protected final Integer maxResultsForLabels;
+    /** Primarily use the specified language when searching for OCR words in an image,  */
+    protected final String languageHint;
 
     /** 
      * Constructor.
@@ -119,13 +134,22 @@ public class Configuration {
                     "Configuration must contain the '" + CONF_JPEG_URL + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_CUMULUS), 
                     "Configuration must contain the '" + CONF_CUMULUS + "' element.");
-            
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_CONFIDENCE_LIMIT),
+                "Configuration must contain the '" + CONF_CONFIDENCE_LIMIT + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_MAX_RESULT_FOR_LABELS),
+                "Configuration must contain the '" + CONF_MAX_RESULT_FOR_LABELS + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_LANGUAGE_HINT),
+                "Configuration must contain the '" + CONF_LANGUAGE_HINT + "' element.");
+
             this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.jpegFolder = FileUtils.getDirectory((String) confMap.get(CONF_JPEG_FOLDER));
             this.jpegSizeLimit = Long.valueOf((Integer) confMap.get(CONF_JPEG_SIZE_LIMIT));
             this.jpegUrl = (String) confMap.get(CONF_JPEG_URL);
             this.cumulusConf = loadCumulusConfiguration((Map<String, Object>) confMap.get(CONF_CUMULUS));
-            
+            this.confidenceLimit = (Integer) confMap.get(CONF_CONFIDENCE_LIMIT);
+            this.maxResultsForLabels = (Integer) confMap.get(CONF_MAX_RESULT_FOR_LABELS);
+            this.languageHint = (String) confMap.get(CONF_LANGUAGE_HINT);
+
             this.test = confMap.containsKey(CONF_TEST);
             if(this.test) {
                 LOGGER.info("Running in TEST mode.");
@@ -189,7 +213,7 @@ public class Configuration {
     public File getTestDir() {
         return testDir;
     }
-    
+
     /**
      * We only allow 1 catalog, so our instantiation of the Cumulus configuration has only one catalog in its 
      * list of catalogs. Thus returning the first and only catalog.
@@ -197,5 +221,24 @@ public class Configuration {
      */
     public String getCumulusCatalog() {
         return cumulusConf.getCatalogs().get(0);
+    }
+
+    /**
+     * The lower limit for the confidence of a word belonging to an image. If lower than this no connection is made
+     * @return The confidence limit for a word
+     *
+     */
+    public Integer getConfidenceLimit() {
+        return confidenceLimit;
+    }
+
+    /** @return The maximum number of labels to return for an image */
+    public Integer getMaxResultsForLabels() {
+        return maxResultsForLabels;
+    }
+
+    /** @return The primary language to use when searching for words */
+    public String getLanguageHint() {
+        return languageHint;
     }
 }

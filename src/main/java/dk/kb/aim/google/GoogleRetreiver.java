@@ -12,6 +12,7 @@ import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.cloud.vision.v1.ImageContext;
+import dk.kb.aim.Configuration;
 import dk.kb.aim.Constants;
 import dk.kb.aim.model.Image;
 import dk.kb.aim.model.Word;
@@ -36,18 +37,6 @@ import java.util.List;
 public class GoogleRetreiver {
     /** The logger.*/
     protected static final Logger LOGGER = LoggerFactory.getLogger(GoogleRetreiver.class);
-    
-    /** The language hint value for danish.
-     *  TODO: make configurable? */
-    public static final String LANGUAGE_HINT_DANISH = "da";
-
-    /** The maximum number of results for the label.
-     *  TODO: make configurable? */
-    public static final Integer MAX_RESULTS_FOR_LABELS = 32;
-    /** The lower limit for the confidence of a word belonging to an image. If lower, then we do not make connection.
-     *  TOOD: make configurable? */
-    public static final Integer CONFIDENCE_LIMIT = 30;
-
 
     /** The client for the google image annotation service.*/
     protected ImageAnnotatorClient annotationClient;
@@ -60,6 +49,11 @@ public class GoogleRetreiver {
     /** The repository for the db word table.*/
     @Autowired
     protected WordRepository wordRepository;
+
+    /** The configuration.*/
+    @Autowired
+    protected Configuration conf;
+
 
     /**
      * Retrieves the color of the image from GoogleVision, and adds it to the database image.
@@ -81,19 +75,20 @@ public class GoogleRetreiver {
      */
     public void retrieveLabels(Image dbImage, GoogleImage googleImage) throws IOException {
         List<AnnotateImageResponse> responses = sendRequest(googleImage, Feature.Type.LABEL_DETECTION,
-                null, MAX_RESULTS_FOR_LABELS);
+                null, conf.getMaxResultsForLabels());
         createImageWordsForLabelAnnotations(dbImage, responses);
     }
 
     /**
      * Retrieves the OCR text for the image.
-     * Adds the parameter to the image annotation request to ensure that it primarily looks for Danish words.
+     * Adds the parameter to the image annotation request to ensure that it primarily looks for words of
+     * the language defined in LANGUAGE_HINT.
      * @param dbImage The database image.
      * @param googleImage The Google image.
      * @throws IOException If it fails to retrieve the OCR text from Google Vision.
      */
     public void retrieveText(Image dbImage, GoogleImage googleImage) throws IOException {
-        ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(LANGUAGE_HINT_DANISH).build();
+        ImageContext imageContext = ImageContext.newBuilder().addLanguageHints(conf.getLanguageHint()).build();
         String ocrText = getOcrText(sendRequest(googleImage, Feature.Type.TEXT_DETECTION, imageContext, null));
         dbImage.setOcr(ocrText);
         imageRepository.updateImage(dbImage);
@@ -128,9 +123,9 @@ public class GoogleRetreiver {
     protected synchronized void handleWordAnnotation(Image dbImage, EntityAnnotation annotation) throws IOException {
         String textEn = annotation.getDescription().trim().toLowerCase();
         int confidence = Math.round(100.0f*annotation.getScore());
-        if(confidence < CONFIDENCE_LIMIT) {
+        if(confidence < conf.getConfidenceLimit()) {
             LOGGER.debug("Ignoring the label '" + textEn + "', since confidence '" + confidence + "' < '"
-                    + CONFIDENCE_LIMIT + "' (limit)");
+                    + conf.getConfidenceLimit() + "' (limit)");
             return;
         }
 
