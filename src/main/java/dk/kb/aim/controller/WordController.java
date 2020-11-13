@@ -1,5 +1,6 @@
 package dk.kb.aim.controller;
 
+import dk.kb.aim.Configuration;
 import dk.kb.aim.Constants;
 import dk.kb.aim.model.Word;
 import dk.kb.aim.repository.WordRepository;
@@ -32,6 +33,10 @@ public class WordController {
     @Autowired
     private WordRepository wordRepository;
 
+    /** The configuration.*/
+    @Autowired
+    protected Configuration conf;
+
     /**
      * Method for updating a given word, regarding both the state and the danish text translation.
      * @param id The ID of the word.
@@ -58,7 +63,13 @@ public class WordController {
             status = WordStatus.REJECTED;
         }
         String category = parts[1];
-        Word word       = new Word(id, text_en.toLowerCase(), text_da.toLowerCase(), category, status);
+        Word word;
+        if (conf.getToLowerCase()) {
+            word = new Word(id, text_en.toLowerCase(), text_da.toLowerCase(), category, status);
+        }
+        else {
+            word = new Word(id, text_en, text_da, category, status);
+        }
         model.addAttribute("words",wordRepository.updateWord(word));
         LOGGER.info("Updating word: " + word);
         return "success";

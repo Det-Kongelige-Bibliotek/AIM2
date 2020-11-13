@@ -41,6 +41,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   confidence_limit: $ The lower limit for the confidence of a word belonging to an image. If lower no connection is made
  *   max_results_for_labels: $ The maximum number of labels to retrieve from a Google image
  *   language_hint: $ primarily use the specified language when searching for OCR words in an image
+ *   to_lower_case: $ true/false: Set the key words in the Wordcontroller to lower case if true
  */
 @Component
 public class Configuration {
@@ -75,6 +76,8 @@ public class Configuration {
     /** The primary language which is used in the OCR'ed text of an image */
     public static final String CONF_LANGUAGE_HINT = "language_hint";
 
+    public static final String CONF_TO_LOWER_CASE = "to_lower_case";
+
     /** Whether Cumulus should have write access. */
     protected static final boolean CUMULUS_WRITE_ACCESS = true;
 
@@ -98,6 +101,8 @@ public class Configuration {
     protected final Integer maxResultsForLabels;
     /** Primarily use the specified language when searching for OCR words in an image,  */
     protected final String languageHint;
+    /** Set the key words in the Wordcontroller to lower case if true */
+    protected final Boolean toLowerCase;
 
     /** 
      * Constructor.
@@ -140,6 +145,8 @@ public class Configuration {
                 "Configuration must contain the '" + CONF_MAX_RESULT_FOR_LABELS + "' element.");
             ArgumentCheck.checkTrue(confMap.containsKey(CONF_LANGUAGE_HINT),
                 "Configuration must contain the '" + CONF_LANGUAGE_HINT + "' element.");
+            ArgumentCheck.checkTrue(confMap.containsKey(CONF_TO_LOWER_CASE),
+                "Configuration must contain the '" + CONF_TO_LOWER_CASE + "' element.");
 
             this.workflowInterval = Long.valueOf((Integer) confMap.get(CONF_WORKFLOW_INTERVAL));
             this.jpegFolder = FileUtils.getDirectory((String) confMap.get(CONF_JPEG_FOLDER));
@@ -149,6 +156,7 @@ public class Configuration {
             this.confidenceLimit = (Integer) confMap.get(CONF_CONFIDENCE_LIMIT);
             this.maxResultsForLabels = (Integer) confMap.get(CONF_MAX_RESULT_FOR_LABELS);
             this.languageHint = (String) confMap.get(CONF_LANGUAGE_HINT);
+            this.toLowerCase = Boolean.parseBoolean(String.valueOf(confMap.get(CONF_TO_LOWER_CASE)));
 
             this.test = confMap.containsKey(CONF_TEST);
             if(this.test) {
@@ -240,5 +248,10 @@ public class Configuration {
     /** @return The primary language to use when searching for words */
     public String getLanguageHint() {
         return languageHint;
+    }
+
+    /** @return true or false. Set the key words in the Wordcontroller to lower case if true */
+    public boolean getToLowerCase() {
+        return toLowerCase;
     }
 }
