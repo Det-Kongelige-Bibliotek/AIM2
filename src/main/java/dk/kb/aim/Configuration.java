@@ -232,7 +232,7 @@ public class Configuration {
     }
 
     /**
-     * The lower limit for the confidence of a word belonging to an image. If lower than this no connection is made
+     * The lower limit for the confidence of a word belonging to an image.
      * @return The confidence limit for a word
      *
      */
