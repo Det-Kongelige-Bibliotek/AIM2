@@ -38,7 +38,7 @@ import dk.kb.cumulus.utils.ArgumentCheck;
  *   jpeg_url: $ The URL to the image-server where the jpegs can be found.
  *   test: $ ONLY FOR TESTS - will use local images and it will revert the state after finish
  *       instead of finishing. It must be the path to the test-files.
- *   confidence_limit: $ The lower limit for the confidence of a word belonging to an image. If lower no connection is made
+ *   confidence_limit: $ The lower limit for the confidence of a word belonging to an image.
  *   max_results_for_labels: $ The maximum number of labels to retrieve from a Google image
  *   language_hint: $ primarily use the specified language when searching for OCR words in an image
  *   to_lower_case: $ true/false: Set the key words in the Wordcontroller to lower case if true
