@@ -1,19 +1,17 @@
 package dk.kb.aim.repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
+import dk.kb.aim.model.Word;
+import dk.kb.aim.model.WordConfidence;
+import dk.kb.aim.model.WordCount;
+import dk.kb.aim.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import dk.kb.aim.model.Word;
-import dk.kb.aim.model.WordConfidence;
+import java.sql.PreparedStatement;
+import java.util.List;
 
 /**
  * Created by dgj on 22-02-2018.
@@ -23,7 +21,7 @@ public class WordRepository {
     /** The database connection. */
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    
+
     /**
      * Creates a database entry for a new word.
      * @param word The word to be entered into the database.
@@ -33,17 +31,13 @@ public class WordRepository {
         final String sql = "INSERT INTO words (text_en,text_da,category,status) VALUES (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(
-                new PreparedStatementCreator() {
-                    @Override
-                    public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                        PreparedStatement pst = con.prepareStatement(sql, new String[] {"id"});
-                        pst.setString(1, word.getTextEn());
-                        pst.setString(2, word.getTextDa());
-                        pst.setString(3, word.getCategory());
-                        pst.setString(4, word.getStatus().toString());
-                        return pst;
-                    }
+        jdbcTemplate.update(con -> {
+                    PreparedStatement pst = con.prepareStatement(sql, new String[] {"id"});
+                    pst.setString(1, word.getTextEn());
+                    pst.setString(2, word.getTextDa());
+                    pst.setString(3, word.getCategory());
+                    pst.setString(4, word.getStatus().toString());
+                    return pst;
                 },
                 keyHolder);
         return (int)keyHolder.getKey();
@@ -63,7 +57,7 @@ public class WordRepository {
             return null;
         }
     }
-    
+
     /**
      * Retrieves a word by the english text column and the category.
      * @param textEn The english text value to search for.
@@ -81,55 +75,99 @@ public class WordRepository {
     }
     
     /**
-     * Update a given word.
+     * Update a given word. If another word exists along the given word, then merge this word into the other, remove it
+     * and return the other word.
      * @param word The word to update.
      * @return The word.
      */
     public Word updateWord(Word word) {
-        jdbcTemplate.update(
-                "UPDATE words SET (text_en,text_da,category,status) = (?,?,?,?) WHERE id = ?",
-                word.getTextEn(), word.getTextDa(), word.getCategory(), word.getStatus().toString(), word.getId());
-        return word;
+        if(hasDuplicateWord(word)) {
+            Word primary = getWordByText(word.getTextEn(), word.getCategory());
+            mergeWords(word, primary);
+            word.setId(primary.getId());
+            return primary;
+        } else {
+            jdbcTemplate.update(
+                    "UPDATE words SET (text_en,text_da,category,status) = (?,?,?,?) WHERE id = ?",
+                    word.getTextEn(), word.getTextDa(), word.getCategory(), word.getStatus().toString(), word.getId());
+            return word;
+        }
     }
-    
+
+    /**
+     * Check whether a word has a duplicate within a category - needed before update.
+     * @param word The word to test whether it has a duplicate.
+     * @return Whether a duplicate exists.
+     */
+    protected boolean hasDuplicateWord(Word word) {
+        List<Word> words = queryForWords("SELECT id,text_en,text_da,category,status FROM words "+
+                "WHERE text_en='"+ word.getTextEn() + "' AND category='" + word.getCategory() + "'");
+        for(Word w : words) {
+            if(w.getId() != word.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Merge one word into another.
+     * Thus moving all image-word relations to the other word, and then removing the from word.
+     * @param from The word to merge from - and then remove.
+     * @param to The word to move to.
+     */
+    protected void mergeWords(Word from, Word to) {
+        String updateSql = "UPDATE image_word SET word_id = ? WHERE word_id = ?";
+        jdbcTemplate.update(updateSql, new Object[] {to.getId(), from.getId()});
+
+        String deleteSql = "DELETE FROM words WHERE id = ?";
+        jdbcTemplate.update(deleteSql, from.getId());
+    }
+
     /**
      * Retrieves all the words.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list with all the words.
      */
-    public List<Word> allWords() {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words");
+    public List<WordCount> allWordCounts(String orderBy, boolean ascending) {
+        return getWordCounts(null, orderBy, ascending);
     }
     
     /**
      * Retrieves all the words with a given status.
      * @param status The status.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list with all the words with the given status.
      */
-    public List<Word> allWordsWithStatus(WordStatus status) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE status = '" + status + "'");
+    public List<WordCount> allWordCountsWithStatus(WordStatus status, String orderBy, boolean ascending) {
+        return getWordCounts("WHERE status = '" + status + "'", orderBy, ascending);
     }
     
     /**
      * Retrieves all the words in a given category.
      * @param category The category for the words.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list of words for a given category.
      */
-    public List<Word> allWordsInCategory(String category) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE category = '" + category + "'");
+    public List<WordCount> allWordCountsInCategory(String category, String orderBy, boolean ascending) {
+        return getWordCounts("WHERE category = '" + category + "'", orderBy, ascending);
     }
     
     /**
      * Retrieves the list of words with a given category and status.
      * @param category The category.
      * @param status The status.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
      * @return The list of words with the given status and in the given category.
      */
-    public List<Word> allWordsInCategoryWithStatus(String category, WordStatus status) {
-        return queryForWords("SELECT id,text_en,text_da,category,status from words "+
-                "WHERE category = '" + category + "' " +
-                "AND status = '" + status + "'");
+    public List<WordCount> allWordCountsInCategoryWithStatus(String category, WordStatus status, String orderBy,
+                                                             boolean ascending) {
+        return getWordCounts("WHERE category = '" + category + "' AND status = '" + status + "'",
+            orderBy, ascending);
     }
     
     /**
@@ -203,7 +241,27 @@ public class WordRepository {
      * @return The list of words retrieved by the SQL query.
      */
     protected List<Word> queryForWords(String sql) {
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"), 
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Word(rs.getInt("id"), rs.getString("text_en"),
                 rs.getString("text_da"), rs.getString("category"), WordStatus.valueOf(rs.getString("status"))));
+    }
+
+    /**
+     * Retrieves the word counts for all words with the given restriction.
+     * @param where The restriction for which words to extract.
+     * @param orderBy The name of the column to sort by.
+     * @param ascending Whether to sort in ascending.
+     * @return The word counts.
+     */
+    protected List<WordCount> getWordCounts(String where, String orderBy, boolean ascending) {
+        String sql = "SELECT words.id, words.text_en, words.text_da, words.category, words.status, "
+                + "COUNT(words.id) AS count "
+                + "FROM words INNER JOIN image_word ON words.id = image_word.word_id ";
+        if(StringUtils.hasValue(where)) {
+            sql += where;
+        }
+        sql += " GROUP BY words.id ORDER BY words." + orderBy + " " + (ascending ? "ASC" : "DESC");
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new WordCount(rs.getInt("id"), rs.getString("text_en"),
+                rs.getString("text_da"), rs.getString("category"),
+                WordStatus.valueOf(rs.getString("status")), rs.getInt("count")));
     }
 }

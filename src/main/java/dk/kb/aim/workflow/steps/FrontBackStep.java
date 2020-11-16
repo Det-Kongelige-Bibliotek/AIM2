@@ -1,13 +1,12 @@
 package dk.kb.aim.workflow.steps;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The workflow for the FrontBack relations to be generated.
@@ -137,13 +136,15 @@ public class FrontBackStep extends WorkflowStep {
         }
         
         // Deal with the multiple backs syntax.
-        String prefix;
-        if(nameWithoutSuffix.matches(".*[0-9]_[0-9].*")) {
-            prefix = nameWithoutSuffix.substring(0, nameWithoutSuffix.lastIndexOf("_"));
-        } else {
-            prefix = nameWithoutSuffix;
-        }
-        
+//        String prefix;
+//        if(nameWithoutSuffix.matches(".*[0-9]_[0-9].*")) {
+//            prefix = nameWithoutSuffix.substring(0, nameWithoutSuffix.lastIndexOf("_"));
+//        } else {
+//            prefix = nameWithoutSuffix;
+//        }
+
+        String prefix = nameWithoutSuffix;
+
         String digits = getTrailingDigits(prefix);
 
         if(digits.matches("[0-9]{1,}")) {

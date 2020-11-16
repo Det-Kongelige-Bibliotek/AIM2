@@ -24,6 +24,8 @@ public class Image {
     private ImageStatus status;
     /** The list of word relations for the image.*/
     private List<ImageWord> imageWords;
+    /** Whether or not this image is the front (and thus not the back) of an image.*/
+    private Boolean isFront;
     
     /**
      * Constructor.
@@ -34,8 +36,10 @@ public class Image {
      * @param color The color of the image.
      * @param ocr The OCR text of the image.
      * @param status The status of the image.
+     * @param isFront Whether or not it is a front-page image.
      */
-    public Image(int id, String path, String cumulusId, String category, String color, String ocr, ImageStatus status) {
+    public Image(int id, String path, String cumulusId, String category, String color, String ocr, ImageStatus status,
+                 boolean isFront) {
         this.id = id;
         this.path = path;
         this.cumulusId = cumulusId;
@@ -43,6 +47,7 @@ public class Image {
         this.color = color;
         this.ocr = ocr;
         this.status = status;
+        this.isFront = isFront;
     }
     
     /**
@@ -156,13 +161,28 @@ public class Image {
     public List<ImageWord> getImageWords() {
         return imageWords;
     }
-    
+
     /**
      * Set a new list of word relations for the image.
      * @param imageWords The new list of word relations for the image.
      */
     public void setImageWords(List<ImageWord> imageWords) {
         this.imageWords = imageWords;
+    }
+
+    /**
+     * @return Whether or not the current image is a front image (or false, then it is a back-page of a photo/postcard).
+     */
+    public boolean getIsFront() {
+        return isFront;
+    }
+
+    /**
+     * Set whether or not the image is a front image.
+     * @param isFront Whether or not the image is a front image.
+     */
+    public void setIsFront(boolean isFront) {
+        this.isFront = isFront;
     }
 
     @Override

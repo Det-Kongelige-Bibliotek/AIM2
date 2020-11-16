@@ -38,10 +38,17 @@ public class ImageRepositoryTest  {
 
     @Test
     public void testCreateAndRetreiveImage() {
-        int id = imageRepository.createImage(new Image(-1,"/tmp/test.jpg","1234","category","red","ocr", ImageStatus.NEW));
-        System.out.println("id is "+id);
-        Image retreivedImage = imageRepository.getImage(id);
-        System.out.println("Retreived image "+retreivedImage);
+        Image image = new Image(-1,"/tmp/test.jpg","1234","category","red","ocr", ImageStatus.NEW, true);
+        int id = imageRepository.createImage(image);
+        Image retrievedImage = imageRepository.getImage(id);
+
+        Assert.assertEquals(image.getCategory(), retrievedImage.getCategory());
+        Assert.assertEquals(image.getColor(), retrievedImage.getColor());
+        Assert.assertEquals(image.getCumulusId(), retrievedImage.getCumulusId());
+        Assert.assertEquals(image.getOcr(), retrievedImage.getOcr());
+        Assert.assertEquals(image.getPath(), retrievedImage.getPath());
+        Assert.assertEquals(image.getStatus(), retrievedImage.getStatus());
+        Assert.assertEquals(image.getIsFront(), retrievedImage.getIsFront());
     }
 
     @Test
@@ -61,7 +68,7 @@ public class ImageRepositoryTest  {
     
     @Test
     public void testUpdatingImage() throws Exception {
-        Image image = new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW);
+        Image image = new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW, true);
         int imageId = imageRepository.createImage(image);
         image.setId(imageId);
         
@@ -73,14 +80,14 @@ public class ImageRepositoryTest  {
     
     @Test
     public void testFindFinishedImages() throws Exception {
-        String catagory = UUID.randomUUID().toString();
-        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", catagory, "red", "ocr", ImageStatus.NEW));
-        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", catagory, "blue", "ocr", ImageStatus.NEW));
-        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", catagory, "green", "ocr", ImageStatus.NEW));
+        String category = UUID.randomUUID().toString();
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", category, "red", "ocr", ImageStatus.NEW, true));
+        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", category, "blue", "ocr", ImageStatus.NEW, true));
+        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", category, "green", "ocr", ImageStatus.NEW, true));
         
-        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", catagory, WordStatus.PENDING));
-        int wordId2 = wordRepository.createWord(new Word("Adjective", "Tillægsord", catagory, WordStatus.REJECTED));
-        int wordId3 = wordRepository.createWord(new Word("Gnu", "Gnu", catagory, WordStatus.ACCEPTED));
+        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", category, WordStatus.PENDING));
+        int wordId2 = wordRepository.createWord(new Word("Adjective", "Tillægsord", category, WordStatus.REJECTED));
+        int wordId3 = wordRepository.createWord(new Word("Gnu", "Gnu", category, WordStatus.ACCEPTED));
         
         imageRepository.addWordToImage(imageId1, wordId1, 70);
         imageRepository.addWordToImage(imageId2, wordId2, 80);
@@ -89,18 +96,19 @@ public class ImageRepositoryTest  {
 //        Assert.assertEquals(3, imageRepository.listAllImages().size());
 //        Assert.assertEquals(3, imageRepository.listImagesWithStatus(ImageStatus.NEW).size());
 //        Assert.assertEquals(0, imageRepository.listImagesWithStatus(ImageStatus.FINISHED).size());
-        Assert.assertEquals(3, imageRepository.listImagesInCategory(catagory).size());
+        Assert.assertEquals(3, imageRepository.listImagesInCategory(category).size());
         Assert.assertEquals(0, imageRepository.listImagesInCategory("NOT THE CATEGORY").size());
-        Assert.assertEquals(3, imageRepository.listImagesInCategoryWithStatus(catagory, ImageStatus.NEW).size());
-        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus(catagory, ImageStatus.UNFINISHED).size());
+        Assert.assertEquals(3, imageRepository.listImagesInCategoryWithStatus(category, ImageStatus.NEW).size());
+        Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus(category, ImageStatus.UNFINISHED).size());
         Assert.assertEquals(0, imageRepository.listImagesInCategoryWithStatus("NOT THE CATEGORY", ImageStatus.UNFINISHED).size());
     }
     
     @Test
     public void testRemovingImages() throws Exception {
-        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", "category", "red", "ocr", ImageStatus.NEW));
+        String category = UUID.randomUUID().toString();
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", category, "red", "ocr", ImageStatus.NEW, true));
         
-        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", "category", WordStatus.PENDING));
+        int wordId1 = wordRepository.createWord(new Word("Word", "MS Word", category, WordStatus.PENDING));
         
         imageRepository.addWordToImage(imageId1, wordId1, 70);
 
@@ -120,10 +128,10 @@ public class ImageRepositoryTest  {
     
     @Test
     public void testListImages() {
-        String catagory = UUID.randomUUID().toString();
-        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", catagory, "red", "ocr", ImageStatus.NEW));
-        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", catagory, "blue", "ocr", ImageStatus.NEW));
-        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", catagory, "green", "ocr", ImageStatus.NEW));
+        String category = UUID.randomUUID().toString();
+        int imageId1 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image1.tif", category, "red", "ocr", ImageStatus.NEW, true));
+        int imageId2 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image2.tif", category, "blue", "ocr", ImageStatus.NEW, true));
+        int imageId3 = imageRepository.createImage(new Image(-1, "src/test/resources/image.tif", "image3.tif", category, "green", "ocr", ImageStatus.NEW, true));
 
         int allImages = imageRepository.listAllImages().size();
         Assert.assertEquals(3, allImages);

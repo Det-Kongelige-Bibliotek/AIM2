@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import dk.kb.aim.model.WordConfidence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,6 +27,13 @@ public class ImageRepository {
     /** The database connector.*/
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    /** The DB repository for the words.*/
+    @Autowired
+    private WordRepository wordRepository;
+
+    /** The select query for images, to ensure that all the columns are in the query.*/
+    protected static final String SELECT_QUERY = "SELECT id,path,cumulus_id,category,color,ocr,status,isFront "
+            + "FROM images";
     
     /**
      * Retrieves the database image object.
@@ -31,8 +41,7 @@ public class ImageRepository {
      * @return The requested image.
      */
     public Image getImage(int id) {
-        List<Image> rs = queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images "+
-                "WHERE id='"+id+"'");
+        List<Image> rs = queryForImages(SELECT_QUERY + " WHERE id='"+id+"'");
         if (rs.size() > 0) {
             return rs.get(0);
         } else {
@@ -56,7 +65,7 @@ public class ImageRepository {
      * @return A list with all the images.
      */
     public List<Image> listAllImages() {
-        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images");
+        return queryForImages(SELECT_QUERY);
     }
     
     /**
@@ -67,8 +76,31 @@ public class ImageRepository {
      * @return A list with the images.
      */
     public List<Image> listImages(int count, int offset) {
-        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status FROM images "
-                + " ORDER BY id DESC LIMIT " + count + " OFFSET " + offset);
+        return queryForImages(SELECT_QUERY + " ORDER BY id DESC LIMIT " + count + " OFFSET " + offset);
+    }
+
+    /**
+     * Retrieves the requested images and the mapping to their words.
+     * @param count The number of images to retrieve.
+     * @param offset The offset for the images to retrieve.
+     * @return The mapping between the images and their words.
+     */
+    public Map<Image, List<WordConfidence>> mapImageWords(int count, int offset) {
+        List<Image> images = listImages(count, offset);
+        return retrieveWordConfidenceForImages(images);
+    }
+
+    /**
+     * Retrieves the requested images for the given word and delivers them along the mapping to their words.
+     * @param wordId The id of the word whose images should be extracted.
+     * @param status The status of the images to retrieve.
+     * @param count The number of images to retrieve.
+     * @param offset The offset for the images to retrieve.
+     * @return The mapping between the images and their words.
+     */
+    public Map<Image, List<WordConfidence>> mapImageWords(int wordId, ImageStatus status, int count, int offset) {
+        List<Image> images = wordImages(wordId, status, count, offset);
+        return retrieveWordConfidenceForImages(images);
     }
     
     /**
@@ -77,8 +109,7 @@ public class ImageRepository {
      * @return The images of the category.
      */
     public List<Image> listImagesInCategory(String category) {
-        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status " +
-                "FROM images WHERE category ='" + category + "'");
+        return queryForImages(SELECT_QUERY + " WHERE category ='" + category + "'");
     }
     
     /**
@@ -88,9 +119,8 @@ public class ImageRepository {
      * @return The list of images with the given status in the given category.
      */
     public List<Image> listImagesInCategoryWithStatus(String category, ImageStatus status) {
-        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status " +
-                "FROM images WHERE category = '" + category + "' " +
-                "AND status = '" + status + "'");
+        return queryForImages(SELECT_QUERY + " WHERE category = '" + category + "' " +
+                " AND status = '" + status + "'");
     }
     
     /**
@@ -99,8 +129,7 @@ public class ImageRepository {
      * @return The list of images with the given status.
      */
     public List<Image> listImagesWithStatus(ImageStatus status) {
-        return queryForImages("SELECT id,path,cumulus_id,category,color,ocr,status " +
-                "FROM images WHERE status = '"+status+"'");
+        return queryForImages(SELECT_QUERY + " WHERE status = '" + status + "'");
     }
     
     /**
@@ -109,7 +138,8 @@ public class ImageRepository {
      * @return The ID of the new image entry.
      */
     public int createImage(Image img) {
-        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status) VALUES (?,?,?,?,?)";
+        final String sql = "INSERT INTO images (path,cumulus_id,color,category,status,ocr,isFront) VALUES "
+                + "(?,?,?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
@@ -123,6 +153,8 @@ public class ImageRepository {
                         pst.setString(3, img.getColor());
                         pst.setString(4, img.getCategory());
                         pst.setString(5, img.getStatus().toString());
+                        pst.setString(6, img.getOcr());
+                        pst.setBoolean(7, img.getIsFront());
                         return pst;
                     }
                 },
@@ -135,10 +167,12 @@ public class ImageRepository {
      * @param img The image to update the entry in the database.
      */
     public void updateImage(Image img)  {
-        Object[] params = {img.getPath(),img.getCumulusId(),img.getCategory(),img.getStatus(),img.getId()};
-        int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT};
+        Object[] params = {img.getPath(),img.getCumulusId(),img.getCategory(),img.getStatus(),img.getOcr(),
+                img.getIsFront(), img.getId()};
+        int[] types = {Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BINARY,
+                       Types.BIGINT};
         jdbcTemplate.update(
-                "UPDATE images SET (path,cumulus_id,category,status) = (?,?,?,?) WHERE id = ?",
+                "UPDATE images SET (path,cumulus_id,category,status,ocr,isFront) = (?,?,?,?,?,?) WHERE id = ?",
                 params, types);
     }
     
@@ -175,7 +209,7 @@ public class ImageRepository {
      * @return The list of maximum 10 images associated with a given word.
      */
     public List<Image> wordImages(int wordId, ImageStatus status) {
-        return wordImages(wordId,status,10);
+        return wordImages(wordId,status,10, 0);
     }
     
     /**
@@ -183,15 +217,16 @@ public class ImageRepository {
      * @param wordId the id of the word.
      * @param status restrict to images with status (if null no all images are returned).
      * @param limit the max number of images returned.
+     * @param offset The offset for the images.
      * @return The list of images associated with a given word.
      */
-    public List<Image> wordImages(int wordId, ImageStatus status, int limit) {
-        String sql = "SELECT id,path,cumulus_id,category,color,ocr,status " +
-                "FROM images WHERE id in " +
+    public List<Image> wordImages(int wordId, ImageStatus status, int limit, int offset) {
+        String sql = SELECT_QUERY + " WHERE id in " +
                 "(SELECT image_id FROM image_word WHERE word_id = " + wordId + ")";
-        if (status != null)
-                sql += " AND status = '" + status.toString() + "'";
-        sql += " ORDER BY id DESC LIMIT " + limit;
+        if (status != null) {
+            sql += " AND status = '" + status.toString() + "'";
+        }
+        sql += " ORDER BY id DESC LIMIT " + limit + " OFFSET " + offset;
         return queryForImages(sql);
     }
     
@@ -201,11 +236,31 @@ public class ImageRepository {
      * @return The list of images.
      */
     private List<Image> queryForImages(String sql) {
-        return jdbcTemplate.query(sql, (rs,rowNum) -> new Image(rs.getInt("id"), rs.getString("path"), 
-                rs.getString("cumulus_id"), rs.getString("category"), rs.getString("color"),rs.getString("ocr"), 
-                ImageStatus.valueOf(rs.getString("status"))));
+        return jdbcTemplate.query(sql, (rs,rowNum) -> new Image(rs.getInt("id"),
+                rs.getString("path"),
+                rs.getString("cumulus_id"),
+                rs.getString("category"),
+                rs.getString("color"),
+                rs.getString("ocr"),
+                ImageStatus.valueOf(rs.getString("status")),
+                rs.getBoolean("isFront")));
     }
-    
+
+    /**
+     * Method for extracting the word confidences for images.
+     * Turns the list of images into a map between the images and the list of their words with confidence.
+     * @param images The list of images.
+     * @return The map between the images and their words with confidence.
+     */
+    protected Map<Image, List<WordConfidence>> retrieveWordConfidenceForImages(List<Image> images) {
+        Map<Image, List<WordConfidence>> res = new HashMap<>();
+        for(Image image : images) {
+            res.put(image, wordRepository.getImageWords(image.getId()));
+        }
+
+        return res;
+    }
+
     /**
      * Removes an image. Both from the images table and all related entries in the image_word table.
      * @param image The image to remove.

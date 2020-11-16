@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import dk.kb.aim.google.GoogleImage;
+import dk.kb.aim.model.Image;
+import dk.kb.aim.repository.ImageStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
-import dk.kb.aim.GoogleRetreiver;
+import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.utils.ImageConverter;
 import dk.kb.cumulus.Constants;
@@ -25,9 +28,9 @@ public class ImportToAimStep extends WorkflowStep {
     /** The default value for the */
     protected static final String CATEGORY_UNKNOWN = "UNKNOWN";
     
-    /** The name of the root category for AIM.*/
+    /** The name of the root category for AIM. Only find those beneath this category.*/
     protected static final String CATEGORY_NAME_AIM = "AIM";
-    
+
     /** The configuration */
     protected final Configuration conf;
     /** The Cumulus retriever.*/
@@ -82,19 +85,11 @@ public class ImportToAimStep extends WorkflowStep {
             
             numberOfRecords++;
             try {
-                // handle the case, when it is a sub-asset, and thus a back-side.
-                if(record.isSubAsset()) {
-                    setDone(record);
-                    numberOfBackPages++;
-                    LOGGER.info("Found back-page which will not be imported into AIM: '[" 
-                            + record.getClass().getCanonicalName() + " -> " 
-                            + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]'");
-                } else {
-                    importRecord(record);
-                    numberOfSuccess++;
-                    LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName() 
-                            + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
-                }
+                // Run on both front and backpages.
+                importRecord(record);
+                numberOfSuccess++;
+                LOGGER.info("Successfully imported the Cumulus record '[" + record.getClass().getCanonicalName()
+                    + " -> " + record.getFieldValue(Constants.FieldNames.RECORD_NAME) + "]' into AIM.");
             } catch (IOException e) {
                 LOGGER.warn("An I/O issue occured, when trying to import the image", e);
                 numberOfFailures++;
@@ -130,10 +125,13 @@ public class ImportToAimStep extends WorkflowStep {
     /**
      * Imports a given Cumulus record.
      * @param record The Cumulus record to import.
+     * @throws IOException If it fails to import the record, locating the file or extracting the metadata
+     * through the Google Vision API.
      */
     protected void importRecord(CumulusRecord record) throws IOException {
         String cumulusId = record.getFieldValue(Constants.FieldNames.RECORD_NAME);
         String category = getAimSubCategory(record);
+        boolean isBackpage = record.isSubAsset();
         File imageFile;
         if(conf.isTest()) {
             imageFile = new File(conf.getTestDir(), cumulusId);
@@ -150,9 +148,20 @@ public class ImportToAimStep extends WorkflowStep {
         
         File jpegFile = imageConverter.convertTiff(imageFile);
 
-        googleRetriever.createImageAndRetreiveLabels(jpegFile, cumulusId, category);
+        GoogleImage googleImage = new GoogleImage(jpegFile);
+        Image dbImage = new Image(-1, jpegFile.getName(), cumulusId, category, "","", ImageStatus.NEW,
+                !isBackpage);
+        int image_id = imageRepository.createImage(dbImage);
+        dbImage.setId(image_id);
+
+        // TODO: test if color?
+        googleRetriever.retrieveColor(dbImage, googleImage);
+        // TODO: test if labels/emneord?
+        googleRetriever.retrieveLabels(dbImage, googleImage);
+        // TODO: test if text?
+        googleRetriever.retrieveText(dbImage, googleImage);
     }
-    
+
     /**
      * Retrieves the AIM subcategory for the given Cumulus record.
      * @param record The record.

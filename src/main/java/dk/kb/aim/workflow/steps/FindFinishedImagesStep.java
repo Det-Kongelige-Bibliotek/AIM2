@@ -1,10 +1,5 @@
 package dk.kb.aim.workflow.steps;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
 import dk.kb.aim.exception.MissingRecordException;
@@ -15,7 +10,12 @@ import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.ImageStatus;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.repository.WordStatus;
+import dk.kb.aim.utils.StringUtils;
 import dk.kb.cumulus.CumulusRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * The workflow step for finding the images which not longer has any pending words,
@@ -29,6 +29,8 @@ public class FindFinishedImagesStep extends WorkflowStep {
     
     /** The name of this step.*/
     protected static final String STEP_NAME = "Find Finished Images step";
+    /** The label for handwriting.*/
+    protected static final String LABEL_HANDWRITING = "handwriting";
     
     /** The empty string, for the case when no words are attached to an image.*/
     protected static final String EMPTY_STRING = "";
@@ -135,17 +137,36 @@ public class FindFinishedImagesStep extends WorkflowStep {
         LOGGER.info("Setting image '" + image.getCumulusId() + "' to finished!");
         
         List<WordConfidence> words = wordRepo.getImageWords(image.getId(), WordStatus.ACCEPTED);
-        String keywords;
         if(words.isEmpty()) {
-            keywords = EMPTY_STRING;
-            LOGGER.warn("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
+            LOGGER.info("No keywords found for '" + image.getCumulusId() + "'. Setting the field to empty.");
         } else {
-            keywords = getKeywords(words);
-            LOGGER.info("Found keywords: \n" + keywords);
+            String keywords = getKeywords(words);
+            LOGGER.debug("Found keywords for '" + image.getCumulusId() + "': \n" + keywords);
+            record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
         }
-        
-        record.setStringValueInField(CumulusRetriever.FIELD_NAME_KEYWORDS, keywords);
-        record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
+
+        // Add whether the image has the handwriting label.
+        if(hasHandwritten(words)) {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_HAANDSKRIFT,
+                    CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_YES);
+        } else {
+            record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_HAANDSKRIFT,
+                    CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO);
+        }
+
+        // add color
+        if(StringUtils.hasValue(image.getColor())) {
+            record.setStringValueInField(CumulusRetriever.FIELD_NAME_COLOR_CODES, image.getColor());
+        }
+
+        // add ocr text
+        if(StringUtils.hasValue(image.getOcr())) {
+            if(image.getIsFront()) {
+                record.setStringValueInField(CumulusRetriever.FIELD_NAME_FORSIDE_TEKST, image.getOcr());
+            } else {
+                record.setStringValueInField(CumulusRetriever.FIELD_NAME_BAGSIDE_TEKST, image.getOcr());
+            }
+        }
         
         // SET RECORD TO NOT READY FOR AIM!
         if(conf.isTest()) {
@@ -157,6 +178,20 @@ public class FindFinishedImagesStep extends WorkflowStep {
         }
         image.setStatus(ImageStatus.FINISHED);
         imageRepo.updateImage(image);
+    }
+
+    /**
+     * Determines whether any of the words contain the handwritten
+     * @param words The words which might contain the handwriting label.
+     * @return Whether or not any of the words contain the handwriting label.
+     */
+    protected boolean hasHandwritten(List<WordConfidence> words) {
+        for(WordConfidence word : words) {
+            if(word.getTextEn().equalsIgnoreCase(LABEL_HANDWRITING)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

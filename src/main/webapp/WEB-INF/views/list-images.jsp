@@ -31,7 +31,9 @@
             </div>
         </c:if>
         <div class="row">
-            <c:forEach items="${images}" var="image">
+            <c:forEach items="${imageWords}" var="imageWord">
+                <c:set var="image" value="${imageWord.getKey()}"/>
+                <c:set var="words" value="${imageWord.getValue()}"/>
                 <div class="col-md-4">
                     <a href="${pageContext.request.contextPath}/images/${image.id}">
                         <div class="card mb-4 box-shadow">
@@ -44,8 +46,8 @@
                                 <p class="card-text">${image.cumulusId}</p>
                                 <dl class="dl-horizontal">
                                     <dt>Keywords</dt>
-                                    <c:forEach items="${image_words.get(image.id)}" var="word">
-                                        <dd>${word.textDa} (${word.textEn})</dd>
+                                    <c:forEach items="${words}" var="word">
+                                        <dd class="word-status-${word.status}">${word.textDa} (${word.textEn}) [${word.confidence} %]</dd>
                                     </c:forEach>
                                 </dl>
                             </div>
@@ -58,7 +60,16 @@
     
     <div class="container">
         <c:if test="${hasMore eq true}">
-            <a class="btn btn-success" href="${pageContext.request.contextPath}/images?offset=${nextOffset}&limit=${limit}">More images</a>
+            <c:set var="urlPath" value="/images/" />
+            <c:if test="${wordId != null}">
+              <c:set var="urlPath" value="/word_images/${wordId}" />
+            </c:if>
+
+            <c:url var="imgUrl" value="${urlPath}">
+                <c:param name="offset" value="${nextOffset}" />
+                <c:param name="limit" value="${limit}" />
+            </c:url>
+            <a class="btn btn-info" href="${imgUrl}" role="button">More images</a>
         </c:if>
     </div>
 </div>

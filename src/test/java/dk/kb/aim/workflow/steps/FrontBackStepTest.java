@@ -32,34 +32,49 @@ public class FrontBackStepTest {
         FrontBackStep fbw = new FrontBackStep(conf, retriever, catalogName);
         String suffix = "." + UUID.randomUUID().toString();
 
-//        addStep("Test with uuid filename with non-digit as last character", "Does not find a front-page");
+        // No number as last -> no frontpage
         String f1 = UUID.randomUUID().toString() + "a" + suffix;
         String p1 = fbw.getFrontPage(f1);
         Assert.assertNull(p1);
 
+        // number 2 as last -> number 1 as last on frontpage
         String id2 = UUID.randomUUID().toString();
         String f2 = id2 + "2" + suffix;
         String p2 = fbw.getFrontPage(f2);
         Assert.assertNotNull(p2);
         Assert.assertEquals(p2, id2 + "1" + suffix);
 
+        // number 3 as last -> no frontpage
         String id3 = UUID.randomUUID().toString();
         String f3 = id3 + "3" + suffix;
         String p3 = fbw.getFrontPage(f3);
         Assert.assertNull(p3);
 
+        // TODO: this feature with multiple back-pages has been removed.
+//        String id4 = UUID.randomUUID().toString();
+//        String f4 = id4 + "2_123456" + suffix;
+//        String p4 = fbw.getFrontPage(f4);
+//        Assert.assertNotNull(p4);
+//        Assert.assertEquals(p4, id4 + "1" + suffix);
+//
+//        String id5 = UUID.randomUUID().toString();
+//        String f5 = id5 + "3_123456";
+//        String p5 = fbw.getFrontPage(f5);
+//        Assert.assertNull(p5);
+
+        // Previous multi-backpage turned into standard backpage.
         String id4 = UUID.randomUUID().toString();
         String f4 = id4 + "2_123456" + suffix;
         String p4 = fbw.getFrontPage(f4);
         Assert.assertNotNull(p4);
-        Assert.assertEquals(p4, id4 + "1" + suffix);
+        Assert.assertEquals(p4, id4 + "2_123455" + suffix);
 
-//        addStep("Test with 'extra' back-pages, but not on an 'odd' page", "No front-page");
+        // Previous multi-backpage turned into standard
         String id5 = UUID.randomUUID().toString();
-        String f5 = id5 + "3_123456";
+        String f5 = id5 + "3_123457";
         String p5 = fbw.getFrontPage(f5);
         Assert.assertNull(p5);
-        
+
         String id6 = UUID.randomUUID().toString() + "a";
         String f6 = id6 + "10000000" + suffix;
         String p6 = fbw.getFrontPage(f6);
@@ -68,12 +83,12 @@ public class FrontBackStepTest {
         
         String id7 = "RU000701.tif";
         String id8 = "RU000702.tif";
-        String id9 = "RU000702_1.tif";
-        String id10 = "RU000702_2.tif";
+//        String id9 = "RU000702_1.tif";
+//        String id10 = "RU000702_2.tif";
         Assert.assertNull(fbw.getFrontPage(id7));
         Assert.assertEquals(id7, fbw.getFrontPage(id8));
-        Assert.assertEquals(id7, fbw.getFrontPage(id9));
-        Assert.assertEquals(id7, fbw.getFrontPage(id10));
+//        Assert.assertEquals(id7, fbw.getFrontPage(id9));
+//        Assert.assertEquals(id7, fbw.getFrontPage(id10));
     }
     
     @Test

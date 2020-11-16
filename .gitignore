@@ -5,6 +5,7 @@ tempDir/
 
 ### Local configuration ###
 aim.yml
+AIMapis.json
 
 ### STS ###
 .apt_generated
@@ -27,3 +28,6 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### Frontend ###
+node_modules

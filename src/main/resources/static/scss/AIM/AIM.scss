@@ -36,3 +36,17 @@
     }
   }
 }
+
+.word-status-ACCEPTED {
+  color: #0A0;
+}
+.word-status-PENDING {
+  color: #990;
+}
+.word-status-REJECTED {
+  color: #F00;
+}
+.word-table a {
+  color: inherit;
+  text-decoration: inherit;
+}

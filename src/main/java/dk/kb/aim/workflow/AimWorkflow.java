@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import dk.kb.aim.Configuration;
 import dk.kb.aim.CumulusRetriever;
-import dk.kb.aim.GoogleRetreiver;
+import dk.kb.aim.google.GoogleRetreiver;
 import dk.kb.aim.repository.ImageRepository;
 import dk.kb.aim.repository.WordRepository;
 import dk.kb.aim.utils.ImageConverter;
@@ -75,7 +75,7 @@ public class AimWorkflow extends TimerTask {
     }
     
     @Override
-    public void run() {
+    public synchronized void run() {
         if(state == WorkflowState.WAITING && nextRun.getTime() < System.currentTimeMillis()) {
             try {
                 state = WorkflowState.RUNNING;

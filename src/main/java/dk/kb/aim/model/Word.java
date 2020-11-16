@@ -130,6 +130,7 @@ public class Word {
                 ", text_en='" + textEn + '\'' +
                 ", text_da='" + textDa + '\'' +
                 ", status='" + status + '\'' +
+                ", category='" + category + '\'' +
                 '}';
     }
 }

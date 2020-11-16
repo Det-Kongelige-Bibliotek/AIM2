@@ -4,6 +4,10 @@ aim:
   jpeg_folder: tempDir/images
   jpeg_size_limit: 3000000
   jpeg_url: /image_store/
+  confidence_limit: 60
+  max_results_for_labels: 32
+  language_hint: da
+  to_lower_case: true
   cumulus:
     server: http://cumulus.kb.dk
     username: cumulus-user

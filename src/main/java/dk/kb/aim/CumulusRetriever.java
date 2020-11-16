@@ -1,21 +1,8 @@
 package dk.kb.aim;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.canto.cumulus.CategoryItem;
 import com.canto.cumulus.constants.CombineMode;
 import com.canto.cumulus.constants.FindFlag;
-
 import dk.kb.aim.exception.MissingRecordException;
 import dk.kb.cumulus.Constants;
 import dk.kb.cumulus.CumulusQuery;
@@ -23,6 +10,16 @@ import dk.kb.cumulus.CumulusRecord;
 import dk.kb.cumulus.CumulusRecordCollection;
 import dk.kb.cumulus.CumulusServer;
 import dk.kb.cumulus.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Class for accessing Cumulus and retrieving the CumulusRecords.
@@ -69,7 +66,20 @@ public class CumulusRetriever {
     public static final String FIELD_NAME_KEYWORDS = "Keywords";
     /** The Cumulus field name for Color Codes.*/
     public static final String FIELD_NAME_COLOR_CODES = "Color Codes";
-    
+    /** The Cumulus field name for Forside Tekst.*/
+    public static final String FIELD_NAME_FORSIDE_TEKST = "Forsidetekst";
+    /** The Cumulus field name for Bagside Tekst.*/
+    public static final String FIELD_NAME_BAGSIDE_TEKST = "Bagsidetekst";
+    /** The Cumulus field name for Håndskrift.*/
+    public static final String FIELD_NAME_HAANDSKRIFT = "Håndskrift";
+    /** The Cumulus field name for Kunstform.*/
+    public static final String FIELD_NAME_KUNSTFORM = "Kunstform";
+
+    /** The 'yes' value for the Cumulus field Håndskrift. */
+    public static final String FIELD_HAANDSKRIFT_VALUE_YES = "Yes";
+    /** The 'no' value for the Cumulus field Håndskrift. */
+    public static final String FIELD_HAANDSKRIFT_VALUE_NO = "No";
+
     
     /** The Cumulus server.*/
     protected CumulusServer server;
