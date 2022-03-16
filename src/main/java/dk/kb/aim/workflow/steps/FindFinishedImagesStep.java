@@ -171,12 +171,15 @@ public class FindFinishedImagesStep extends WorkflowStep {
         // SET RECORD TO NOT READY FOR AIM!
         if(conf.isTest()) {
             record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, EMPTY_STRING);
+            LOGGER.info("Cumulus status for image {} is {}", image.getCumulusId(), EMPTY_STRING);
         } else {
             record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                     CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
+            LOGGER.info("Cumulus status for image {} is {}", image.getCumulusId(), CumulusRetriever.FIELD_VALUE_AIM_STATUS_DONE);
             record.setBooleanValueInField(CumulusRetriever.FIELD_NAME_READY_FOR_AIM, Boolean.FALSE);            
         }
         image.setStatus(ImageStatus.FINISHED);
+        LOGGER.info("Status for image {} is set to {}", image.getCumulusId(), image.getStatus());
         imageRepo.updateImage(image);
     }
 
@@ -215,10 +218,12 @@ public class FindFinishedImagesStep extends WorkflowStep {
      */
     protected void setUnfinished(CumulusRecord record, Image image) {
         image.setStatus(ImageStatus.UNFINISHED);
+        LOGGER.info("Status for image {} is set to {}", image.getCumulusId(), image.getStatus());
         imageRepo.updateImage(image);
-        
-        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
+
+        record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS,
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING);
+        LOGGER.info("Cumulus status is set to: {}", CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING);
     }
     
     /**

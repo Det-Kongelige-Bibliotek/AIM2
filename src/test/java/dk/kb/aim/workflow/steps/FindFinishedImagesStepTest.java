@@ -67,12 +67,13 @@ public class FindFinishedImagesStepTest {
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO));
         verifyNoMoreInteractions(record);
         
-        verify(image, times(3)).getCumulusId();
+        verify(image, times(5)).getCumulusId();
         verify(image, times(2)).getId();
         verify(image, times(2)).getColor();
         verify(image, times(2)).getOcr();
         verify(image).getIsFront();
         verify(image).setStatus(eq(ImageStatus.FINISHED));
+        verify(image).getStatus();
         verifyNoMoreInteractions(image);
 
         verify(imageRepo).listImagesWithStatus(ImageStatus.UNFINISHED);
@@ -130,11 +131,12 @@ public class FindFinishedImagesStepTest {
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_HAANDSKRIFT), eq(CumulusRetriever.FIELD_HAANDSKRIFT_VALUE_NO));
         verifyNoMoreInteractions(record);
         
-        verify(image, times(3)).getCumulusId();
+        verify(image, times(5)).getCumulusId();
         verify(image, times(2)).getId();
         verify(image, times(2)).getColor();
         verify(image).getOcr();
         verify(image).setStatus(eq(ImageStatus.FINISHED));
+        verify(image).getStatus();
         verifyNoMoreInteractions(image);
 
         verify(imageRepo).listImagesWithStatus(ImageStatus.UNFINISHED);
@@ -185,10 +187,11 @@ public class FindFinishedImagesStepTest {
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), 
                 eq(CumulusRetriever.FIELD_VALUE_AIM_STATUS_AWATING));
         verifyNoMoreInteractions(record);
-        
-        verify(image).getCumulusId();
+
+        verify(image, times(2)).getCumulusId();
         verify(image).getId();
         verify(image).setStatus(eq(ImageStatus.UNFINISHED));
+        verify(image).getStatus();
         verifyNoMoreInteractions(image);
         
         verify(imageRepo).listImagesWithStatus(ImageStatus.UNFINISHED);
@@ -405,12 +408,13 @@ public class FindFinishedImagesStepTest {
         
         step.setFinished(record, image);
         
-        verify(image, times(2)).getCumulusId();
+        verify(image, times(4)).getCumulusId();
         verify(image).getId();
         verify(image, times(2)).getColor();
         verify(image, times(2)).getOcr();
         verify(image).getIsFront();
         verify(image).setStatus(eq(ImageStatus.FINISHED));
+        verify(image).getStatus();
         verifyNoMoreInteractions(image);
         
         verify(record).setStringValueInField(eq(CumulusRetriever.FIELD_NAME_KEYWORDS), anyString());
@@ -457,11 +461,12 @@ public class FindFinishedImagesStepTest {
         
         step.setFinished(record, image);
         
-        verify(image, times(2)).getCumulusId();
+        verify(image, times(4)).getCumulusId();
         verify(image).getId();
         verify(image).getColor();
         verify(image).getOcr();
         verify(image).setStatus(eq(ImageStatus.FINISHED));
+        verify(image).getStatus();
         verifyNoMoreInteractions(image);
         
         verify(record).setStringEnumValueForField(eq(CumulusRetriever.FIELD_NAME_AIM_STATUS), eq(FindFinishedImagesStep.EMPTY_STRING));
@@ -542,6 +547,8 @@ public class FindFinishedImagesStepTest {
         verifyNoMoreInteractions(record);
         
         verify(image).setStatus(ImageStatus.UNFINISHED);
+        verify(image).getStatus();
+        verify(image).getCumulusId();
         verifyNoMoreInteractions(image);
         
         verify(imageRepo).updateImage(eq(image));

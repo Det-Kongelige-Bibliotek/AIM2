@@ -141,6 +141,7 @@ public class ImportToAimStep extends WorkflowStep {
 
         record.setStringEnumValueForField(CumulusRetriever.FIELD_NAME_AIM_STATUS, 
                 CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
+        LOGGER.info("Cumulus status for image {} is {}", cumulusId, CumulusRetriever.FIELD_VALUE_AIM_STATUS_IN_PROCESS);
 
         if(!imageFile.isFile()) {
             throw new IllegalStateException("Cannot find the file '" + imageFile.getAbsolutePath() + "'");
