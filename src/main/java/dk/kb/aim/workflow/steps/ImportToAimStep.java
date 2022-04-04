@@ -95,7 +95,7 @@ public class ImportToAimStep extends WorkflowStep {
                 numberOfFailures++;
             } catch (Throwable e) {
                 System.gc();
-                LOGGER.warn("Mayor failure, when trying to import the image.", e);
+                LOGGER.warn("Major failure, when trying to import the image.", e);
                 numberOfFailures++;
             }
         }

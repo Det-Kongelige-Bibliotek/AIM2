@@ -65,6 +65,7 @@ public class WordRepository {
      * @return The word, or null if no such word exists.
      */
     public Word getWordByText(String textEn, String category) {
+        textEn = textEn.replace("'", "\\'");
         List<Word> rs = queryForWords("SELECT id,text_en,text_da,category,status FROM words "+
                 "WHERE text_en='" + textEn + "' AND category ='" + category + "'");
         if (rs.size() > 0) {
