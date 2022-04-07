@@ -2,7 +2,7 @@
 # source this from your .bashrc or .zshrc
 
 WEBAPPS="/var/lib/tomcat9/webapps"
-VERSION="2.0.10-RC2" # match this with pom.xml
+VERSION="2.0.10" # match this with pom.xml
 DIR=`dirname "$0"` # folder of this script
 
 # copy frontend without building, even works for jsp files
