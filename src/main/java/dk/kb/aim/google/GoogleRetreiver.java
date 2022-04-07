@@ -105,7 +105,7 @@ public class GoogleRetreiver {
         LOGGER.debug("Received " + responses.size() + " image annotations.");
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
-                LOGGER.error("Error: %s\n", res.getError().getMessage());
+                LOGGER.error("Error: {}\n", res.getError().getMessage());
             } else {
                 for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
                     handleWordAnnotation(dbImage, annotation);
@@ -121,7 +121,7 @@ public class GoogleRetreiver {
      * @throws IOException If it fails to translate.
      */
     protected synchronized void handleWordAnnotation(Image dbImage, EntityAnnotation annotation) throws IOException {
-        String textEn = annotation.getDescription().trim().toLowerCase();
+        String textEn = annotation.getDescription().replace("'", "''").trim().toLowerCase();
         int confidence = Math.round(100.0f*annotation.getScore());
         if(confidence < conf.getConfidenceLimit()) {
             LOGGER.debug("Ignoring the label '" + textEn + "', since confidence '" + confidence + "' < '"
@@ -154,7 +154,7 @@ public class GoogleRetreiver {
         StringBuffer result = new StringBuffer();
         for (AnnotateImageResponse res : responses) {
             if (res.hasError()) {
-                LOGGER.error("Error: %s\n", res.getError().getMessage());
+                LOGGER.error("Error: {}\n", res.getError().getMessage());
             } else {
                 result.append(res.getFullTextAnnotation().getText());
                 result.append("\n");
